@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ThiLo! Manifest</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: #0f0f0f; color: #f0f0f0;
+    padding: 40px 20px; max-width: 620px; margin: 0 auto;
+    line-height: 1.75;
+  }
+  h1 { font-size: 28px; font-weight: 700; color: #e8c547; margin-bottom: 6px; }
+  .tagline { font-size: 13px; color: #666; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 40px; }
+  h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #47a8e8; margin: 36px 0 14px; }
+  p { font-size: 15px; color: #ccc; margin-bottom: 12px; }
+  strong { color: #f0f0f0; }
+  blockquote { border-left: 3px solid #e8c547; padding: 12px 20px; margin: 20px 0;
+    background: #1a1a1a; border-radius: 0 10px 10px 0; }
+  blockquote p { font-size: 17px; color: #e8c547; font-style: italic; margin: 0; }
+  hr { border: none; border-top: 1px solid #2a2a2a; margin: 32px 0; }
+  .feature { background: #1a1a1a; border: 1px solid #2a2a2a; border-left: 3px solid #e8c547;
+    border-radius: 0 10px 10px 0; padding: 14px 18px; margin-bottom: 12px; }
+  .feature-title { font-size: 14px; font-weight: 700; color: #f0f0f0; margin-bottom: 4px; }
+  .feature-text { font-size: 14px; color: #aaa; }
+  .final { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px;
+    padding: 20px; margin-top: 32px; text-align: center; }
+  .final p { font-size: 16px; color: #e8c547; font-weight: 600; margin-bottom: 8px; }
+  .final .sub { font-size: 13px; color: #666; font-weight: 400; }
+  .author { margin-top: 40px; font-size: 12px; color: #555; text-align: right; }
+</style>
+</head>
+<body>
+
+<h1>ThiLo! Manifest</h1>
+<div class="tagline">Think Local. Synenergy.</div>
+
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:28px;flex-wrap:wrap;">
+  <select id="docLangSel" style="background:#1a1a1a;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;">
+    <option value="">— Sprache wählen —</option>
+    <option value="hu">Ungarisch</option>
+    <option value="en">Englisch</option>
+    <option value="fr">Französisch</option>
+    <option value="it">Italienisch</option>
+    <option value="es">Spanisch</option>
+    <option value="pl">Polnisch</option>
+    <option value="cs">Tschechisch</option>
+    <option value="ru">Russisch</option>
+    <option value="tr">Türkisch</option>
+    <option value="hr">Kroatisch</option>
+    <option value="sk">Slowakisch</option>
+    <option value="sl">Slowenisch</option>
+    <option value="ro">Rumänisch</option>
+    <option value="uk">Ukrainisch</option>
+    <option value="sr">Serbisch</option>
+    <option value="el">Griechisch</option>
+    <option value="bs">Bosnisch</option>
+    <option value="sq">Albanisch</option>
+  </select>
+  <button id="docTranslateBtn" style="background:#e8c547;color:#111;border:none;padding:10px 18px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">🌐 Übersetzen</button>
+  <span id="docTransStatus" style="font-size:12px;color:#666;"></span>
+</div>
+
+<script>
+document.getElementById("docTranslateBtn").addEventListener("click", async () => {
+  const lang = document.getElementById("docLangSel").value;
+  if (!lang) { alert("Bitte zuerst eine Sprache wählen."); return; }
+  const status = document.getElementById("docTransStatus");
+  status.textContent = "Übersetze…";
+  const elements = document.querySelectorAll("p, .card-text, .step-text, .hint, li");
+  let done = 0;
+  for (const el of elements) {
+    const text = el.innerText.trim();
+    if (!text || text.length < 3) continue;
+    try {
+      const url = "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(text) + "&langpair=de|" + lang;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.responseData && data.responseData.translatedText) {
+        el.innerText = data.responseData.translatedText;
+      }
+    } catch {}
+    done++;
+    status.textContent = done + " Abschnitte übersetzt…";
+    await new Promise(r => setTimeout(r, 100));
+  }
+  status.textContent = "✓ Fertig";
+});
+</script>
+<h2>Die Geschichte beginnt mit einer Ungerechtigkeit</h2>
+<p>SayHi war eine App die Menschen verband. Einfach, präzise, menschlich. Amazon kaufte sie — nicht um sie weiterzuentwickeln, sondern um sie zu eliminieren. Millionen Nutzer verloren ein Werkzeug das ihnen gehörte. Keine Erklärung. Kein Nachfolger. Einfach weg.</p>
+<p>Das ist die Macht der Konzerne: kaufen, auslöschen, kontrollieren.</p>
+
+<hr>
+
+<h2>Die Antwort</h2>
+<p>Ich habe mit Claude eine App gebaut die Amazon nicht noch einmal eliminieren kann.</p>
+<p>Nicht weil sie besser finanziert ist. Nicht weil sie einen mächtigen Konzern im Rücken hat. Sondern weil sie <strong>dezentral</strong> ist.</p>
+<p><strong>ThiLo! Babel</strong> lebt nicht in einem Rechenzentrum das man kaufen kann. Es lebt in den Händen seiner Nutzer. Im Browser. Im Code. In der Community.</p>
+
+<hr>
+
+<h2>Was ThiLo! unzerstörbar macht</h2>
+
+<div class="feature">
+  <div class="feature-title">Dezentrale Macht</div>
+  <div class="feature-text">Kein einziger Punkt den man kaufen und stilllegen kann. Der Code gehört allen. Die App läuft überall.</div>
+</div>
+
+<div class="feature">
+  <div class="feature-title">Open Source</div>
+  <div class="feature-text">Selbst wenn heute alle Server verschwänden — der Code lebt weiter. In jedem Gerät. In jedem Nutzer.</div>
+</div>
+
+<div class="feature">
+  <div class="feature-title">Schwarmintelligenz</div>
+  <div class="feature-text">30 Nutzer heute. 3.000 morgen. Jeder ein Multiplikator. Jeder ein Knotenpunkt. Ein Schwarm hat kein Zentrum das man treffen kann.</div>
+</div>
+
+<div class="feature">
+  <div class="feature-title">Deine KI gehört dir</div>
+  <div class="feature-text">Nicht Amazons KI. Nicht Googles KI. Dein Wissen. Deine Geschichte. Deine KI. ThiLo! nutzt die globale Stärke der Cloud für lokale, persönliche Souveränität.</div>
+</div>
+
+<hr>
+
+<h2>Das Prinzip</h2>
+<blockquote><p>Globale Intelligenz für lokale Souveränität.</p></blockquote>
+<p>Wir verbinden das Beste aus zwei Welten: die Kraft des globalen Netzes mit der Freiheit des Einzelnen.</p>
+<p>Das ist kein Zufall. Das ist Synenergy. Das kleine <strong>e</strong> — unsichtbar, aber alles verbindend.</p>
+
+<hr>
+
+<h2>An die Konzerne</h2>
+<p>Ihr könnt eine App kaufen. Ihr könnt einen Server abschalten. Ihr könnt einen Gründer aufkaufen.</p>
+<p>Aber ihr könnt keine Idee kaufen die bereits in tausend Händen lebt.</p>
+
+<div class="final">
+  <p>ThiLo! gehört allen — oder es gehört niemandem.</p>
+  <div class="sub">Und genau deshalb kann es niemand nehmen.</div>
+</div>
+
+<div class="author">
+  Mag. Rudolf Grothusen, Krensdorf 2026<br>
+  ThiLo! — Think Local. Synenergy.
+</div>
+
+</body>
+</html>

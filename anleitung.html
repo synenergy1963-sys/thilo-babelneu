@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ThiLo! Babel – Anwendung & Besonderheiten</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: #0f0f0f; color: #f0f0f0;
+    padding: 40px 20px; max-width: 620px; margin: 0 auto;
+    line-height: 1.75;
+  }
+  h1 { font-size: 28px; font-weight: 700; color: #e8c547; margin-bottom: 6px; }
+  .tagline { font-size: 13px; color: #666; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 40px; }
+  h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #47a8e8; margin: 36px 0 14px; }
+  p { font-size: 15px; color: #ccc; margin-bottom: 12px; }
+  strong { color: #f0f0f0; }
+  hr { border: none; border-top: 1px solid #2a2a2a; margin: 32px 0; }
+
+  .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 10px; }
+  .card-title { font-size: 14px; font-weight: 700; color: #f0f0f0; margin-bottom: 6px; }
+  .card-text { font-size: 14px; color: #aaa; line-height: 1.6; }
+
+  .step { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px;
+    padding: 14px 18px 14px 52px; margin-bottom: 10px; position: relative; }
+  .step-num { position: absolute; left: 14px; top: 14px;
+    background: #e8c547; color: #111; width: 24px; height: 24px; border-radius: 50%;
+    font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .step-title { font-size: 14px; font-weight: 700; color: #f0f0f0; margin-bottom: 4px; }
+  .step-text { font-size: 14px; color: #aaa; line-height: 1.55; }
+
+  .hint { background: #1a1a1a; border: 1px solid #2a2a2a; border-left: 3px solid #e8c547;
+    border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0; font-size: 14px; color: #aaa; }
+  .hint strong { color: #e8c547; }
+
+  .gold { color: #e8c547; font-weight: 700; }
+  .blue { color: #47a8e8; font-weight: 700; }
+
+  .format-box { background: #111; border: 1px solid #2a2a2a; border-radius: 10px;
+    padding: 12px 16px; font-family: monospace; font-size: 13px; color: #6abf6a; margin: 10px 0; }
+
+  .author { margin-top: 40px; font-size: 13px; color: #666; line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<h1>ThiLo! Babel</h1>
+<div class="tagline">Anwendung & Besonderheiten · v1.7</div>
+
+<h2>Wozu dient ThiLo! Babel?</h2>
+<p>ThiLo! Babel beseitigt die Sprachbarriere zwischen Menschen, damit andere Kulturen und ihre Besonderheiten besser erkundet und diese Schätze mit anderen geteilt werden können.</p>
+<p>Die App unterstützt außerdem beim Erlernen von Fremdsprachen und Fachausdrücken. Jeder Beruf bringt seine eigene Fachsprache mit sich — ein ukrainischer Zimmermann hat andere Bedürfnisse als eine slowakische Pflegerin. Deshalb kannst Du eigene Vokabel- und Phrasenlisten erstellen und importieren.</p>
+<p>Diese bleiben ausschließlich auf Deinem persönlichen Speicher — ganz im Sinne von <strong>„Think Local"</strong>, der Kernidee der ThiLo!-Produktfamilie.</p>
+
+<hr>
+
+<h2>Übersetzen</h2>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-title">Sprachen wählen</div>
+  <div class="step-text">Oben links und rechts die gewünschten Sprachen auswählen. Mit ⇄ tauschen. Die App merkt sich die letzte Einstellung.</div>
+</div>
+
+<div class="step">
+  <div class="step-num">2</div>
+  <div class="step-title">Sprechen</div>
+  <div class="step-text"><span class="gold">Gelber Knopf</span> — erste Person spricht. <span class="blue">Blauer Knopf</span> — zweite Person spricht. Kurz und klar sprechen, dann warten bis die Übersetzung erscheint und vorgelesen wird.</div>
+</div>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <div class="step-title">Text eingeben</div>
+  <div class="step-text">Alternativ Text direkt ins Textfeld tippen oder einfügen, dann auf <strong>Übersetzen</strong> tippen.</div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <div class="step-title">Wiederholen & vorbereiten</div>
+  <div class="step-text">Mit <strong>🔁</strong> wird die letzte Übersetzung nochmals vorgelesen. Du kannst Gespräche auch vorab einsprechen und die übersetzten Phrasen später mit der Wiederholfunktion im Gespräch abspielen.</div>
+</div>
+
+<div class="hint"><strong>Hinweis:</strong> Die Spracherkennung bricht nach einer kurzen Pause ab. Flüssig und zügig sprechen — Denkpausen vorher machen. Die App funktioniert am besten in <strong>Google Chrome</strong> auf Android.</div>
+
+<hr>
+
+<h2>Gesprächsprotokoll</h2>
+<p>Alle Übersetzungen werden automatisch mitgeschrieben. Am Ende eines Gesprächs kann das Protokoll als Textdatei exportiert werden — ideal um besprochene Details zuhause nachzulesen.</p>
+
+<hr>
+
+<h2>Phrasenbuch & Coping-Phrasen</h2>
+
+<div class="card">
+  <div class="card-title">Vorgefertigte Phrasen</div>
+  <div class="card-text">Häufige Redewendungen nach Kategorien geordnet. Antippen — die Phrase wird übersetzt und vorgelesen.</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Coping-Phrasen</div>
+  <div class="card-text">Im Menü steht ein Paket mit 47 Fragen für lokales Klimawissen zum Herunterladen bereit — der Tourist als reisender Reporter. Diese Fragen helfen, Anpassungsstrategien an den Klimawandel aufzuspüren und weiterzugeben.</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Eigene Phrasen importieren</div>
+  <div class="card-text">Eigene Phrasenlisten als TXT-Datei importieren. Format pro Zeile:</div>
+</div>
+<div class="format-box">Deutsch | Übersetzung | Kategorie<br>Wo ist der Bahnhof? | Hol van az állomás? | Reise</div>
+<p style="font-size:13px;color:#666">Kategorie ist optional — Standard: Eigene Phrasen.</p>
+
+<hr>
+
+<h2>Vokabelliste</h2>
+
+<div class="card">
+  <div class="card-title">Grundvokabular</div>
+  <div class="card-text">1750 deutsche Grundvokabeln mit ungarischer Referenzübersetzung sind eingebaut. Im Vokabel-Modal einmalig laden — für alle 20 Sprachen nutzbar.</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Eigene Vokabeln & Importformat</div>
+  <div class="card-text">Fremdwort eingeben — die App übersetzt automatisch ins Deutsche. Eigene Listen im Format:</div>
+</div>
+<div class="format-box">Berg (der) | montagne (la) (FR)<br>tető | roof (EN)</div>
+
+<div class="card">
+  <div class="card-title">Klammern & Ländercode</div>
+  <div class="card-text">Der Ländercode (FR), (HU) etc. zeigt die Ursprungssprache an. <strong>Alles in Klammern wird weder gesprochen noch automatisch übersetzt</strong> — Klammern dienen ausschließlich dem grammatikalischen Verständnis auf dem Bildschirm.</div>
+</div>
+
+<div class="hint"><strong>Tipp:</strong> Die automatische Übersetzung via MyMemory ist gut aber nicht unfehlbar. Bei Fachvokabular bitte bei einem Muttersprachler prüfen bevor Du es als Original speicherst.</div>
+
+<hr>
+
+<h2>Updates</h2>
+<p>Da es keine zentrale Nutzerverwaltung gibt, solltest Du gelegentlich nach Updates suchen. Dafür gibt es den <strong>Update-Knopf im Menü</strong>. Ein Download lohnt sich nur, wenn die Versionsnummer höher ist als die der installierten Version.</p>
+<p>Ist das der Fall, lösche die App vom Startbildschirm und installiere die neue Version über das Browsermenü erneut. Eventuell musst Du anschließend die Mikrofonfreigabe nochmals erlauben.</p>
+
+<hr>
+
+<h2>20 Sprachen</h2>
+<p>Deutsch, Ungarisch, Englisch, Französisch, Italienisch, Spanisch, Polnisch, Tschechisch, Russisch, Türkisch, Kroatisch, Slowakisch, Slowenisch, Rumänisch, Ukrainisch, Serbisch, Griechisch, Bosnisch, Albanisch, Latein.</p>
+<div class="hint"><strong>Latein:</strong> Dabei als Funfakt — die Übersetzungsqualität ist begrenzt da Latein eine tote Sprache ist.</div>
+
+<hr>
+
+<h2>ThiLo! wächst</h2>
+<p>Die ThiLo!-Produktfamilie wächst laufend weiter. Eine eigene Internetseite wird folgen.</p>
+<p>Ich freue mich über jedes Feedback und wünsche mir, dass die Produkte weitergegeben werden und möglichst großen Nutzen in der Welt stiften.</p>
+<p><strong>Viel Freude damit!</strong></p>
+
+<div class="author">
+  Mag. Rudolf Grothusen, Krensdorf 2026<br>
+  ThiLo! — Think Local. Synenergy.<br>
+  <a href="mailto:synenergy1963@gmail.com" style="color:#555">synenergy1963@gmail.com</a>
+</div>
+
+</body>
+</html>
