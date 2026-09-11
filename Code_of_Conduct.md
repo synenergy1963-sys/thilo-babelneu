@@ -1,7 +1,12 @@
-ThiLo! Code of Conduct
+ # Code of Conduct
 
-Dieses Projekt verwendet das ThiLo! Manifest als offiziellen Verhaltenskodex.
-Es definiert die Werte, Prinzipien und das Verhalten der Community.
+This project follows the principles and values defined in the ThiLo! Manifest, available in 20 languages.
 
-Der vollständige Verhaltenskodex ist hier abrufbar:
+The Manifest describes the ethical guidelines, community expectations, and behavioral standards for all contributors and users of this project.
+
+Everybody can use this project for free and is invited to share it with other people.
+
+You can read the full Manifest here:
 https://thilobabelneu.netlify.app/thilo-manifest.html
+
+By participating in this project, you agree to uphold these principles and act respectfully and responsibly within the community.
