@@ -364,7 +364,7 @@
       <div class="mi-icon">🌸</div>
       <div><div>ThiLo! Manifest</div><div class="mi-sub">Philosophie & Seele von ThiLo!</div></div>
     </a>
-    <div class="menu-version">ThiLo! Babel v1.7 · Juli 2026</div>
+    <div class="menu-version">ThiLo! Babel · 6.10.2026 Hebräisch</div>
     <div style="text-align:center;margin-top:10px;">
       <a href="https://www.netlify.com" target="_blank">
         <img src="https://www.netlify.com/v3/img/components/netlify-color-accent.svg" alt="Hosted on Netlify" style="height:20px;opacity:0.4;">
@@ -573,6 +573,14 @@ const LANGS = [
   { code: "el-GR", name: "Griechisch" },
   { code: "bs-BA", name: "Bosnisch" },
   { code: "sq-AL", name: "Albanisch" },
+  // **Eine Freundin soll in Israel sowohl Vokabeln lernen als auch dolmetschen können —
+  // Hebräisch muss dafür ganz normal in der Sprachliste stehen.**
+  // Funktion: wie jede andere Sprache hier generisch über `code`/`name` eingebunden; kein
+  // Sonderfall nötig, da Erkennung/Ausgabe/Übersetzung überall nur `code.split("-")[0]`
+  // bzw. den vollen BCP-47-Code nutzen. Einzige bekannte Einschränkung: Hebräisch wird
+  // rechts-nach-links geschrieben, Babels Oberfläche ist (wie bei allen anderen Sprachen)
+  // nicht für RTL ausgelegt — Text bleibt lesbar, nur nicht spiegelverkehrt ausgerichtet.
+  { code: "he-IL", name: "Hebräisch" },
   { code: "la", name: "Latein" },
 ];
 
