@@ -6,12 +6,13 @@
 <meta name="theme-color" content="#0f0f0f" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="ThiLo! Babel" />
+<meta name="apple-mobile-web-app-title" content="Babel Pro" />
+<meta name="robots" content="noindex, nofollow" />
 <meta name="mobile-web-app-capable" content="yes" />
-<title>ThiLo! Babel</title>
+<title>ThiLo! Babel Pro</title>
 <link rel="manifest" href="./manifest.json" />
-<link rel="icon" href="./icon.svg" type="image/svg+xml" />
-<link rel="apple-touch-icon" href="./icon.svg" />
+<link rel="icon" type="image/png" sizes="48x48" href="./icons/favicon-48.png" />
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: #0f0f0f; color: #f0f0f0;
@@ -106,6 +107,8 @@
   border-radius: 8px; font-family: inherit; font-size: 12px; cursor: pointer;
 }
 .phrasebtn:hover { color: #ccc; border-color: #555; }
+.io-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 12px; }
+.io-arrow { color: #6abf6a; font-size: 11px; font-weight: 600; letter-spacing: 0.03em; white-space: nowrap; }
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none;
   align-items: flex-end; justify-content: center; z-index: 50;
@@ -183,6 +186,32 @@
 .menu-item:hover { background: #1e1e1e; color: #f0f0f0; }
 .menu-item .mi-icon { width: 28px; text-align: center; font-size: 17px; flex-shrink: 0; }
 .menu-item .mi-sub { font-size: 11px; color: #555; margin-top: 1px; }
+body.symbols-only .lbl { display: none; }
+.icon-lbl-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+/* Kernsatz: Die Sprechen-/Übersetzen-Zeile muss auf jedem Handy in den Rahmen passen.
+   Wunsch: Wort UND Icon im Knopf, ohne dass die Zeile nach rechts aus der Umrahmung rutscht.
+   Wirkung: Im Normalmodus trägt der Übersetzen-Knopf nur den kleinen Pfeil + Wort (schmal wie früher);
+   die farbigen Textzeilen (ico-deco) erscheinen nur im Symbolmodus, wo das Wort ohnehin fehlt und Platz frei ist.
+   Funktion: ico-deco standardmäßig ausgeblendet; min-width:0 erlaubt den flex-Kindern zu schrumpfen
+   (sonst gilt min-width:auto = Inhaltsbreite und die Zeile läuft über), overflow:hidden als Notbremse. */
+.ico-deco { display: none; }
+body.symbols-only .ico-deco { display: inline-block; }
+.translatebtn .ico-arrow { width: 16px; height: 16px; }
+body.symbols-only .translatebtn .ico-arrow { width: 26px; height: 26px; }
+/* Breite richtet sich nach dem Inhalt (flex-basis:auto) statt nach dem Rest gleichmäßig zu teilen —
+   sonst wurde das "n" von "Übersetzen" abgeschnitten. Wiederholen-Knöpfe und Abstände etwas schlanker. */
+.btnrow { gap: 8px; }
+.btnrow .repeatbtn { width: 40px; }
+.btnrow .micbtn, .btnrow .translatebtn { flex: 1 1 auto; width: auto; min-width: 0; overflow: hidden; padding-left: 8px; padding-right: 8px; }
+.translatebtn.icon-lbl-btn { gap: 8px; }
+/* Normalmodus: Wort dicht am Pfeil (das Pfeil-SVG hat innen selbst schon etwas Rand, deshalb negativer Ausgleich) */
+body:not(.symbols-only) .translatebtn.icon-lbl-btn { gap: 1px; }
+body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
+/* Schmale Handys (~360 px): kleiner Pfeil im Normalmodus entfällt, das Wort trägt allein */
+@media (max-width: 380px) {
+  .btnrow .repeatbtn { width: 36px; }
+  body:not(.symbols-only) .translatebtn .ico-arrow { display: none; }
+}
 .menu-divider { border: none; border-top: 1px solid #2a2a2a; margin: 8px 0; }
 .menu-version { font-size: 13px; color: #e8c547; text-align: center; margin-top: 12px; font-weight: 700; letter-spacing: 0.05em; padding: 10px; background: #1a1a1a; border-radius: 8px; border: 1px solid #2a2a2a; }
 
@@ -261,88 +290,106 @@
 <body>
 
 <div class="app-header">
-  <svg width="72" height="72" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <radialGradient id="gold" cx="45%" cy="40%" r="60%">
-        <stop offset="0%" stop-color="#f5d96b"/>
-        <stop offset="60%" stop-color="#d4960a"/>
-        <stop offset="100%" stop-color="#b87800"/>
-      </radialGradient>
-      <radialGradient id="glow" cx="50%" cy="50%" r="20%">
-        <stop offset="0%" stop-color="#fff" stop-opacity="0.6"/>
-        <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
-      </radialGradient>
-    </defs>
-    <circle cx="100" cy="100" r="98" fill="#9b1c1c"/>
-    <circle cx="100" cy="100" r="86" fill="url(#gold)"/>
-    <g stroke="#c8890a" stroke-width="0.8" fill="none" opacity="0.5">
-      <ellipse cx="100" cy="100" rx="86" ry="28"/>
-      <ellipse cx="100" cy="100" rx="86" ry="55"/>
-      <ellipse cx="100" cy="100" rx="86" ry="75"/>
-      <ellipse cx="100" cy="100" rx="28" ry="86"/>
-      <ellipse cx="100" cy="100" rx="55" ry="86"/>
-      <ellipse cx="100" cy="100" rx="75" ry="86"/>
-    </g>
-    <circle cx="100" cy="100" r="30" fill="url(#glow)"/>
-    <text x="100" y="44" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="#1a1a5e" letter-spacing="-1">e</text>
-    <text x="100" y="66" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="#1a1a5e" letter-spacing="-1">n</text>
-    <circle cx="100" cy="100" r="13" fill="white" stroke="#9b1c1c" stroke-width="2"/>
-    <text x="100" y="107" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="18" font-weight="900" fill="#9b1c1c">e</text>
-    <text x="100" y="132" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="#1a1a5e">r</text>
-    <text x="100" y="154" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="#1a1a5e">g</text>
-    <text x="100" y="176" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="#1a1a5e">y</text>
-    <text x="26" y="107" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="#1a1a5e">s</text>
-    <text x="48" y="107" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="#1a1a5e">y</text>
-    <text x="70" y="107" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="#1a1a5e">n</text>
-    <text x="130" y="107" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="#1a1a5e">r</text>
-    <text x="152" y="107" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="#1a1a5e">g</text>
-    <text x="174" y="107" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="#1a1a5e">y</text>
-  </svg>
-  <div style="font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#666">ThiLo! Babel</div>
+  <img src="./icons/logo-144.png" width="72" height="72" alt="Synenergy">
+  <div style="font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#666" data-appname>ThiLo! Babel Pro</div>
   <button class="menu-btn" id="menuBtn">⋮</button>
 </div>
 
 <div class="modal-overlay" id="menuModal">
   <div class="menu-sheet">
     <div class="modal-header">
-      <div class="menu-title">ThiLo! Babel</div>
+      <div class="menu-title" data-appname>ThiLo! Babel Pro</div>
       <button class="modal-close" id="closeMenuBtn">✕</button>
     </div>
 
     <div class="menu-section">App</div>
-    <a class="menu-item" href="https://thilobabel.netlify.app" target="_blank">
+    <a class="menu-item" href="/" target="_blank">
       <span class="mi-icon">🔄</span>
-      <div><div>App aktualisieren</div><div class="mi-sub">Neueste Version im Browser öffnen</div></div>
+      <div><div data-i18n="updateTitle">App aktualisieren</div><div class="mi-sub" data-i18n="updateSub">Neueste Version im Browser öffnen</div></div>
     </a>
 
     <hr class="menu-divider" />
-    <div class="menu-section">ThiLo! Familie</div>
+    <div class="menu-section" data-i18n="familyHeader">ThiLo! Familie</div>
     <a class="menu-item" href="https://thilobrainflow.netlify.app" target="_blank">
       <span class="mi-icon">🧠</span>
-      <div><div>ThiLo! Brain Flow</div><div class="mi-sub">Ideen & Gedankenströme</div></div>
+      <div><div>ThiLo! Brain Flow</div><div class="mi-sub" data-i18n="brainflowSub">Ideen & Gedankenströme</div></div>
     </a>
     <div class="menu-item" style="opacity:0.4;cursor:default;">
       <span class="mi-icon">📓</span>
-      <div><div>ThiLo! Note</div><div class="mi-sub">In Entwicklung</div></div>
+      <div><div>ThiLo! Note</div><div class="mi-sub" data-i18n="noteSub">In Entwicklung</div></div>
     </div>
     <div class="menu-item" style="opacity:0.4;cursor:default;">
-      <span class="mi-icon">🎙</span>
-      <div><div>ThiLo! Mic</div><div class="mi-sub">Feldaufnahmen für Babel</div></div>
+      <span class="mi-icon"><svg width="19" height="17" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><line x1="8" y1="10" x2="40" y2="10" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.85"/><line x1="8" y1="24" x2="40" y2="24" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.6"/><path d="M50 8v26M40 26l10 10l10-10" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="34" y1="52" x2="58" y2="52" stroke="currentColor" stroke-width="5.5" stroke-linecap="round"/></svg></span>
+      <div><div>ThiLo! Mic</div><div class="mi-sub" data-i18n="micSub">Feldaufnahmen für Babel</div></div>
     </div>
 
     <hr class="menu-divider" />
-    <div class="menu-section">Pakete & Importe</div>
+    <div class="menu-section" data-i18n="packagesHeader">Pakete & Importe</div>
     <a class="menu-item" href="/coping-phrasen.txt" download>
       <span class="mi-icon">📥</span>
-      <div><div>Coping-Phrasen herunterladen</div><div class="mi-sub">47 Fragen für lokales Wissen</div></div>
+      <div><div data-i18n="copingTitle">Coping-Phrasen herunterladen</div><div class="mi-sub" data-i18n="copingSub">47 Fragen für lokales Wissen</div></div>
     </a>
     <input type="file" id="importCopingFile" accept=".txt" style="display:none;" />
 
     <hr class="menu-divider" />
-    <div class="menu-section">Unterstützen</div>
+    <div class="menu-section" data-i18n="settingsHeader">Einstellungen</div>
+    <div class="menu-item" style="cursor:default;" data-pro-only>
+      <span class="mi-icon">🌍</span>
+      <div style="flex:1;">
+        <div data-i18n-b="uiModeBTitle">Sprache für Status- und Hilfetexte</div>
+        <div class="mi-sub" data-i18n-b="uiModeBSub">Betrifft Meldungen im Hauptbildschirm — nicht das Menü (das folgt der Ankersprache)</div>
+      </div>
+      <button class="phrasebtn" id="uiModeBBtn" style="min-width:44px;flex-shrink:0;">EN</button>
+    </div>
+
+    <div class="menu-item" style="cursor:default;">
+      <span class="mi-icon">🔤</span>
+      <div style="flex:1;">
+        <div data-i18n-b="symbolModeTitle">Nur Symbole (ohne Wörter)</div>
+        <div class="mi-sub" data-i18n-b="symbolModeSub">Knöpfe zeigen nur die Icons — sprachunabhängig, unabhängig von den beiden Einstellungen oben</div>
+      </div>
+      <button class="phrasebtn" id="symbolModeBtn" style="min-width:44px;flex-shrink:0;">⚪</button>
+    </div>
+
+    <label class="menu-item" style="cursor:pointer;" for="autoTranslateToggle">
+      <span class="mi-icon">🌐</span>
+      <div style="flex:1;">
+        <div data-i18n="autoTranslateTitle">Beim Anzeigen automatisch übersetzen</div>
+        <div class="mi-sub" data-i18n="autoTranslateSub">Aus (Standard): keine automatischen Anfragen beim Öffnen/Filtern/Lernen — nur localize! übersetzt</div>
+      </div>
+      <input type="checkbox" id="autoTranslateToggle" style="width:20px;height:20px;flex-shrink:0;" />
+    </label>
+
+    <hr class="menu-divider" />
+    <div class="menu-section">🔑 Google Translate (Pro)</div>
+    <div class="menu-item" style="cursor:default;flex-direction:column;align-items:stretch;gap:8px;">
+      <div class="mi-sub" id="proKeyStatus"></div>
+      <input type="password" id="proKeyInput" placeholder="Google-API-Key einfügen" data-i18n-ph="keyPlaceholder" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;color:#f0f0f0;padding:10px 14px;border-radius:10px;font-family:inherit;font-size:14px;outline:none;" />
+      <div class="io-row">
+        <button class="phrasebtn" id="proKeySaveBtn" data-i18n="keySave">Speichern &amp; prüfen</button>
+        <button class="phrasebtn" id="proKeyDeleteBtn" data-i18n="keyDelete">Löschen</button>
+      </div>
+      <div class="mi-sub" id="proKeyUsage"></div>
+    </div>
+
+    <hr class="menu-divider" />
+    <div class="menu-section" data-i18n="exportImportHeader">Export &amp; Import</div>
+    <div class="io-row">
+      <button class="phrasebtn icon-lbl-btn" id="exportPhrasenBtn"><svg width="18" height="18" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><path d="M2 6h28a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4h-3v8l-9-8h-16a4 4 0 0 1-4-4v-14a4 4 0 0 1 4-4z" fill="none" stroke="#e0b84a" stroke-width="4" stroke-linejoin="round"/><path d="M30 34h28a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4h-16l-9 8v-8h-3a4 4 0 0 1-4-4v-14a4 4 0 0 1 4-4z" fill="none" stroke="#4a8fe0" stroke-width="4" stroke-linejoin="round"/></svg><span class="lbl" data-i18n="phrasenBtn">Phrasen</span></button>
+      <span class="io-arrow">← <span data-i18n="exportLabel">EXPORT</span> →</span>
+      <button class="phrasebtn icon-lbl-btn" id="exportVokabelnBtn"><svg width="18" height="18" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><rect x="8" y="14" width="34" height="24" rx="4" fill="none" stroke="currentColor" stroke-width="4"/><rect x="18" y="24" width="34" height="24" rx="4" fill="none" stroke="currentColor" stroke-width="4"/></svg><span class="lbl" data-i18n="vokabelnBtn">Vokabeln</span></button>
+    </div>
+    <div class="io-row">
+      <button class="phrasebtn icon-lbl-btn" id="importPhrasenBtn"><svg width="18" height="18" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><path d="M2 6h28a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4h-3v8l-9-8h-16a4 4 0 0 1-4-4v-14a4 4 0 0 1 4-4z" fill="none" stroke="#e0b84a" stroke-width="4" stroke-linejoin="round"/><path d="M30 34h28a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4h-16l-9 8v-8h-3a4 4 0 0 1-4-4v-14a4 4 0 0 1 4-4z" fill="none" stroke="#4a8fe0" stroke-width="4" stroke-linejoin="round"/></svg><span class="lbl" data-i18n="phrasenBtn">Phrasen</span></button>
+      <span class="io-arrow">→ <span data-i18n="importLabel">IMPORT</span> ←</span>
+      <button class="phrasebtn icon-lbl-btn" id="importVokabelnBtn"><svg width="18" height="18" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><rect x="8" y="14" width="34" height="24" rx="4" fill="none" stroke="currentColor" stroke-width="4"/><rect x="18" y="24" width="34" height="24" rx="4" fill="none" stroke="currentColor" stroke-width="4"/></svg><span class="lbl" data-i18n="vokabelnBtn">Vokabeln</span></button>
+    </div>
+
+    <hr class="menu-divider" />
+    <div class="menu-section" data-i18n="supportHeader">Unterstützen</div>
     <a class="menu-item" href="https://paypal.me/RuGrothusen" target="_blank">
       <span class="mi-icon">☕</span>
-      <div><div>Einen Kaffee spendieren</div><div class="mi-sub">PayPal – freiwilliger Beitrag</div></div>
+      <div><div data-i18n="coffeeTitle">Einen Kaffee spendieren</div><div class="mi-sub" data-i18n="coffeeSub">PayPal – freiwilliger Beitrag</div></div>
     </a>
 
     <hr class="menu-divider" />
@@ -358,13 +405,14 @@
     <hr class="menu-divider" />
     <a class="menu-item" href="/anleitung.html" target="_blank">
       <div class="mi-icon">📖</div>
-      <div><div>Bedienungsanleitung</div><div class="mi-sub">Anwendung & Besonderheiten</div></div>
+      <div><div data-i18n="manualTitle">Bedienungsanleitung</div><div class="mi-sub" data-i18n="manualSub">Anwendung & Besonderheiten</div></div>
     </a>
     <a class="menu-item" href="/thilo-manifest.html" target="_blank">
       <div class="mi-icon">🌸</div>
-      <div><div>ThiLo! Manifest</div><div class="mi-sub">Philosophie & Seele von ThiLo!</div></div>
+      <div><div>ThiLo! Manifest</div><div class="mi-sub" data-i18n="manifestSub">Philosophie & Seele von ThiLo!</div></div>
     </a>
-    <div class="menu-version">ThiLo! Babel · 6.10.2026 Hebräisch</div>
+    <!-- **Rudolf sieht am Gerät sofort, welche Fassung gerade läuft.** -->
+<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel Pro</span> · Stand: 06.10.2026, 01:45 · Basis Babel v1.10</div>
     <div style="text-align:center;margin-top:10px;">
       <a href="https://www.netlify.com" target="_blank">
         <img src="https://www.netlify.com/v3/img/components/netlify-color-accent.svg" alt="Hosted on Netlify" style="height:20px;opacity:0.4;">
@@ -376,18 +424,18 @@
 <div class="wrap">
   <div class="langbar">
     <select id="langA" class="lang-gold"></select>
-    <button class="anchorbtn" id="anchorBtn" title="Ankersprache setzen">⚓</button>
+    <button class="anchorbtn" id="anchorBtn" title="Ankersprache setzen" data-pro-only>⚓</button>
     <button class="swapbtn" id="swapBtn">⇄</button>
     <select id="langB" class="lang-blue"></select>
   </div>
 
   <div class="panel gold" id="panelA">
     <div class="panel-label" id="labelA"></div>
-    <textarea class="heard" id="heardA" placeholder="Sprich, tippe oder füge Text ein…" rows="2"></textarea>
+    <textarea class="heard" id="heardA" placeholder="Sprich, tippe oder füge Text ein…" data-i18n-ph-b="mainPlaceholder" rows="2"></textarea>
     <div class="btnrow">
       <button class="repeatbtn" id="repeatA" title="Originaltext wiederholen">🔁</button>
-      <button class="micbtn gold" id="micA">🎙 <span id="micAText">Sprechen</span></button>
-      <button class="translatebtn" id="goA">Übersetzen</button>
+      <button class="micbtn gold" id="micA"><svg width="18" height="18" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><rect x="24" y="8" width="16" height="30" rx="8" fill="currentColor"/><path d="M16 28v4a16 16 0 0 0 32 0v-4" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><line x1="32" y1="48" x2="32" y2="58" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><line x1="22" y1="58" x2="42" y2="58" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg><span id="micAText" class="lbl" data-i18n-b="speakLabel">Sprechen</span></button>
+      <button class="translatebtn icon-lbl-btn" id="goA"><svg class="ico-deco" width="15" height="9" viewBox="0 0 64 32" aria-hidden="true" style="flex-shrink:0"><rect x="4" y="4" width="52" height="6" rx="3" fill="#e0b84a"/><rect x="4" y="16" width="36" height="6" rx="3" fill="#e0b84a" opacity="0.7"/><rect x="4" y="28" width="44" height="4" rx="2" fill="#e0b84a" opacity="0.5"/></svg><svg class="ico-arrow" width="24" height="24" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><path d="M8 32H50" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M38 18L54 32L38 46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="ico-deco" width="15" height="9" viewBox="0 0 64 32" aria-hidden="true" style="flex-shrink:0"><rect x="4" y="4" width="52" height="6" rx="3" fill="#4a8fe0"/><rect x="4" y="16" width="36" height="6" rx="3" fill="#4a8fe0" opacity="0.7"/><rect x="4" y="28" width="44" height="4" rx="2" fill="#4a8fe0" opacity="0.5"/></svg><span class="lbl" data-i18n-b="translateLabel">Übersetzen</span></button>
       <button class="repeatbtn" id="repeatTransA" title="Übersetzung wiederholen">🔁</button>
     </div>
     <div class="translated empty" id="transA">Übersetzung erscheint hier</div>
@@ -395,11 +443,11 @@
 
   <div class="panel blue" id="panelB">
     <div class="panel-label" id="labelB"></div>
-    <textarea class="heard" id="heardB" placeholder="Sprich, tippe oder füge Text ein…" rows="2"></textarea>
+    <textarea class="heard" id="heardB" placeholder="Sprich, tippe oder füge Text ein…" data-i18n-ph-b="mainPlaceholder" rows="2"></textarea>
     <div class="btnrow">
       <button class="repeatbtn" id="repeatB" title="Originaltext wiederholen">🔁</button>
-      <button class="micbtn blue" id="micB">🎙 <span id="micBText">Sprechen</span></button>
-      <button class="translatebtn" id="goB">Übersetzen</button>
+      <button class="micbtn blue" id="micB"><svg width="18" height="18" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><rect x="24" y="8" width="16" height="30" rx="8" fill="currentColor"/><path d="M16 28v4a16 16 0 0 0 32 0v-4" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><line x1="32" y1="48" x2="32" y2="58" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><line x1="22" y1="58" x2="42" y2="58" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg><span id="micBText" class="lbl" data-i18n-b="speakLabel">Sprechen</span></button>
+      <button class="translatebtn icon-lbl-btn" id="goB"><svg class="ico-deco" width="15" height="9" viewBox="0 0 64 32" aria-hidden="true" style="flex-shrink:0"><rect x="4" y="4" width="52" height="6" rx="3" fill="#4a8fe0"/><rect x="4" y="16" width="36" height="6" rx="3" fill="#4a8fe0" opacity="0.7"/><rect x="4" y="28" width="44" height="4" rx="2" fill="#4a8fe0" opacity="0.5"/></svg><svg class="ico-arrow" width="24" height="24" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><path d="M8 32H50" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M38 18L54 32L38 46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="ico-deco" width="15" height="9" viewBox="0 0 64 32" aria-hidden="true" style="flex-shrink:0"><rect x="4" y="4" width="52" height="6" rx="3" fill="#e0b84a"/><rect x="4" y="16" width="36" height="6" rx="3" fill="#e0b84a" opacity="0.7"/><rect x="4" y="28" width="44" height="4" rx="2" fill="#e0b84a" opacity="0.5"/></svg><span class="lbl" data-i18n-b="translateLabel">Übersetzen</span></button>
       <button class="repeatbtn" id="repeatTransB" title="Übersetzung wiederholen">🔁</button>
     </div>
     <div class="translated empty" id="transB">Übersetzung erscheint hier</div>
@@ -408,8 +456,8 @@
   <div class="status" id="status"></div>
   <div class="actionrow">
     <button class="clearbtn" id="clearBtn">Alles löschen</button>
-    <button class="phrasebtn" id="openPhrasesBtn">📖 Phrasen</button>
-    <button class="phrasebtn" id="openVocabBtn">📚 Vokabeln</button>
+    <button class="phrasebtn icon-lbl-btn" id="openPhrasesBtn"><svg width="18" height="18" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><path d="M2 6h28a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4h-3v8l-9-8h-16a4 4 0 0 1-4-4v-14a4 4 0 0 1 4-4z" fill="none" stroke="#e0b84a" stroke-width="4" stroke-linejoin="round"/><path d="M30 34h28a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4h-16l-9 8v-8h-3a4 4 0 0 1-4-4v-14a4 4 0 0 1 4-4z" fill="none" stroke="#4a8fe0" stroke-width="4" stroke-linejoin="round"/></svg><span class="lbl" data-i18n="phrasenBtn">Phrasen</span></button>
+    <button class="phrasebtn icon-lbl-btn" id="openVocabBtn"><svg width="18" height="18" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><rect x="8" y="14" width="34" height="24" rx="4" fill="none" stroke="currentColor" stroke-width="4"/><rect x="18" y="24" width="34" height="24" rx="4" fill="none" stroke="currentColor" stroke-width="4"/></svg><span class="lbl" data-i18n="vokabelnBtn">Vokabeln</span></button>
     </div>
 </div>
 
@@ -419,36 +467,36 @@
       <div class="modal-title" id="modalTitle">Phrasen</div>
       <button class="modal-close" id="closePhrasesBtn">✕</button>
     </div>
-<div id="phraseTreasureList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
+<div id="phraseTreasureList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;" data-pro-only></div>
 
     <div class="own-phrase-form">
-      <input type="text" id="ownDe" placeholder="Deutsch (z.B. Wo ist der Schlüssel)" />
-      <input type="text" id="ownHu" placeholder="Übersetzung" />
+      <input type="text" id="ownDe" placeholder="Deutsch (z.B. Wo ist der Schlüssel)" data-i18n-ph-b="ownPhraseDe" />
+      <input type="text" id="ownHu" placeholder="Übersetzung" data-i18n-ph-b="translationPlaceholder" />
       <div style="display:flex;gap:8px;align-items:center;">
         <select id="ownPhraseCat" style="flex:1;background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;">
           <option value="" disabled selected>— Kategorie wählen —</option>
           <option value="Eigene Phrasen">Eigene Phrasen</option>
         </select>
-               <input type="text" id="ownPhraseNewCat" placeholder="Neue Kategorie…" style="flex:1;background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;" />
+               <input type="text" id="ownPhraseNewCat" placeholder="Neue Kategorie…" data-i18n-ph-b="newCategoryPlaceholder" style="flex:1;background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;" />
       </div>
-   <button class="own-phrase-add" id="ownAddBtn">+ Eigene Phrase hinzufügen</button>
-      <button class="own-phrase-add" id="phraseLocalizeBtn" style="background:#1a2a1a;border-color:#2a4a2a;color:#6abf6a;">⏚ Localize! (0)</button>
-      <button class="own-phrase-add" id="loadGrundphrasenBtn" style="background:#1a2a1a;border-color:#2a4a2a;color:#6abf6a;">📚 Grundphrasen laden</button>
+   <button class="own-phrase-add icon-lbl-btn" id="ownAddBtn"><svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><line x1="32" y1="12" x2="32" y2="52" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><line x1="12" y1="32" x2="52" y2="32" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></svg><span class="lbl">Eigene Phrase hinzufügen</span></button>
+      <button class="own-phrase-add" id="phraseLocalizeBtn" style="background:#1a2a1a;border-color:#2a4a2a;color:#6abf6a;" data-pro-only>⏚ Localize! (0)</button>
+      <button class="own-phrase-add icon-lbl-btn" id="loadGrundphrasenBtn" style="background:#1a2a1a;border-color:#2a4a2a;color:#6abf6a;"><svg width="19" height="17" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><line x1="8" y1="10" x2="40" y2="10" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.85"/><line x1="8" y1="24" x2="40" y2="24" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.6"/><path d="M50 8v26M40 26l10 10l10-10" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="34" y1="52" x2="58" y2="52" stroke="currentColor" stroke-width="5.5" stroke-linecap="round"/></svg><span class="lbl">Grundphrasen laden</span></button>
     </div>
 
     <div class="own-phrase-form">
-      <textarea id="phraseBulk" rows="3" placeholder="Format: Deutsch ; Übersetzung ; Kategorie&#10;Beispiel: Wo ist der Bahnhof? ; Hol van az állomás? ; Reise&#10;(Kategorie optional — Standard: Eigene Phrasen)"></textarea>
+      <textarea id="phraseBulk" rows="3" placeholder="Format: Deutsch ; Übersetzung ; Kategorie&#10;Beispiel: Wo ist der Bahnhof? ; Hol van az állomás? ; Reise&#10;(Kategorie optional — Standard: Eigene Phrasen)" data-i18n-ph-b="phraseBulkPlaceholder"></textarea>
       <div style="display:flex;gap:8px;align-items:center;">
-        <button class="own-phrase-add" id="phraseBulkAddBtn" style="flex:1;">+ Phrasen-Liste importieren</button>
-        <button id="phraseNotesToggle" class="learn-open-btn">📝 NOTES</button>
+        <button class="own-phrase-add icon-lbl-btn" id="phraseBulkAddBtn" style="flex:1;"><svg width="17" height="15" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><line x1="8" y1="14" x2="48" y2="14" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><line x1="8" y1="32" x2="48" y2="32" stroke="currentColor" stroke-width="6" stroke-linecap="round" opacity="0.75"/><line x1="8" y1="50" x2="34" y2="50" stroke="currentColor" stroke-width="6" stroke-linecap="round" opacity="0.5"/></svg><span class="lbl">Phrasen-Liste importieren</span></button>
+        <button id="phraseNotesToggle" class="learn-open-btn" data-pro-only>📝 NOTES</button>
       </div>
     </div>
 
-    <input type="text" id="phraseFilter" placeholder="🔍 Filtern…" style="background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;" />
+    <input type="text" id="phraseFilter" placeholder="🔍 Filtern…" data-i18n-ph-b="filterPlaceholder" style="background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;" />
 
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
       <div id="phraseTOC" style="display:flex;flex-wrap:wrap;gap:6px;flex:1;"></div>
-      <button id="phraseLearnOpenBtn" class="learn-open-btn">🎓 LEARN</button>
+      <button id="phraseLearnOpenBtn" class="learn-open-btn" data-pro-only>🎓 LEARN</button>
     </div>
     <div id="phraseList"></div>
   </div>
@@ -460,37 +508,37 @@
       <div class="modal-title" id="vocabModalTitle">Vokabeln</div>
       <button class="modal-close" id="closeVocabBtn">✕</button>
     </div>
-<div id="treasureList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
+<div id="treasureList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;" data-pro-only></div>
 
     <div class="own-phrase-form">
-      <input type="text" id="vocabTerm" placeholder="Fremdwort eingeben (z.B. ragazza)" />
+      <input type="text" id="vocabTerm" placeholder="Fremdwort eingeben (z.B. ragazza)" data-i18n-ph-b="vocabTermPlaceholder" />
       <div style="display:flex;gap:8px;align-items:center;">
         <select id="vocabCategory" style="flex:1;background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;">
           <option value="">— Kategorie wählen —</option>
         </select>
-        <input type="text" id="vocabNewCat" placeholder="Neue Kategorie…" style="flex:1;background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;" />
+        <input type="text" id="vocabNewCat" placeholder="Neue Kategorie…" data-i18n-ph-b="newCategoryPlaceholder" style="flex:1;background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;" />
       </div>
-      <button class="own-phrase-add" id="vocabAddBtn">+ Vokabel hinzufügen (Auto-Übersetzung)</button>
-      <button class="own-phrase-add" id="localizeBtn" style="background:#1a2a1a;border-color:#2a4a2a;color:#6abf6a;">⏚ Localize! (0)</button>
-              <button class="own-phrase-add" id="loadGrundvokabularBtn" style="background:#1a2a1a;border-color:#2a4a2a;color:#6abf6a;">📚 Grundvokabular laden</button>
+      <button class="own-phrase-add icon-lbl-btn" id="vocabAddBtn"><svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><line x1="32" y1="12" x2="32" y2="52" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><line x1="12" y1="32" x2="52" y2="32" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></svg><span class="lbl">Vokabel hinzufügen (Auto-Übersetzung)</span></button>
+      <button class="own-phrase-add" id="localizeBtn" style="background:#1a2a1a;border-color:#2a4a2a;color:#6abf6a;" data-pro-only>⏚ Localize! (0)</button>
+              <button class="own-phrase-add icon-lbl-btn" id="loadGrundvokabularBtn" style="background:#1a2a1a;border-color:#2a4a2a;color:#6abf6a;"><svg width="19" height="17" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><line x1="8" y1="10" x2="40" y2="10" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.85"/><line x1="8" y1="24" x2="40" y2="24" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.6"/><path d="M50 8v26M40 26l10 10l10-10" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="34" y1="52" x2="58" y2="52" stroke="currentColor" stroke-width="5.5" stroke-linecap="round"/></svg><span class="lbl">Grundvokabular laden</span></button>
     </div>
 
         <div class="own-phrase-form">
-      <textarea id="vocabBulk" rows="3" placeholder="Format: Fremdwort ; Kategorie&#10;Beispiel: ragazza ; Menschen&#10;(Kategorie optional — Standard: Allgemein)"></textarea>
+      <textarea id="vocabBulk" rows="3" placeholder="Format: Fremdwort ; Kategorie&#10;Beispiel: ragazza ; Menschen&#10;(Kategorie optional — Standard: Allgemein)" data-i18n-ph-b="vocabBulkPlaceholder"></textarea>
       <div style="display:flex;gap:8px;align-items:center;">
-        <button class="own-phrase-add" id="vocabBulkAddBtn" style="flex:1;">+ Liste importieren</button>
-        <button id="vocabNotesToggle" class="learn-open-btn">📝 NOTES</button>
+        <button class="own-phrase-add icon-lbl-btn" id="vocabBulkAddBtn" style="flex:1;"><svg width="17" height="15" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><line x1="8" y1="14" x2="48" y2="14" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><line x1="8" y1="32" x2="48" y2="32" stroke="currentColor" stroke-width="6" stroke-linecap="round" opacity="0.75"/><line x1="8" y1="50" x2="34" y2="50" stroke="currentColor" stroke-width="6" stroke-linecap="round" opacity="0.5"/></svg><span class="lbl">Liste importieren</span></button>
+        <button id="vocabNotesToggle" class="learn-open-btn" data-pro-only>📝 NOTES</button>
       </div>
     </div>
 
-    <input type="text" id="vocabFilter" placeholder="🔍 Filtern…" style="background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;" />
+    <input type="text" id="vocabFilter" placeholder="🔍 Filtern…" data-i18n-ph-b="filterPlaceholder" style="background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;" />
 
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
   <div id="vocabTOC" style="display:flex;flex-wrap:wrap;gap:6px;flex:1;"></div>
   <button id="vocabAlphaToggle" style="background:#1a1a1a;border:1px solid #2a2a2a;color:#aaa;padding:5px 10px;border-radius:6px;font-family:inherit;font-size:11px;cursor:pointer;white-space:nowrap;">A–Z DE</button>
   <button id="vocabForeignToggle" style="background:#1a1a1a;border:1px solid #2a2a2a;color:#aaa;padding:5px 10px;border-radius:6px;font-family:inherit;font-size:11px;cursor:pointer;white-space:nowrap;">A–Z FR</button>
   <button id="vocabRandomToggle" style="background:#1a1a1a;border:1px solid #2a2a2a;color:#aaa;padding:5px 10px;border-radius:6px;font-family:inherit;font-size:11px;cursor:pointer;white-space:nowrap;">🔀</button>
-  <button id="learnOpenBtn" class="learn-open-btn">🎓 LEARN</button>
+  <button id="learnOpenBtn" class="learn-open-btn" data-pro-only>🎓 LEARN</button>
 </div>
     <div id="vocabList"></div>
   </div>
@@ -552,6 +600,26 @@
   </div>
 </div>
 
+<script src="ui-strings.js"></script>
+<script src="status-strings.js"></script>
+<script>
+/* Kernsatz: Fehlt ui-strings.js oder status-strings.js (Datei vergessen, Tippfehler im Namen,
+   Netzwerkfehler beim allerersten Laden), darf die App nicht komplett sterben, nur weil eine
+   Statuszeile leer bleibt. Funktion: Prüft, ob die externen Funktionen existieren; wenn nicht,
+   ersetzt sie leise durch ungefährliche Platzhalter, bevor irgendein anderer Code sie aufruft. */
+if (typeof applyUILanguage !== "function") {
+  console.warn("ThiLo! Babel: ui-strings.js nicht geladen — Menü bleibt beim eingebauten Deutsch.");
+  window.applyUILanguage = function () {};
+  window.uiLangKey = function () { return "de"; };
+}
+if (typeof tb !== "function") {
+  console.warn("ThiLo! Babel: status-strings.js nicht geladen — Status-/Fehlertexte bleiben leer, Kernfunktionen laufen weiter.");
+  window.tb = function () { return ""; };
+  window.labelPlural = function (art) { return (typeof LABELS !== "undefined" && LABELS[art]) ? LABELS[art].plural : ""; };
+  window.applyUILanguageB = function () {};
+  window.toggleUIModeB = function () {};
+}
+</script>
 <script>
 const LANGS = [
   { code: "de-DE", name: "Deutsch" },
@@ -573,16 +641,19 @@ const LANGS = [
   { code: "el-GR", name: "Griechisch" },
   { code: "bs-BA", name: "Bosnisch" },
   { code: "sq-AL", name: "Albanisch" },
-  // **Eine Freundin soll in Israel sowohl Vokabeln lernen als auch dolmetschen können —
-  // Hebräisch muss dafür ganz normal in der Sprachliste stehen.**
-  // Funktion: wie jede andere Sprache hier generisch über `code`/`name` eingebunden; kein
-  // Sonderfall nötig, da Erkennung/Ausgabe/Übersetzung überall nur `code.split("-")[0]`
-  // bzw. den vollen BCP-47-Code nutzen. Einzige bekannte Einschränkung: Hebräisch wird
-  // rechts-nach-links geschrieben, Babels Oberfläche ist (wie bei allen anderen Sprachen)
-  // nicht für RTL ausgelegt — Text bleibt lesbar, nur nicht spiegelverkehrt ausgerichtet.
-  { code: "he-IL", name: "Hebräisch" },
   { code: "la", name: "Latein" },
 ];
+
+// ============ PRO: NAME (einzige Stelle im Skript; außerdem manifest.json und die Meta-Tags oben) ============
+// Kernsatz: Rudolf hat einmal versehentlich eine Pro-Vorstufe als Free deployt, weil
+// beide Versionen als getrennte Dateien ohne gemeinsame Markierung existierten.
+// Funktion: Dieses eine Flag entscheidet, welche Pro-exklusiven Elemente (per
+// data-pro-only markiert) sichtbar sind. Für den Free-Build hier auf false setzen,
+// für Pro auf true — der Rest der Datei bleibt in beiden Fällen identisch.
+const IST_PRO = false;
+const APP_NAME = IST_PRO ? "ThiLo! Babel Pro" : "ThiLo! Babel";
+document.title = APP_NAME;
+document.querySelectorAll("[data-appname]").forEach(el => { el.textContent = APP_NAME; });
 
 const LANG_PREF_KEY = "thilo-babel-langs";
 function loadLangPrefs() {
@@ -600,6 +671,15 @@ let langA = _savedLangs ? _savedLangs.langA : "de-DE";
 let langB = _savedLangs ? _savedLangs.langB : "hu-HU";
 // --- Ankersprache ---
 const ANCHOR_KEY = "thilo-babel-anchor";
+// Änderung 3 (Auftrag 21.9.2026): Das Feld `de` ist per Definition Deutsch — nicht "die
+// Ankersprache", auch wenn `anchorLang` in seltenen Fällen theoretisch auf etwas anderes
+// gesetzt werden könnte. Alle bisherigen Gold-Listen (GSL, Realschule, Grundwortschatz,
+// deren Merge) sind DE- oder EN-verankert mit tatsächlich deutschem `de`-Inhalt; keine
+// bekannte Liste weicht davon ab. Der Rest des Codes geht an vielen Stellen ohnehin schon
+// davon aus (`localizeEintraege` übersetzt immer FROM "de-DE", getAnkerText/getZielText
+// nutzen `de` unabhängig von langA als Deutsch-Fallback) — eine eigene "Ankercode"-Logik
+// nur beim Import wäre die Abweichung gewesen, nicht dieser feste Wert hier.
+const DE_FIELD_LANG = "de-DE";
 function loadAnchor() {
   try { return localStorage.getItem(ANCHOR_KEY); } catch { return null; }
 }
@@ -607,6 +687,26 @@ function saveAnchor(langCode) {
   try { localStorage.setItem(ANCHOR_KEY, langCode); } catch {}
 }
 let anchorLang = loadAnchor();
+if (anchorLang) applyUILanguage(anchorLang); // Menüsprache wie beim letzten Mal (Ankersprache bleibt fix)
+applyUILanguageB(); // Status-/Fehler-/Hilfetexte: DE oder EN, unabhängig vom Anker
+document.getElementById("uiModeBBtn").addEventListener("click", toggleUIModeB);
+
+// ============ Symbolmodus: Knöpfe zeigen nur Icons, kein Wort in keiner Sprache ============
+const SYMBOL_MODE_KEY = "thilo-babel-symbol-mode";
+function loadSymbolMode() { try { return localStorage.getItem(SYMBOL_MODE_KEY) === "1"; } catch { return false; } }
+function saveSymbolMode(on) { try { localStorage.setItem(SYMBOL_MODE_KEY, on ? "1" : "0"); } catch {} }
+function applySymbolMode(on) {
+  document.body.classList.toggle("symbols-only", on);
+  const btn = document.getElementById("symbolModeBtn");
+  if (btn) btn.textContent = on ? "🔵" : "⚪";
+}
+let symbolMode = loadSymbolMode();
+applySymbolMode(symbolMode);
+document.getElementById("symbolModeBtn").addEventListener("click", () => {
+  symbolMode = !symbolMode;
+  saveSymbolMode(symbolMode);
+  applySymbolMode(symbolMode);
+});
 let recording = null;   // 'A' | 'B' | null
 let thinking = null;    // 'A' | 'B' | null
 let recInstance = null;
@@ -694,14 +794,14 @@ function speak(text, langCode, onDone) {
   const value = String(text || '').trim();
 
   if (!value) {
-    setStatus('Kein Text zum Vorlesen vorhanden.');
+    setStatus(tb('noTextToSpeak'));
     if (typeof onDone === 'function') onDone();
     return;
   }
 
   if (!('speechSynthesis' in window) ||
       typeof SpeechSynthesisUtterance === 'undefined') {
-    setStatus('Sprachausgabe wird von diesem Browser nicht unterstützt.');
+    setStatus(tb('ttsUnsupported'));
     if (typeof onDone === 'function') onDone();
     return;
   }
@@ -744,7 +844,15 @@ function speak(text, langCode, onDone) {
     synth.cancel();
     synth.speak(utterance);
 
-    setStatus(`Spreche ${langName(langCode)} …`);
+    // Fehlt eine passende Stimme komplett (z.B. Ecosia/Chromium-Forks ohne Googles
+    // Netzwerkstimmen, nur die in Windows selbst installierten Sprachen verfügbar),
+    // spricht mancher Browser den Text trotzdem — nur eben mit der falschen Stimme, statt
+    // zu schweigen. Damit das nicht als stiller Fehler durchgeht: kurzer Hinweis im Status.
+    if (!exactVoice && !languageVoice && voices.length > 0) {
+      setStatus(tb('noVoiceInstalled', langName(langCode)));
+    } else {
+      setStatus(tb('speaking', langName(langCode)));
+    }
 
     utterance.onend = () => {
       setStatus('');
@@ -752,7 +860,7 @@ function speak(text, langCode, onDone) {
     };
 
     utterance.onerror = event => {
-      setStatus(`Sprachausgabe-Fehler: ${event.error || 'unbekannt'}`);
+      setStatus(tb('ttsError', event.error));
       klingeln();
     };
   };
@@ -813,9 +921,9 @@ function addLimitChars(n) {
   const used = getLimitData() + n;
   localStorage.setItem(LIMIT_KEY, String(used));
   if (used >= DAILY_LIMIT) {
-    setStatus("⛔ Tageslimit von MyMemory erreicht – bis morgen warten.");
+    setStatus(tb('dailyLimitReached'));
   } else if (used >= WARN_AT) {
-    setStatus("⚠️ Achtung, das gratis verfügbare Tageslimit geht zur Neige! (" + Math.round(used/1000) + "k/" + Math.round(DAILY_LIMIT/1000) + "k Zeichen)");
+    setStatus(tb('limitWarning', Math.round(used/1000), Math.round(DAILY_LIMIT/1000)));
   }
   return used;
 }
@@ -831,22 +939,95 @@ async function libreTranslate(text, from, to) {
   return data.translatedText;
 }
 
-// ============ ÜBERSETZUNG via Netlify Function (Key serverseitig) ============
-async function googleTranslate(text, from, to) {
-  const res = await fetch("/.netlify/functions/translate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text, from, to })
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || "Übersetzungsfehler: " + res.status);
-  }
-  const data = await res.json();
-  return data.translation;
+// ============ PRO: ÜBERSETZUNG mit eigenem Google-Key (direkt aus dem Browser) ============
+// Der Key liegt nur im localStorage dieses Browsers, wird nie exportiert und nie an einen
+// eigenen Server gesendet. Die Anfrage geht direkt vom Gerät an Google (Cloud Translation v2).
+const PRO_KEY_STORE = "thilo-babel-pro-google-key";
+const PRO_CHARS_PREFIX = "thilo-babel-pro-google-chars-";
+let lastService = "";
+let lastGoogleError = "";
+
+function getProKey() {
+  try { return (localStorage.getItem(PRO_KEY_STORE) || "").trim(); } catch { return ""; }
+}
+function saveProKey(k) {
+  try { localStorage.setItem(PRO_KEY_STORE, k); return true; } catch { return false; }
+}
+function deleteProKey() {
+  try { localStorage.removeItem(PRO_KEY_STORE); } catch {}
+}
+function proCharsKey() { return PRO_CHARS_PREFIX + new Date().toISOString().slice(0, 7); }
+function getProChars() {
+  try { return parseInt(localStorage.getItem(proCharsKey()) || "0", 10) || 0; } catch { return 0; }
+}
+function addProChars(n) {
+  try { localStorage.setItem(proCharsKey(), String(getProChars() + n)); } catch {}
 }
 
+async function googleRequest(key, text, src, tgt) {
+  const res = await fetch("https://translation.googleapis.com/language/translate/v2?key=" + encodeURIComponent(key), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ q: text, source: src, target: tgt, format: "text" })
+  });
+  let data = {};
+  try { data = await res.json(); } catch {}
+  if (!res.ok) {
+    const err = new Error((data.error && data.error.message) || ("HTTP " + res.status));
+    err.status = res.status;
+    throw err;
+  }
+  const t = data.data && data.data.translations && data.data.translations[0] && data.data.translations[0].translatedText;
+  if (!t) throw new Error("Leere Antwort von Google");
+  return t;
+}
+
+// Bei Netzwerkfehler, 429 oder 5xx bis zu 3 Versuche mit 1 s Pause; bei Key-Fehlern (400/403) sofort aufgeben.
+async function googleTranslate(text, from, to, versuch) {
+  versuch = versuch || 1;
+  const key = getProKey();
+  if (!key) throw new Error("Kein Google-Key hinterlegt");
+  try {
+    const t = await googleRequest(key, text, from.split("-")[0], to.split("-")[0]);
+    addProChars(text.length);
+    return t;
+  } catch (e) {
+    const wiederholbar = e.status === undefined || e.status === 429 || e.status >= 500;
+    if (wiederholbar && versuch < 3) {
+      await new Promise(r => setTimeout(r, 1000));
+      return googleTranslate(text, from, to, versuch + 1);
+    }
+    throw e;
+  }
+}
+
+// Schutz vor Massenanfragen (Bugfix 20.9.2026): nach zu vielen Fehlern in Folge wird
+// das Übersetzen für kurze Zeit ausgesetzt, statt weiter tausende Anfragen zu senden.
+const TRANSLATE_FAIL_MAX = 10;
+const TRANSLATE_PAUSE_MS = 60000;
+let translateFailStreak = 0;
+let translatePausedUntil = 0;
+
 async function doTranslate(text, from, to) {
+  // Gleiche Sprache: nichts zu übersetzen, kein Aufruf (verbraucht sonst das Tageslimit)
+  if (from.split("-")[0] === to.split("-")[0]) return text;
+  if (Date.now() < translatePausedUntil) throw new Error("Übersetzung pausiert (zu viele Fehler)");
+  try {
+    const result = await doTranslateCore(text, from, to);
+    translateFailStreak = 0;
+    return result;
+  } catch (e) {
+    translateFailStreak++;
+    if (translateFailStreak >= TRANSLATE_FAIL_MAX) {
+      translateFailStreak = 0;
+      translatePausedUntil = Date.now() + TRANSLATE_PAUSE_MS;
+      setStatus(tb('translationPaused'));
+    }
+    throw e;
+  }
+}
+
+async function doTranslateCore(text, from, to) {
   const src = from.split("-")[0];
   const tgt = to.split("-")[0];
 
@@ -861,33 +1042,41 @@ async function doTranslate(text, from, to) {
     return ergebnisse.join(" ");
   }
 
+  // 1) Mit hinterlegtem Google-Key: Google zuerst
+  let googleFehler = false;
+  if (getProKey()) {
+    try {
+      const t = await googleTranslate(text, from, to);
+      lastService = "Google";
+      lastGoogleError = "";
+      return t;
+    } catch (e) {
+      googleFehler = true;
+      lastGoogleError = e.message || String(e);
+      console.warn("Google-Fehler, weiche auf MyMemory aus:", lastGoogleError);
+    }
+  }
+
+  // 2) MyMemory (ohne Key oder als Reserve bei Google-Fehler)
   addLimitChars(text.length);
 
   const url = "https://api.mymemory.translated.net/get?q=" +
     encodeURIComponent(text) + "&langpair=" + src + "|" + tgt + "&de=synenergy1963@gmail.com";
 
-  try {
-    const res = await fetch(url);
-    if (res.status === 429) {
-      setStatus("MyMemory Limit — nutze Google Translate…");
-      return await googleTranslate(text, from, to);
-    }
-    if (!res.ok) throw new Error("Server-Fehler: " + res.status);
-    const data = await res.json();
-    if (data.responseStatus === 429 || (data.responseDetails && data.responseDetails.includes("MYMEMORY WARNING"))) {
-      setStatus("MyMemory Limit — nutze Google Translate…");
-      return await googleTranslate(text, from, to);
-    }
-    const translation = data.responseData && data.responseData.translatedText;
-    if (!translation || data.responseStatus !== 200) {
-      throw new Error("Keine Übersetzung erhalten.");
-    }
-    return translation;
-  } catch(e) {
-    if (e.message.includes("Limit") || e.message.includes("429")) throw e;
-    try { return await googleTranslate(text, from, to); } catch {}
-    throw e;
+  const limitText = "MyMemory-Tageslimit erreicht" + (getProKey() ? "" : " — Google-Key im Menü hinterlegen");
+  const res = await fetch(url);
+  if (res.status === 429) throw new Error(limitText);
+  if (!res.ok) throw new Error("Server-Fehler: " + res.status);
+  const data = await res.json();
+  if (data.responseStatus === 429 || (data.responseDetails && data.responseDetails.includes("MYMEMORY WARNING"))) {
+    throw new Error(limitText);
   }
+  const translation = data.responseData && data.responseData.translatedText;
+  if (!translation || data.responseStatus !== 200) {
+    throw new Error("Keine Übersetzung erhalten.");
+  }
+  lastService = googleFehler ? "MyMemory (Google-Fehler)" : "MyMemory";
+  return translation;
 }
 
 async function translateAndSpeak(panel) {
@@ -900,14 +1089,14 @@ async function translateAndSpeak(panel) {
 
   thinking = panel;
   setTrans(panel, "");
-  setStatus("Übersetze…");
+  setStatus(tb('translating'));
   updateButtons();
 
   try {
     const translated = await doTranslate(spoken, src, tgt);
     thinking = null;
     setTrans(panel, translated);
-    setStatus("✓");
+    setStatus("✓" + (lastService ? " · " + lastService : ""));
     if (panel === "A") lastTransA = translated;
     else lastTransB = translated;
     speak(translated, tgt);
@@ -915,14 +1104,14 @@ async function translateAndSpeak(panel) {
   } catch (err) {
     thinking = null;
     setTrans(panel, "");
-    setStatus("Übersetzungsfehler: " + err.message);
+    setStatus(tb('translationError', err.message));
   }
   updateButtons();
 }
 
 function startRec(panel) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { setStatus("Spracherkennung nicht verfügbar – bitte Chrome verwenden."); return; }
+  if (!SR) { setStatus(tb('speechRecUnavailableChrome')); return; }
 
   const isA = panel === "A";
   const src = isA ? langA : langB;
@@ -935,7 +1124,7 @@ function startRec(panel) {
 
   recording = panel;
   updateButtons();
-  setStatus("Hören…");
+  setStatus(tb('listening'));
 
   rec.onresult = (e) => {
     const spoken = e.results[0][0].transcript;
@@ -944,7 +1133,9 @@ function startRec(panel) {
   };
 
   rec.onerror = (e) => {
-    setStatus("Fehler: " + e.error);
+    // "network": typisch für Chromium-Forks ohne Googles Cloud-Spracherkennung
+    // (Ecosia, Brave, Vivaldi …) — kein Mikrofonproblem, sondern eine Browser-Einschränkung.
+    setStatus(e.error === "network" ? tb('networkError') : tb('genericError', e.error));
     recording = null;
     updateButtons();
   };
@@ -1060,7 +1251,7 @@ document.getElementById("clearTransBtn").addEventListener("click", () => {
 });
 
 document.getElementById("exportBtn").addEventListener("click", () => {
-  if (transcriptData.length === 0) { setStatus("Kein Protokoll vorhanden."); return; }
+  if (transcriptData.length === 0) { setStatus(tb('noTranscript')); return; }
   const lines = transcriptData.map(e =>
     "[" + e.time + "] " + langName(e.srcLang) + ": " + e.spoken + "\n" +
     "  → " + langName(e.tgtLang) + ": " + e.translated
@@ -1078,6 +1269,14 @@ populateSelects();
 renderLabels();
 updateButtons();
 updateAnchorBtn();
+
+// Kernsatz: Free zeigt dieselbe Datei, nur ohne die Pro-Bausteine (Ankersprache,
+// internationale UI, Notesfeld, Lernmodule, Schatzkammer/Veredelung) — das
+// Datenmodell dahinter (guete, treasure, origin …) bleibt unverändert bestehen,
+// nur die Bedienelemente verschwinden.
+if (!IST_PRO) {
+  document.querySelectorAll("[data-pro-only]").forEach(el => { el.style.display = "none"; });
+}
 
 
 // --- Wiederholbutton ---
@@ -1103,6 +1302,70 @@ const menuModal = document.getElementById("menuModal");
 document.getElementById("menuBtn").addEventListener("click", () => menuModal.classList.add("open"));
 document.getElementById("closeMenuBtn").addEventListener("click", () => menuModal.classList.remove("open"));
 menuModal.addEventListener("click", (e) => { if (e.target === menuModal) menuModal.classList.remove("open"); });
+
+const autoTranslateToggle = document.getElementById("autoTranslateToggle");
+if (autoTranslateToggle) {
+  autoTranslateToggle.checked = autoTranslateAnzeige();
+  autoTranslateToggle.addEventListener("change", () => {
+    setAutoTranslateAnzeige(autoTranslateToggle.checked);
+    renderListe("vokabel");
+    renderListe("phrase");
+  });
+}
+
+// ============ PRO: Key-Fach im Menü ============
+const proKeyInput = document.getElementById("proKeyInput");
+const proKeyStatus = document.getElementById("proKeyStatus");
+const proKeyUsage = document.getElementById("proKeyUsage");
+
+function maskKey(k) { return k.length > 8 ? k.slice(0, 4) + "…" + k.slice(-4) : "••••"; }
+
+function refreshProKeyUI() {
+  const key = getProKey();
+  if (key) {
+    proKeyStatus.textContent = "✓ Key gespeichert (" + maskKey(key) + ") · Google zuerst, MyMemory als Reserve" +
+      (lastGoogleError ? " · letzter Google-Fehler: " + lastGoogleError : "");
+    proKeyUsage.textContent = "Über Google übersetzte Zeichen diesen Monat: " + getProChars().toLocaleString("de-AT");
+  } else {
+    proKeyStatus.textContent = "Kein Key hinterlegt · Übersetzung läuft über MyMemory (Tageslimit)";
+    proKeyUsage.textContent = "";
+  }
+}
+
+document.getElementById("proKeySaveBtn").addEventListener("click", async () => {
+  const k = proKeyInput.value.trim();
+  if (!k) { proKeyStatus.textContent = "Bitte zuerst einen Key einfügen."; return; }
+  if (/\s/.test(k) || k.length < 20) { proKeyStatus.textContent = "✗ Das sieht nicht wie ein Google-API-Key aus."; return; }
+  proKeyStatus.textContent = "Prüfe Key…";
+  try {
+    const t = await googleRequest(k, "Hallo", "de", "en");
+    if (!saveProKey(k)) { proKeyStatus.textContent = "✗ Key konnte nicht im Browser gespeichert werden."; return; }
+    proKeyInput.value = "";
+    lastGoogleError = "";
+    refreshProKeyUI();
+    proKeyStatus.textContent = "✓ Key geprüft (Test: Hallo → " + t + ") und gespeichert (" + maskKey(k) + ")";
+  } catch (e) {
+    proKeyStatus.textContent = "✗ Key nicht akzeptiert: " + (e.message || e);
+  }
+});
+
+document.getElementById("proKeyDeleteBtn").addEventListener("click", () => {
+  if (!getProKey()) { refreshProKeyUI(); return; }
+  if (!confirm(tb('keyDeleteConfirm'))) return;
+  deleteProKey();
+  lastGoogleError = "";
+  refreshProKeyUI();
+});
+
+document.getElementById("menuBtn").addEventListener("click", refreshProKeyUI);
+refreshProKeyUI();
+
+// ============ PRO: BEZAHLSCHRANKE (Platzhalter — wird zuletzt gefüllt) ============
+// Solange die Pro-Seite nur für den Entwickler läuft, ist die Schranke offen.
+function proGatePruefen() { return true; }
+if (!proGatePruefen()) {
+  document.body.innerHTML = '<p style="padding:24px;color:#f0f0f0;font-family:sans-serif;">Pro-Zugang nicht freigeschaltet.</p>';
+}
 
 
 // ============================================================
@@ -1131,69 +1394,82 @@ function generateId() {
 }
 
 // ---------- Speicher ----------
+// Vokabel- und Phrasenschätze sind eigene Schätze auf eigenen JSONs (Rudolf, 19.9.).
+// Deshalb ist die Speicherung jetzt konsequent nach `art` getrennt: eigener Storage-Key,
+// eigene Metadaten, eigene Aktiv-Liste pro Art. "main-Vokabeln" und "main-Phrasen" sind
+// zwei unabhängige Schätze, die nur zufällig denselben Namen tragen. Ein Import/Löschen
+// der einen Art rührt die andere nie an.
 const EINTRAG_PREFIX   = "thilo-babel-eintraege-";
 const TREASURES_META_KEY = "thilo-babel-treasures";
 const ACTIVE_TREASURES_KEY = "thilo-babel-active-treasures";
 const CATS_PREFIX = "thilo-babel-cats-";
 const TRANS_CACHE_KEY = "thilo-babel-eintrag-trans";
 const NOTES_VISIBLE_KEY = "thilo-babel-notes-visible";
+// Änderung 2, Auftrag 21.9.2026: Anzeige übersetzt nicht mehr automatisch, Standard aus.
+const AUTO_TRANSLATE_KEY = "thilo-babel-auto-translate-anzeige";
+function autoTranslateAnzeige() {
+  try { return localStorage.getItem(AUTO_TRANSLATE_KEY) === "1"; } catch { return false; }
+}
+function setAutoTranslateAnzeige(an) {
+  try { localStorage.setItem(AUTO_TRANSLATE_KEY, an ? "1" : "0"); } catch {}
+}
 
-function loadTreasure(treasure) {
-  try { return JSON.parse(localStorage.getItem(EINTRAG_PREFIX + treasure)) || []; } catch { return []; }
+function eintraegeKey(treasure, art) { return EINTRAG_PREFIX + treasure + "-" + art; }
+function loadTreasure(treasure, art) {
+  try { return JSON.parse(localStorage.getItem(eintraegeKey(treasure, art))) || []; } catch { return []; }
 }
-function saveTreasure(treasure, list) {
-  try { localStorage.setItem(EINTRAG_PREFIX + treasure, JSON.stringify(list)); } catch {}
+function saveTreasure(treasure, art, list) {
+  try { localStorage.setItem(eintraegeKey(treasure, art), JSON.stringify(list)); } catch {}
 }
-function loadActiveTreasures() {
+function activeKey(art) { return ACTIVE_TREASURES_KEY + "-" + art; }
+function loadActiveTreasures(art) {
   try {
-    const raw = localStorage.getItem(ACTIVE_TREASURES_KEY);
+    const raw = localStorage.getItem(activeKey(art));
     if (raw) return JSON.parse(raw);
   } catch {}
   return ["main", "manual"];
 }
-function saveActiveTreasures(list) {
-  try { localStorage.setItem(ACTIVE_TREASURES_KEY, JSON.stringify(list)); } catch {}
+function saveActiveTreasures(art, list) {
+  try { localStorage.setItem(activeKey(art), JSON.stringify(list)); } catch {}
 }
-function loadTreasureMeta() {
-  try { return JSON.parse(localStorage.getItem(TREASURES_META_KEY)) || {}; } catch { return {}; }
+function metaKey(art) { return TREASURES_META_KEY + "-" + art; }
+function loadTreasureMeta(art) {
+  try { return JSON.parse(localStorage.getItem(metaKey(art))) || {}; } catch { return {}; }
 }
-function saveTreasureMeta(meta) {
-  try { localStorage.setItem(TREASURES_META_KEY, JSON.stringify(meta)); } catch {}
+function saveTreasureMeta(art, meta) {
+  try { localStorage.setItem(metaKey(art), JSON.stringify(meta)); } catch {}
 }
 
-// store.eintraege wäre bei nur einem Schatz ausreichend; da mehrere Schätze
-// (main, manual, Fachschätze) parallel existieren, bleibt die Speicherung
-// pro Schatz getrennt — orthogonal zu `art`, siehe Architektur-Briefing §4.
-function loadAllEintraege() {
-  const active = loadActiveTreasures();
+function loadAllEintraege(art) {
+  const active = loadActiveTreasures(art);
   let result = [];
   for (const t of active) {
-    result = result.concat(loadTreasure(t).map(e => ({ ...e, treasure: t })));
+    result = result.concat(loadTreasure(t, art).map(e => ({ ...e, treasure: t })));
   }
   return result;
 }
 function getEintraege(art) {
-  return loadAllEintraege().filter(e => e.art === art);
+  return loadAllEintraege(art);
 }
-function saveNeuerEintrag(treasure, eintrag) {
-  const list = loadTreasure(treasure);
+function saveNeuerEintrag(treasure, art, eintrag) {
+  const list = loadTreasure(treasure, art);
   list.push(eintrag);
-  saveTreasure(treasure, list);
+  saveTreasure(treasure, art, list);
 }
-function updateEintragById(id, patch) {
-  // Sucht id in allen aktiven Schätzen (Herkunft ist beim Aufruf meist unbekannt).
-  for (const t of loadActiveTreasures()) {
-    const list = loadTreasure(t);
+function updateEintragById(id, art, patch) {
+  // Sucht id in allen aktiven Schätzen DIESER Art (Herkunft ist beim Aufruf meist unbekannt).
+  for (const t of loadActiveTreasures(art)) {
+    const list = loadTreasure(t, art);
     const idx = list.findIndex(e => e.id === id);
-    if (idx >= 0) { list[idx] = { ...list[idx], ...patch }; saveTreasure(t, list); return true; }
+    if (idx >= 0) { list[idx] = { ...list[idx], ...patch }; saveTreasure(t, art, list); return true; }
   }
   return false;
 }
-function deleteEintragById(id) {
-  for (const t of loadActiveTreasures()) {
-    const list = loadTreasure(t);
+function deleteEintragById(id, art) {
+  for (const t of loadActiveTreasures(art)) {
+    const list = loadTreasure(t, art);
     const idx = list.findIndex(e => e.id === id);
-    if (idx >= 0) { list.splice(idx, 1); saveTreasure(t, list); return true; }
+    if (idx >= 0) { list.splice(idx, 1); saveTreasure(t, art, list); return true; }
   }
   return false;
 }
@@ -1223,11 +1499,11 @@ function refreshCatSelect(art, selectEl) {
   if (current && cats.includes(current)) selectEl.value = current;
 }
 
-// ---------- Einmalige Migration aus dem alten, getrennten Speicherformat ----------
+// ---------- Einmalige Migration aus dem alten, getrennten Speicherformat (vor v4) ----------
 function migriereAlteDaten() {
   if (localStorage.getItem("thilo-babel-migrated-v4")) return;
 
-  // 1) Vokabel-Schätze: thilo-babel-vocab-<treasure> -> thilo-babel-eintraege-<treasure>
+  // 1) Vokabel-Schätze: thilo-babel-vocab-<treasure> -> thilo-babel-eintraege-<treasure>-vokabel
   const keysToRemove = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
@@ -1247,13 +1523,13 @@ function migriereAlteDaten() {
         guete: v.guete || "bronze", notes: v.notes || "",
         origin: v.origin || "de-DE", ankerBeiAnlage: v.ankerBeiAnlage || ""
       }));
-      const bestand = loadTreasure(treasure);
-      saveTreasure(treasure, bestand.concat(neue));
+      const bestand = loadTreasure(treasure, "vokabel");
+      saveTreasure(treasure, "vokabel", bestand.concat(neue));
     }
     localStorage.removeItem(key);
   });
 
-  // 2) Eigene Phrasen: thilo-babel-own-phrases -> thilo-babel-eintraege-manual
+  // 2) Eigene Phrasen: thilo-babel-own-phrases -> thilo-babel-eintraege-manual-phrase
   try {
     const ownPhrases = JSON.parse(localStorage.getItem("thilo-babel-own-phrases")) || [];
     if (ownPhrases.length) {
@@ -1264,8 +1540,8 @@ function migriereAlteDaten() {
         guete: (p.localized && Object.keys(p.localized).length) ? "silber" : "bronze",
         notes: p.notes || "", origin: p.origin || "de-DE"
       }));
-      const bestand = loadTreasure("manual");
-      saveTreasure("manual", bestand.concat(neue));
+      const bestand = loadTreasure("manual", "phrase");
+      saveTreasure("manual", "phrase", bestand.concat(neue));
       const cats = new Set(loadCats("phrase"));
       neue.forEach(e => cats.add(e.category));
       saveCats("phrase", [...cats].sort());
@@ -1285,6 +1561,61 @@ function migriereAlteDaten() {
   localStorage.setItem("thilo-babel-migrated-v4", "1");
 }
 migriereAlteDaten();
+
+// ---------- Migration v5: Vokabel- und Phrasenschätze endgültig trennen ----------
+// Bis hierhin lag pro Schatz EIN gemischtes Array (art als Feld). Rudolf hat klargestellt:
+// Vokabelschätze und Phrasenschätze sind eigene Schätze auf eigenen JSONs — deshalb bekommt
+// jede Art jetzt ihren eigenen Speicher-Key, ihre eigene Aktiv-Liste, ihre eigenen Metadaten.
+// Diese Migration läuft für alle, die schon auf dem gemischten v4-Format gespeichert hatten.
+function migriereAufGetrennteSchaetze() {
+  if (localStorage.getItem("thilo-babel-migrated-v5")) return;
+
+  // 1) Gemischte thilo-babel-eintraege-<treasure> (ohne -vokabel/-phrase-Suffix) aufteilen
+  const combinedKeys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith(EINTRAG_PREFIX) && !key.endsWith("-vokabel") && !key.endsWith("-phrase")) {
+      combinedKeys.push(key);
+    }
+  }
+  combinedKeys.forEach(key => {
+    const treasure = key.slice(EINTRAG_PREFIX.length);
+    let alte = [];
+    try { alte = JSON.parse(localStorage.getItem(key)) || []; } catch {}
+    const vok = alte.filter(e => e.art === "vokabel");
+    const phr = alte.filter(e => e.art === "phrase");
+    if (vok.length) { const best = loadTreasure(treasure, "vokabel"); saveTreasure(treasure, "vokabel", best.concat(vok)); }
+    if (phr.length) { const best = loadTreasure(treasure, "phrase"); saveTreasure(treasure, "phrase", best.concat(phr)); }
+    localStorage.removeItem(key);
+  });
+
+  // 2) Aktiv-Liste: alte gemeinsame Liste als Startwert in beide Arten kopieren
+  try {
+    const raw = localStorage.getItem(ACTIVE_TREASURES_KEY);
+    if (raw) {
+      const alt = JSON.parse(raw);
+      saveActiveTreasures("vokabel", alt);
+      saveActiveTreasures("phrase", alt);
+    }
+  } catch {}
+  localStorage.removeItem(ACTIVE_TREASURES_KEY);
+
+  // 3) Metadaten: alte gemeinsame Meta als Startwert in beide Arten kopieren.
+  // Ungenau (ein Level galt vorher für beide Arten gemeinsam), aber besser als Datenverlust —
+  // der User sieht danach ggf. ein Level, das er per Neuimport/Löschen korrigieren kann.
+  try {
+    const raw = localStorage.getItem(TREASURES_META_KEY);
+    if (raw) {
+      const altMeta = JSON.parse(raw);
+      saveTreasureMeta("vokabel", { ...altMeta });
+      saveTreasureMeta("phrase", { ...altMeta });
+    }
+  } catch {}
+  localStorage.removeItem(TREASURES_META_KEY);
+
+  localStorage.setItem("thilo-babel-migrated-v5", "1");
+}
+migriereAufGetrennteSchaetze();
 
 // ---------- Grundwortschatz (Seed-Listen, wie ein Fachschatz von Hand geladen) ----------
 const GRUNDVOKABULAR = [
@@ -1326,6 +1657,14 @@ function langShortCode(code) {
   return (parts[1] || parts[0]).toUpperCase();
 }
 
+// Kurzcode ("de", "en", "hu") -> voller Code aus LANGS ("de-DE", "en-US", "hu-HU"); sonst null
+function langFromShort(kurz) {
+  if (!kurz) return null;
+  const k = String(kurz).toLowerCase().split("-")[0];
+  const l = LANGS.find(x => x.code.toLowerCase().split("-")[0] === k);
+  return l ? l.code : null;
+}
+
 // --- Anker- und Zielsprachen-Helfer ---
 // Der Anker ist langA (links, golden). Die Zielsprache ist langB (rechts, blau).
 // Gilt unverändert für Vokabeln UND Phrasen — beide Arten teilen dieselben Felder.
@@ -1364,6 +1703,13 @@ async function getEintragDisplay(v, targetLang) {
     return { display: v.localized[targetLang], origin: originLang };
   }
 
+  // Steht `term` laut origin schon in der Zielsprache, nicht übersetzen (Bugfix 20.9.2026).
+  // Ziel Deutsch ausgenommen: dort gilt immer `de`.
+  if (v.term && targetLang !== "de-DE" &&
+      originLang.split("-")[0].toLowerCase() === targetLang.split("-")[0].toLowerCase()) {
+    return { display: v.term, origin: originLang };
+  }
+
   let srcLang = anchorLang || "de-DE";
 
   if (targetLang === srcLang) {
@@ -1384,6 +1730,16 @@ async function getEintragDisplay(v, targetLang) {
   const cache = loadTransCache();
   const key = srcLang + "|" + targetLang + "|" + srcTerm;
   if (cache[key]) return { display: cache[key], origin: originLang };
+
+  // Änderung 2 (Auftrag 21.9.2026): Anzeige übersetzt nicht mehr automatisch, außer der
+  // Schalter "Beim Anzeigen automatisch übersetzen" ist an (Standard: aus). Verhindert die
+  // Anfrageflut bei großen Hauptschätzen und selten gebrauchten Zielsprachen. localize!
+  // bleibt der ausdrückliche Weg, Übersetzungen zu holen. Bereits vorhandene Werte
+  // (localized, term, Zwischenspeicher — alles oben) werden weiterhin ohne Einschränkung
+  // angezeigt; nur der frische Dienst-Aufruf selbst wird hier gestoppt.
+  if (!autoTranslateAnzeige()) {
+    return { display: srcTerm + " (nicht übersetzt)", origin: originLang, unuebersetzt: true };
+  }
 
   try {
     const translated = await doTranslate(srcTerm, srcLang, targetLang);
@@ -1483,7 +1839,7 @@ function buildEintragRow(v, art) {
         if (gespeichert) return;
         gespeichert = true;
         const neu = input.value.trim();
-        updateEintragById(v.id, { notes: neu });
+        updateEintragById(v.id, art, { notes: neu });
         renderListe(art);
       };
       input.addEventListener("keydown", (ev) => {
@@ -1542,7 +1898,7 @@ function buildEintragRow(v, art) {
   delBtn.title = LABELS[art].singular + " löschen";
   delBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    deleteEintragById(v.id);
+    deleteEintragById(v.id, art);
     renderListe(art);
   });
 
@@ -1568,7 +1924,7 @@ function setVocabSort(mode) {
   });
   const fb = document.getElementById("vocabForeignToggle");
   if (fb) fb.textContent = "A–Z " + langName(langB).slice(0,2).toUpperCase();
-  renderListe("vokabel");
+  return renderListe("vokabel");
 }
 
 // EINE Render-Funktion für Vokabeln UND Phrasen — art bestimmt nur,
@@ -1601,7 +1957,7 @@ async function renderListe(art) {
     resolved.push({ ...v, displayTerm: r.display });
     if (i % 10 === 9) {
       await new Promise(res => setTimeout(res, 30));
-      if (i > 0 && i % 200 === 199) setStatus("Lade " + LABELS[art].plural + "… " + (i + 1) + "/" + list.length);
+      if (i > 0 && i % 200 === 199) setStatus(tb('loadingProgress', labelPlural(art), i + 1, list.length));
     }
   }
   setStatus("");
@@ -1614,6 +1970,32 @@ async function renderListe(art) {
   });
 
   listEl.innerHTML = "";
+
+  // TOC bleibt in jedem Sortiermodus sichtbar (Bugfix 20.9.2026, Bug 5). Klick springt zur
+  // Kategorie; ist gerade eine Sortierung statt Kategorien-Ansicht aktiv, wird zuerst auf
+  // "cat" zurückgesetzt (die Kategorie-Anker existieren nur in dieser Ansicht).
+  const tocEl = document.getElementById(ids.toc);
+  if (tocEl) {
+    tocEl.innerHTML = "";
+    Object.keys(groups).sort().forEach(cat => {
+      const btn = document.createElement("button");
+      btn.textContent = cat;
+      btn.style.cssText = "background:#1a1a1a;border:1px solid #2a2a2a;color:#aaa;padding:4px 10px;border-radius:6px;font-family:inherit;font-size:11px;cursor:pointer;";
+      btn.addEventListener("click", () => {
+        const zielId = art + "-cat-" + cat.replace(/[^a-z0-9]/gi, "_");
+        if (art === "vokabel" && vocabSortMode !== "cat") {
+          setVocabSort("cat").then(() => {
+            const el = document.getElementById(zielId);
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+          return;
+        }
+        const el = document.getElementById(zielId);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      tocEl.appendChild(btn);
+    });
+  }
 
   if (art === "vokabel") {
     const fb = document.getElementById("vocabForeignToggle");
@@ -1633,25 +2015,8 @@ async function renderListe(art) {
         return;
       }
       sorted.forEach(v => listEl.appendChild(buildEintragRow(v, art)));
-      const tocEl = document.getElementById(ids.toc);
-      if (tocEl) tocEl.innerHTML = "";
       return;
     }
-  }
-
-  const tocEl = document.getElementById(ids.toc);
-  if (tocEl) {
-    tocEl.innerHTML = "";
-    Object.keys(groups).sort().forEach(cat => {
-      const btn = document.createElement("button");
-      btn.textContent = cat;
-      btn.style.cssText = "background:#1a1a1a;border:1px solid #2a2a2a;color:#aaa;padding:4px 10px;border-radius:6px;font-family:inherit;font-size:11px;cursor:pointer;";
-      btn.addEventListener("click", () => {
-        const el = document.getElementById(art + "-cat-" + cat.replace(/[^a-z0-9]/gi, "_"));
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
-      tocEl.appendChild(btn);
-    });
   }
 
   Object.keys(groups).sort().forEach(cat => {
@@ -1676,11 +2041,11 @@ async function renderListe(art) {
 
 // ---------- Anlegen ----------
 async function addVokabel(term, category, originLang) {
-  setStatus("Übersetze Vokabel…");
+  setStatus(tb('translatingVocab'));
   const zielSprache = anchorLang || "de-DE";
   let de = term;
   try { de = await doTranslate(cleanTerm(term), originLang, zielSprache); } catch {}
-  saveNeuerEintrag("manual", {
+  saveNeuerEintrag("manual", "vokabel", {
     id: generateId(), art: "vokabel",
     term, de, category: category || "",
     origin: originLang, ankerBeiAnlage: zielSprache,
@@ -1689,7 +2054,7 @@ async function addVokabel(term, category, originLang) {
   ensureCat("vokabel", category);
   refreshCatSelect("vokabel", document.getElementById("vocabCategory"));
   updateLocalizeBtn();
-  setStatus("✓ Vokabel gespeichert (" + langName(zielSprache) + ")");
+  setStatus(tb('vocabSaved', langName(zielSprache)));
 }
 
 async function addPhrase(de, translation, category) {
@@ -1697,7 +2062,7 @@ async function addPhrase(de, translation, category) {
     try { translation = await doTranslate(de, "de-DE", langB); } catch { translation = de; }
   }
   const localized = {}; localized[langB] = translation;
-  saveNeuerEintrag("manual", {
+  saveNeuerEintrag("manual", "phrase", {
     id: generateId(), art: "phrase",
     term: translation, de, category: category || "Eigene Phrasen",
     origin: "de-DE", guete: "bronze", notes: "", localized
@@ -1716,7 +2081,7 @@ function updateLocalizeBtnFor(art, btnId) {
   const btn = document.getElementById(btnId);
   if (!btn) return;
   const sprachen = [langA, langB].filter((s, i, arr) => arr.indexOf(s) === i);
-  const alle = [...loadTreasure("main"), ...loadTreasure("manual")].filter(e => e.art === art);
+  const alle = [...loadTreasure("main", art), ...loadTreasure("manual", art)];
   let count = 0;
   alle.forEach(v => { if (!v.localized || sprachen.some(s => !v.localized[s])) count++; });
   btn.textContent = "⏚ Localize! (" + count + ")";
@@ -1727,41 +2092,117 @@ async function localizeEintraege(art) {
   const sprachen = [langA, langB].filter((s, i, arr) => arr.indexOf(s) === i);
   const btnId = art === "vokabel" ? "localizeBtn" : "phraseLocalizeBtn";
   const btn = document.getElementById(btnId);
-  if (btn) btn.disabled = true;
 
+  const kurz = c => (c || "").toLowerCase().split("-")[0];
+
+  // Änderung 1 (Auftrag 21.9.2026): localize! ist in erster Linie ein Verfestiger — bekannte
+  // Übersetzungen (direkt oder aus dem Zwischenspeicher) in den Eintrag schreiben, den Dienst
+  // nur bei echten Lücken fragen. Vorab zählen, wie viele Einträge den Dienst wirklich
+  // bräuchten, als Grundlage für die Bestätigung unten.
+  const startCache = loadTransCache();
+  function cacheKeyFuer(quelle, sprache) { return "de-DE|" + sprache + "|" + cleanTerm(quelle); }
+  let brauchtDienst = 0;
   for (const treasure of ["main", "manual"]) {
-    const list = loadTreasure(treasure);
-    let done = 0, changed = false;
-    for (const v of list) {
-      if (v.art !== art) continue;
+    for (const v of loadTreasure(treasure, art)) {
       for (const sprache of sprachen) {
         if (v.localized && v.localized[sprache]) continue;
-        try {
-          const quelle = v.de || v.term || "";
-          const text = await doTranslate(cleanTerm(quelle), "de-DE", sprache);
-          if (text) {
-            v.localized = v.localized || {};
-            v.localized[sprache] = (sprache === "de-DE") ? quelle : text;
-            done++; changed = true;
-          }
-        } catch {}
+        if (kurz(sprache) === "de") continue;
+        if (v.term && kurz(v.origin) === kurz(sprache)) continue;
+        if (startCache[cacheKeyFuer(v.de || v.term || "", sprache)]) continue;
+        brauchtDienst++;
       }
-      if (v.guete === "bronze" && v.localized && sprachen.every(s => v.localized[s])) v.guete = "silber";
     }
-    if (changed) saveTreasure(treasure, list);
   }
 
-  // Übersetzungs-Cache für diese Sprachen löschen, damit frische Werte greifen
-  const cache = loadTransCache();
-  let cacheChanged = false;
-  Object.keys(cache).forEach(key => {
-    if (sprachen.some(s => key.includes("|" + s + "|") || key.startsWith(s + "|"))) { delete cache[key]; cacheChanged = true; }
-  });
-  if (cacheChanged) saveTransCache(cache);
+  if (brauchtDienst > 50) {
+    const weiter = confirm(tb('localizeConfirm', brauchtDienst));
+    if (!weiter) { setStatus(tb('localizeCancelled')); return; }
+  }
 
-  setStatus("✓ " + LABELS[art].plural + " lokalisiert (" + langName(langA) + " + " + langName(langB) + ").");
-  updateLocalizeBtn();
-  renderListe(art);
+  if (btn) btn.disabled = true;
+  let abgebrochen = false;
+  let seitPause = 0;
+  let apiAufrufe = 0;
+  const verwendeteCacheKeys = new Set();
+
+  try {
+    for (const treasure of ["main", "manual"]) {
+      if (abgebrochen) break;
+      const list = loadTreasure(treasure, art);
+      let changed = false;
+      for (const v of list) {
+        if (abgebrochen) break;
+        for (const sprache of sprachen) {
+          if (v.localized && v.localized[sprache]) continue;
+          const quelle = v.de || v.term || "";
+
+          // Gleiche Sprache: kein API-Aufruf. Deutsch = Feld `de`; ist `term` in dieser
+          // Sprache (origin), dann ist `term` die Übersetzung.
+          let direkt = null;
+          if (kurz(sprache) === "de") direkt = quelle;
+          else if (v.term && kurz(v.origin) === kurz(sprache)) direkt = v.term;
+          if (direkt) {
+            v.localized = v.localized || {};
+            v.localized[sprache] = direkt;
+            changed = true;
+            continue;
+          }
+
+          // NEU (Änderung 1): Zwischenspeicher nachsehen, bevor der Dienst gefragt wird —
+          // dieselbe Schlüsselform wie beim automatischen Anzeigen (getEintragDisplay).
+          const cacheKey = cacheKeyFuer(quelle, sprache);
+          const aktuellerCache = loadTransCache();
+          if (aktuellerCache[cacheKey]) {
+            v.localized = v.localized || {};
+            v.localized[sprache] = aktuellerCache[cacheKey];
+            changed = true;
+            verwendeteCacheKeys.add(cacheKey);
+            continue;
+          }
+
+          try {
+            const text = await doTranslate(cleanTerm(quelle), "de-DE", sprache);
+            apiAufrufe++; seitPause++;
+            if (text) {
+              v.localized = v.localized || {};
+              v.localized[sprache] = text;
+              changed = true;
+            }
+          } catch {}
+
+          if (Date.now() < translatePausedUntil) { abgebrochen = true; break; }
+        }
+        if (v.guete === "bronze" && v.localized && sprachen.every(s => v.localized[s])) v.guete = "silber";
+
+        // Nach je 20 Übersetzungen: Zwischenstand sichern, Fortschritt zeigen, kurz warten
+        if (seitPause >= 20) {
+          seitPause = 0;
+          if (changed) saveTreasure(treasure, art, list);
+          setStatus(tb('localizingProgress', apiAufrufe));
+          await new Promise(r => setTimeout(r, 1000));
+        }
+      }
+      if (changed) saveTreasure(treasure, art, list);
+    }
+
+    // NEU (Änderung 1): Nur die tatsächlich verwendeten Zwischenspeicher-Einträge löschen,
+    // nicht pauschal alle Einträge dieser Sprachen — sonst gingen bei einem Abbruch mitten
+    // im Lauf auch noch nicht verfestigte, aber im Cache vorhandene Übersetzungen verloren.
+    if (verwendeteCacheKeys.size > 0) {
+      const cache = loadTransCache();
+      verwendeteCacheKeys.forEach(k => delete cache[k]);
+      saveTransCache(cache);
+    }
+
+    if (abgebrochen) {
+      setStatus(tb('localizeAborted'));
+    } else {
+      setStatus(tb('localizedDone', labelPlural(art), langName(langA), langName(langB)));
+    }
+  } finally {
+    updateLocalizeBtn();
+    renderListe(art);
+  }
 }
 
 // ---------- Häkchenliste der Fachschätze (§8.3) — global für beide Arten ----------
@@ -1770,17 +2211,17 @@ async function localizeEintraege(art) {
 // Häkchen/Löschen in beiden Modalen unabhängig funktionieren, aber auf denselben
 // Speicher (loadActiveTreasures/loadTreasureMeta) wirken.
 function renderTreasureList() {
-  renderTreasureListFor("treasureList");
-  renderTreasureListFor("phraseTreasureList");
+  renderTreasureListFor("treasureList", "vokabel");
+  renderTreasureListFor("phraseTreasureList", "phrase");
 }
 
-function renderTreasureListFor(containerId) {
+function renderTreasureListFor(containerId, art) {
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = "";
 
-  const meta = loadTreasureMeta();
-  const active = loadActiveTreasures();
+  const meta = loadTreasureMeta(art);
+  const active = loadActiveTreasures(art);
 
   const all = ["main", "manual"];
   Object.keys(meta).forEach(t => { if (!all.includes(t)) all.push(t); });
@@ -1793,12 +2234,11 @@ function renderTreasureListFor(containerId) {
     check.type = "checkbox";
     check.checked = active.includes(t);
     check.addEventListener("change", () => {
-      const akt = loadActiveTreasures();
+      const akt = loadActiveTreasures(art);
       if (check.checked) { if (!akt.includes(t)) akt.push(t); }
       else { const idx = akt.indexOf(t); if (idx >= 0) akt.splice(idx, 1); }
-      saveActiveTreasures(akt);
-      renderListe("vokabel");
-      renderListe("phrase");
+      saveActiveTreasures(art, akt);
+      renderListe(art);
     });
 
     const label = document.createElement("span");
@@ -1813,17 +2253,19 @@ function renderTreasureListFor(containerId) {
 
     const del = document.createElement("button");
     del.textContent = "🗑️";
+    del.title = LABELS[art].plural + " aus '" + t + "' löschen";
     del.style.cssText = "background:none;border:1px solid #2a2a2a;color:#888;border-radius:6px;padding:2px 6px;cursor:pointer;font-size:11px;";
     del.addEventListener("click", () => {
-      if (!confirm("Schatz '" + t + "' löschen?")) return;
-      localStorage.removeItem(EINTRAG_PREFIX + t);
-      const m2 = loadTreasureMeta();
+      // Löscht nur diese Art dieses Schatzes — die andere Art (falls vorhanden) bleibt unberührt,
+      // da Vokabel- und Phrasenschätze eigene, unabhängige Schätze sind.
+      if (!confirm(tb('deleteEntryConfirm', labelPlural(art), t))) return;
+      localStorage.removeItem(eintraegeKey(t, art));
+      const m2 = loadTreasureMeta(art);
       delete m2[t];
-      saveTreasureMeta(m2);
-      saveActiveTreasures(loadActiveTreasures().filter(x => x !== t));
-      renderTreasureList();
-      renderListe("vokabel");
-      renderListe("phrase");
+      saveTreasureMeta(art, m2);
+      saveActiveTreasures(art, loadActiveTreasures(art).filter(x => x !== t));
+      renderTreasureListFor(containerId, art);
+      renderListe(art);
     });
 
     row.appendChild(check); row.appendChild(label); row.appendChild(info); row.appendChild(del);
@@ -1844,10 +2286,25 @@ const vocabFilterInput = document.getElementById("vocabFilter");
 const ownDeInput = document.getElementById("ownDe");
 const ownHuInput = document.getElementById("ownHu");
 
+// Bugfix 20.9.2026, Bug 6: "Grundvokabular/-phrasen laden" bleibt nach dem Laden grau —
+// auch nach erneutem Öffnen des Modals. Über einen persistenten Merker statt Kategorie-
+// Check, da importierte Gold-Listen andere Kategorien tragen können (Auftrag-Hinweis).
+const GRUND_VOKABULAR_FLAG = "thilo-babel-grundvokabular-geladen";
+const GRUND_PHRASEN_FLAG = "thilo-babel-grundphrasen-geladen";
+function grundBtnZustand(btnId, flagKey) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  const geladen = localStorage.getItem(flagKey) === "1";
+  btn.disabled = geladen;
+  btn.style.opacity = geladen ? "0.4" : "";
+  btn.style.cursor = geladen ? "default" : "pointer";
+}
+
 function openVocabModal() {
   updateLocalizeBtn();
   updateNotesToggleBtn();
   renderTreasureList();
+  grundBtnZustand("loadGrundvokabularBtn", GRUND_VOKABULAR_FLAG);
   renderListe("vokabel");
   vocabModal.classList.add("open");
 }
@@ -1864,6 +2321,7 @@ function openPhraseModal() {
   updateLocalizeBtn();
   updateNotesToggleBtn();
   renderTreasureList();
+  grundBtnZustand("loadGrundphrasenBtn", GRUND_PHRASEN_FLAG);
   renderListe("phrase");
   phraseModal.classList.add("open");
 }
@@ -1913,13 +2371,13 @@ document.getElementById("vocabBulkAddBtn").addEventListener("click", async () =>
   }
   vocabBulkInput.value = "";
   renderListe("vokabel");
-  setStatus(added > 0 ? added + " Vokabeln importiert." : "Kein gültiges Format (Fremdwort ; Kategorie).");
+  setStatus(tb('vocabImportResult', added));
 });
 vocabFilterInput.addEventListener("input", () => renderListe("vokabel"));
 
 document.getElementById("loadGrundvokabularBtn").addEventListener("click", () => {
-  const list = loadTreasure("main");
-  const existing = new Set(list.filter(e => e.art === "vokabel").map(v => v.term));
+  const list = loadTreasure("main", "vokabel");
+  const existing = new Set(list.map(v => v.term));
   let added = 0;
   for (const entry of GRUNDVOKABULAR) {
     const term = cleanTerm(entry.hu);
@@ -1932,12 +2390,14 @@ document.getElementById("loadGrundvokabularBtn").addEventListener("click", () =>
     existing.add(term);
     added++;
   }
-  saveTreasure("main", list);
+  saveTreasure("main", "vokabel", list);
   ensureCat("vokabel", "Grundvokabular");
   refreshCatSelect("vokabel", vocabCategoryInput);
   updateLocalizeBtn();
+  localStorage.setItem(GRUND_VOKABULAR_FLAG, "1");
+  grundBtnZustand("loadGrundvokabularBtn", GRUND_VOKABULAR_FLAG);
   renderListe("vokabel");
-  setStatus(added + " Grundvokabeln geladen (main).");
+  setStatus(tb('baseVocabLoaded', added));
 });
 
 // --- Phrasen-Anlegen-Formular ---
@@ -1981,13 +2441,13 @@ document.getElementById("phraseBulkAddBtn").addEventListener("click", async () =
   document.getElementById("phraseBulk").value = "";
   renderListe("phrase");
   refreshOwnPhraseCats();
-  setStatus(added > 0 ? added + " Phrasen importiert." : "Kein gültiges Format (Deutsch ; Übersetzung ; Kategorie).");
+  setStatus(tb('phraseImportResult', added));
 });
 document.getElementById("phraseFilter").addEventListener("input", () => renderListe("phrase"));
 
 document.getElementById("loadGrundphrasenBtn").addEventListener("click", async () => {
-  const list = loadTreasure("main");
-  const existing = new Set(list.filter(e => e.art === "phrase").map(p => p.de));
+  const list = loadTreasure("main", "phrase");
+  const existing = new Set(list.map(p => p.de));
   let added = 0;
   for (const group of GRUNDPHRASEN) {
     for (const item of group.items) {
@@ -2002,12 +2462,14 @@ document.getElementById("loadGrundphrasenBtn").addEventListener("click", async (
       added++;
     }
   }
-  saveTreasure("main", list);
+  saveTreasure("main", "phrase", list);
   GRUNDPHRASEN.forEach(g => ensureCat("phrase", g.cat));
   refreshOwnPhraseCats();
   updateLocalizeBtn();
+  localStorage.setItem(GRUND_PHRASEN_FLAG, "1");
+  grundBtnZustand("loadGrundphrasenBtn", GRUND_PHRASEN_FLAG);
   renderListe("phrase");
-  setStatus(added + " Grundphrasen geladen (main).");
+  setStatus(tb('basePhrasesLoaded', added));
 });
 
 document.getElementById("localizeBtn").addEventListener("click", () => localizeEintraege("vokabel"));
@@ -2032,8 +2494,8 @@ document.getElementById("importCopingFile").addEventListener("change", (e) => {
   reader.onload = async (ev) => {
     const lines = ev.target.result.split("\n").map(l => l.trim()).filter(Boolean);
     let added = 0;
-    const list = loadTreasure("manual");
-    const existing = new Set(list.filter(e => e.art === "phrase").map(p => p.de));
+    const list = loadTreasure("manual", "phrase");
+    const existing = new Set(list.map(p => p.de));
     for (const line of lines) {
       if (line.startsWith("#")) continue;
       let de, translation, category;
@@ -2056,11 +2518,11 @@ document.getElementById("importCopingFile").addEventListener("change", (e) => {
       existing.add(de);
       added++;
     }
-    saveTreasure("manual", list);
+    saveTreasure("manual", "phrase", list);
     e.target.value = "";
     menuModal.classList.remove("open");
     renderListe("phrase");
-    setStatus(added + " Phrasen importiert – Phrasenbuch öffnen zum Ansehen.");
+    setStatus(tb('phraseImportViewHint', added));
   };
   reader.readAsText(file, "utf-8");
 });
@@ -2080,8 +2542,26 @@ let learnCurrentRec = null;
 let learnAutoTimer = null;
 let learnAutoPhase = null;
 
+// Kernsatz: Wer bei "Hund" natürlich "der Hund" sagt, soll dafür nicht bestraft werden —
+// aber die richtige Antwort selbst wird NICHT verändert, falls ein Artikel dort absichtlich
+// dazugehört. Deshalb wird das führende Füllwort nur auf der GESPROCHENEN Seite entfernt, nie
+// auf der erwarteten. Funktion: erkennt genau ein führendes Artikel-/Pronomenwort (DE/EN/HU,
+// weitere Sprachen bisher nicht abgedeckt) und schneidet nur dieses eine Wort ab.
+const LEADING_FILLERS = new Set([
+  "der","die","das","dem","den","des","ein","eine","einen","einem","einer","ich",
+  "the","a","an","i",
+  "az" // Ungarisch (bestimmter Artikel vor Vokal) — "a" (vor Konsonant) deckt sich mit Englisch "a"
+]);
+function stripLeadingFiller(s) {
+  const words = s.trim().split(/\s+/);
+  if (words.length > 1 && LEADING_FILLERS.has(words[0].toLowerCase())) {
+    return words.slice(1).join(" ");
+  }
+  return s;
+}
 function isSimilar(spoken, correct) {
-  const a = spoken.toLowerCase().trim();
+  // Satzzeichen, die Spracherkenner gern anhängen, kosten sonst unnötig Distanz.
+  let a = stripLeadingFiller(spoken).toLowerCase().trim().replace(/[.,!?;:¡¿]+$/g, "");
   const b = correct.toLowerCase().trim();
   if (a === b) return true;
   const maxLen = Math.max(a.length, b.length);
@@ -2166,12 +2646,21 @@ function closeLearnOverlay() {
 
 async function buildLearnQueue() {
   const alle = getEintraege(learnArt);
-  if (alle.length === 0) { setStatus("Keine " + LABELS[learnArt].plural + " vorhanden."); return []; }
+  if (alle.length === 0) { setStatus(tb('noneAvailable', labelPlural(learnArt))); return []; }
   const resolved = await Promise.all(alle.map(async (v, idx) => {
     const r = await getEintragDisplay(v, langB);
-    return { ...v, idx, displayTerm: r.display };
+    return { ...v, idx, displayTerm: r.display, unuebersetzt: !!r.unuebersetzt };
   }));
-  return resolved;
+  // Änderung 2 (Auftrag 21.9.2026): Einträge ohne Übersetzung in der Zielsprache werden
+  // nicht abgefragt — der Lernmodus darf nicht selbst zum Auslöser der Anfrageflut werden.
+  const nutzbar = resolved.filter(v => !v.unuebersetzt);
+  const uebersprungen = resolved.length - nutzbar.length;
+  if (nutzbar.length === 0 && uebersprungen > 0) {
+    setStatus(tb('missingTranslations', langName(langB)));
+  } else if (uebersprungen > 0) {
+    setStatus(tb('missingTranslationsSkipped', langName(langB), uebersprungen));
+  }
+  return nutzbar;
 }
 
 async function startLearnMode(direction, mode) {
@@ -2253,7 +2742,7 @@ function runAutoCard() {
 
 function startLearnRecognition(isAuto) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { setStatus("Spracherkennung nicht verfügbar."); return; }
+  if (!SR) { setStatus(tb('speechRecUnavailable')); return; }
 
   if (learnCurrentRec) {
     try { learnCurrentRec.onresult = null; learnCurrentRec.onerror = null; learnCurrentRec.onend = null; learnCurrentRec.abort(); } catch {}
@@ -2295,6 +2784,15 @@ function startLearnRecognition(isAuto) {
     } else {
       fb.className = "learn-feedback fail";
       fb.textContent = "✗ " + expected;
+      // Zeigt, was die Spracherkennung tatsächlich verstanden hat — sonst lässt sich ein
+      // Fehlversuch nie einordnen (falsch gesprochen? falsch verstanden? Füllwort davor?).
+      const saidEl = document.createElement("div");
+      saidEl.style.fontSize = "12px";
+      saidEl.style.color = "#999";
+      saidEl.style.marginTop = "3px";
+      saidEl.style.fontWeight = "normal";
+      saidEl.textContent = spoken ? tb('youSaid', spoken) : tb('nothingRecognized');
+      fb.appendChild(saidEl);
       learnSessionMissed.push(getAnkerText(v));
       updateRepeatBtn();
     }
@@ -2332,7 +2830,36 @@ function startLearnRecognition(isAuto) {
   };
 
   rec.onresult = (e) => { const spoken = e.results[0][0].transcript; finishWith(spoken, isSimilar(spoken, expected)); };
-  rec.onerror = () => { finishWith("", false); };
+  rec.onerror = (e) => {
+    // Bugfix 20.9.2026 (Abend): Browser melden "no-speech"/"aborted" oft deutlich früher
+    // als die eingestellte Sprechzeit — das ließ das Feedback sofort und fälschlich als
+    // "nichts gesagt" erscheinen. Dabei unterbrach der sofortige Feedback-speak() per
+    // synth.cancel() sogar noch das gerade erst gestartete Vorlesen der Karte, was sich wie
+    // falsche Sprachausgabe anhörte (eigentlich zwei überlappende Ansagen, nicht eine falsche).
+    // Echte "keine Antwort"-Erkennung übernimmt weiterhin allein der antwortTimer.
+    if (e.error === "no-speech" || e.error === "aborted") {
+      if (isAuto) { if (!handled) { try { rec.start(); } catch {} } return; }
+      if (learnCurrentRec === rec) {
+        learnCurrentRec = null;
+        document.getElementById("learnMicBtn").classList.remove("active");
+      }
+      return;
+    }
+    // "network": Chromium-Forks ohne Googles Cloud-Spracherkennung (Ecosia, Brave, Vivaldi …)
+    // bekommen das sofort, unabhängig vom Mikrofon — endloses Neustarten wie bei "no-speech"
+    // wäre hier sinnlos, es würde immer wieder denselben Fehler geben. Stattdessen klar
+    // informieren und anhalten statt fälschlich als falsch zu werten oder endlos durchzulernen.
+    if (e.error === "network") {
+      setStatus(tb('networkError'));
+      if (learnCurrentRec === rec) {
+        learnCurrentRec = null;
+        document.getElementById("learnMicBtn").classList.remove("active");
+      }
+      if (isAuto) stopAutoLoop();
+      return;
+    }
+    finishWith("", false);
+  };
   rec.onend = () => {};
   rec.start();
 }
@@ -2431,46 +2958,41 @@ function updateAnchorBtn() {
   }
 }
 document.getElementById("anchorBtn").addEventListener("click", () => {
-  if (anchorLang) { setStatus("⚓ Ankersprache ist bereits gesetzt: " + langName(anchorLang)); return; }
+  if (anchorLang) { setStatus(tb('anchorAlreadySet', langName(anchorLang))); return; }
   const current = langA;
-  if (!confirm("Ankersprache auf " + langName(current) + " setzen?\n\nDas ist einmalig. Änderung nur durch Neuinstallation möglich.\n\n(Initialisierung läuft: erst Phrasen, dann Vokabeln.)")) return;
+  if (!confirm(tb('anchorConfirm', langName(current)))) return;
   anchorLang = current;
   saveAnchor(anchorLang);
+  applyUILanguage(anchorLang); // Menü einmalig auf die Ankersprache umstellen (bleibt dann so)
   updateAnchorBtn();
-  setStatus("⚓ Ankersprache gesetzt: " + langName(anchorLang));
+  setStatus(tb('anchorSet', langName(anchorLang)));
 
   setTimeout(async () => {
     try {
-      setStatus("Initialisierung: Phrasen…");
+      setStatus(tb('initPhrases'));
       await localizeEintraege("phrase");
-      setStatus("Initialisierung: Vokabeln… (das dauert einen Moment)");
+      setStatus(tb('initVocab'));
       await localizeEintraege("vokabel");
-      setStatus("✓ Initialisierung abgeschlossen.");
+      setStatus(tb('initDone'));
     } catch (err) {
-      setStatus("Initialisierung teilweise fehlgeschlagen: " + (err.message || err));
+      setStatus(tb('initPartialFail', err.message || err));
     }
   }, 500);
 });
 updateAnchorBtn();
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => { navigator.serviceWorker.register("/sw.js").catch(() => {}); });
+// **Babel Pro startet auch ohne Netz, sobald es einmal besucht wurde – aber nur dort, wo ein Service Worker überhaupt erlaubt ist.**
+// Funktion: Registrierung nur unter http/https (nicht aus einer von der Festplatte geöffneten Datei); Pfad relativ wie im Manifest.
+if ("serviceWorker" in navigator && (location.protocol === "http:" || location.protocol === "https:")) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("./sw.js").catch(() => {}); });
 }
 </script>
 
 
 
-<!-- Privacy-first analytics - lädt im Hintergrund, blockiert App nicht -->
+<!-- **Die private Entwicklerseite zählt keine Besucher: hier steht bewusst kein Statistik-Skript.** -->
 <script>
-(function() {
-  try {
-    var s = document.createElement('script');
-    s.async = true;
-    s.src = 'https://scripts.simpleanalyticscdn.com/latest.js';
-    s.onerror = function() {};
-    document.body.appendChild(s);
-  } catch(e) {}
-})();
+// (Statistik-Skript im Pro-Projekt bewusst entfernt: private Entwicklerseite)
 
 // ============ SPRACH-SPEZIFISCHER EXPORT/IMPORT ============
 // §8.8: Export umfasst ausschließlich main + manual (Fachschätze gelten als fertig).
@@ -2502,22 +3024,18 @@ function toExportFormat(e, currentLang, srcLang, transCache) {
   };
 }
 
-function exportMyData() {
+function exportMyData(art) {
   const currentLang = langB;
   const anzeigeName = LANGS.find(l => l.code === currentLang)?.name || currentLang;
   const srcLang = anchorLang || "de-DE";
   const transCache = loadTransCache();
 
-  const alleMainManual = [...loadTreasure("main"), ...loadTreasure("manual")];
-  const vokabelEintraege = alleMainManual.filter(e => e.art === "vokabel");
-  const phraseEintraege  = alleMainManual.filter(e => e.art === "phrase");
+  const eintraege = [...loadTreasure("main", art), ...loadTreasure("manual", art)];
 
-  setStatus('Exportiere...');
-  const langVocabs  = vokabelEintraege.map(e => toExportFormat(e, currentLang, srcLang, transCache));
-  const langPhrases = phraseEintraege.map(e => toExportFormat(e, currentLang, srcLang, transCache));
-
-  const vokabelCats = loadCats("vokabel");
-  const phraseCats  = loadCats("phrase");
+  setStatus(tb('exporting', labelPlural(art)));
+  const langEintraege = eintraege.map(e => toExportFormat(e, currentLang, srcLang, transCache));
+  const cats = loadCats(art);
+  const categoriesOut = [...new Set([...cats, ...langEintraege.map(v => v.category)].filter(Boolean))];
 
   const exportData = {
     version: '4.0',
@@ -2525,16 +3043,19 @@ function exportMyData() {
     treasure: 'main',
     anchor: srcLang.split("-")[0],
     target: currentLang.split("-")[0],
-    type: 'voc',
+    type: art === "vokabel" ? "voc" : "phr",
     exportedAt: new Date().toISOString(),
-    totalVocabs: langVocabs.length,
-    totalPhrases: langPhrases.length,
-    prompt: "Vergolde diesen Schatz. 1) Bereinige Fehler. 2) Eliminiere Dubletten. 3) Versehe Substantive mit Artikeln. 4) Teile die Kategorien sinnvoll auf.",
-    vocabs: langVocabs,
-    phrases: langPhrases,
-    categories: [...new Set([...vokabelCats, ...langVocabs.map(v => v.category)].filter(Boolean))],
-    phraseCategories: [...new Set([...phraseCats, ...langPhrases.map(p => p.category)].filter(Boolean))]
+    prompt: "Vergolde diesen Schatz. 1) Bereinige Fehler. 2) Eliminiere Dubletten. 3) Versehe Substantive mit Artikeln. 4) Teile die Kategorien sinnvoll auf."
   };
+  if (art === "vokabel") {
+    exportData.totalVocabs = langEintraege.length;
+    exportData.vocabs = langEintraege;
+    exportData.categories = categoriesOut;
+  } else {
+    exportData.totalPhrases = langEintraege.length;
+    exportData.phrases = langEintraege;
+    exportData.phraseCategories = categoriesOut;
+  }
 
   const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -2543,21 +3064,21 @@ function exportMyData() {
   const anchor = srcLang.split("-")[0];
   const target = currentLang.split("-")[0];
   const datum = new Date().toISOString().slice(0,10);
-  a.download = `Silver-Voc-${anchor}-${target}-main-${datum}.json`;
+  a.download = `Silver-${LABELS[art].kuerzel}-${anchor}-${target}-main-${datum}.json`;
   document.body.appendChild(a);
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
 
-  setStatus(`Exportiert: ${langVocabs.length} Vokabeln, ${langPhrases.length} Phrasen (${anzeigeName})`);
+  setStatus(tb('exportedDone', langEintraege.length, labelPlural(art), anzeigeName));
 }
 
-// §8.2/§8.9: Prüfroutine beim Import. Geprüft gegen den tatsächlichen Code (nicht nur
-// die Doku): gold/gold ersetzt anstandslos den Bestand; blockiert wird ausschließlich der
-// Fall "Bestand ist Gold, neue Datei ist es nicht" — das gilt für JEDEN Schatz, nicht nur
-// main. Die Beispiel-Konfliktmeldung in §8.9 ist kein Sonderfall für main, sondern genau
-// dieser allgemeine Fall mit "main" als Beispielnamen — daher kein Widerspruch zur Tabelle,
-// keine Rückfrage bei Rudolf nötig.
+// Prüfroutine beim Import (Rudolf, 19.9.): Silber wird nie importiert. Gold verdrängt
+// Silber anstandslos. Ist am `main`-Schatz einer Art (Vokabeln ODER Phrasen) bereits Gold
+// vorhanden, wird ein erneuter Gold-Import für GENAU DIESE ART verweigert — erst löschen,
+// dann neu importieren. Für Fachschätze gilt diese Sperre nie: die werden immer ersetzt,
+// unabhängig vom vorhandenen Level. Da Vokabel- und Phrasenschätze eigene Schätze mit
+// eigenen JSONs sind, läuft diese Prüfung jetzt vollständig pro `art` getrennt.
 function importMyData(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -2575,58 +3096,88 @@ function importMyData(file) {
         if (level === "platinum") level = "gold"; // §8.1: Platin ist nur ein Dateiname-Label
 
         if (level === "silver") {
-          setStatus("⛔ Silber wird nicht importiert. Nur Gold.");
+          setStatus(tb('silverNotImported'));
           resolve(null);
           return;
         }
 
         const treasure = data.treasure || "main";
-        const meta = loadTreasureMeta();
-        const current = meta[treasure] || null;
+        const quellen = [];
+        if (data.vocabs)  quellen.push({ art: "vokabel", items: data.vocabs,  cats: data.categories });
+        if (data.phrases) quellen.push({ art: "phrase",  items: data.phrases, cats: data.phraseCategories });
 
-        if (current && current.level === "gold" && level === "gold") {
-          // Gleich: erlaubt, ersetzt (§8.2)
-        } else if (current && current.level === "gold" && level !== "gold") {
-          setStatus("⛔ Import verweigert: " + treasure + " ist bereits Gold.");
+        if (quellen.length === 0) {
+          setStatus(tb('emptyFile'));
           resolve(null);
           return;
         }
 
-        const neueEintraege = [];
-        if (data.vocabs) {
-          data.vocabs.forEach(v => neueEintraege.push({
-            id: generateId(), art: "vokabel",
-            term: v.term || "", de: v.de || v.term || "",
-            category: v.category || "Allgemein", localized: v.localized || {},
-            origin: v.origin || "de-DE", notes: v.notes || "", guete: level
-          }));
-        }
-        if (data.phrases) {
-          data.phrases.forEach(p => neueEintraege.push({
-            id: generateId(), art: "phrase",
-            term: p.term || p.hu || "", de: p.de || "",
-            category: p.category || "Eigene Phrasen", localized: p.localized || {},
-            origin: p.origin || "de-DE", notes: p.notes || "", guete: level
-          }));
-        }
-        saveTreasure(treasure, neueEintraege);
+        const meldungen = [];
+        let irgendwasImportiert = false;
 
-        if (data.categories) saveCats("vokabel", data.categories);
-        if (data.phraseCategories) saveCats("phrase", data.phraseCategories);
+        quellen.forEach(({ art, items, cats }) => {
+          const meta = loadTreasureMeta(art);
+          const current = meta[treasure] || null;
 
-        meta[treasure] = { level: level, dateiname: dateiname, datum: new Date().toISOString() };
-        saveTreasureMeta(meta);
+          if (treasure === "main" && current && current.level === "gold") {
+            meldungen.push(tb('goldAlreadyExists', labelPlural(art)));
+            return;
+          }
+
+          // Beim Import in main: bekannte Übersetzungen direkt in `localized` eintragen.
+          // `term` steht in der Zielsprache des Dateikopfs, `de` ist Deutsch (DE_FIELD_LANG,
+          // s.o.) — nicht "die Ankersprache". Korrektur vom 20.9.2026 zurückgenommen: dort
+          // wurde `de` fälschlich unter dem Ankercode des Dateikopfs abgelegt, was der
+          // Definition von `de` an jeder anderen Stelle im Code widersprach. So muss Babel
+          // weder beim Anzeigen noch bei Localize! etwas übersetzen. Fehlt `target` im
+          // Dateikopf (ältere Dateien): zielCode bleibt null, Verhalten wie bisher.
+          const zielCode = treasure === "main" ? langFromShort(data.target) : null;
+          const neueEintraege = items.map(v => {
+            const loc = Object.assign({}, v.localized || {});
+            if (treasure === "main") {
+              const t = (v.term || v.hu || "").trim();
+              const d = (v.de || "").trim();
+              if (zielCode && zielCode !== DE_FIELD_LANG && t && !loc[zielCode]) loc[zielCode] = t;
+              if (d && !loc[DE_FIELD_LANG]) loc[DE_FIELD_LANG] = d;
+            }
+            return {
+              id: generateId(), art,
+              term: v.term || v.hu || "", de: v.de || v.term || "",
+              category: v.category || (art === "vokabel" ? "Allgemein" : "Eigene Phrasen"),
+              localized: loc,
+              origin: v.origin || "de-DE", notes: v.notes || "", guete: level
+            };
+          });
+          saveTreasure(treasure, art, neueEintraege);
+
+          if (cats) saveCats(art, cats);
+
+          meta[treasure] = { level: level, dateiname: dateiname, datum: new Date().toISOString() };
+          saveTreasureMeta(art, meta);
+
+          // Bei main-Import: manual (dieser Art) leeren, weil der Goldschatz alle Einträge enthält.
+          if (treasure === "main") {
+            saveTreasure("manual", art, []);
+          }
+
+          // Neu importierten Schatz automatisch anhaken, damit er sofort sichtbar ist.
+          const akt = loadActiveTreasures(art);
+          if (!akt.includes(treasure)) {
+            akt.push(treasure);
+            saveActiveTreasures(art, akt);
+          }
+
+          irgendwasImportiert = true;
+          meldungen.push(tb('importedSummary', level, treasure, labelPlural(art), neueEintraege.length));
+        });
 
         localStorage.removeItem(TRANS_CACHE_KEY);
-
-        const anzahlVocabs = data.vocabs ? data.vocabs.length : 0;
-        const anzahlPhrases = data.phrases ? data.phrases.length : 0;
-        setStatus("✓ " + level + " importiert (" + treasure + "). " + anzahlVocabs + " Vokabeln, " + anzahlPhrases + " Phrasen.");
-        setTimeout(() => location.reload(), 1500);
-        resolve(data);
+        setStatus(meldungen.join("  "));
+        if (irgendwasImportiert) setTimeout(() => location.reload(), 1500);
+        resolve(irgendwasImportiert ? data : null);
       } catch (err) {
         reject(err);
-        setStatus('Fehler: ' + err.message);
+        setStatus(tb('genericError', err.message));
       }
     };
     reader.onerror = reject;
@@ -2648,26 +3199,24 @@ function createDataFileInput() {
   document.body.appendChild(input);
 }
 
-function addDataButtonsToMenu() {
-  const menuSection = document.querySelector('.menu-section');
-  if (!menuSection) return;
-
-  const exportBtn = document.createElement('div');
-  exportBtn.className = 'menu-item';
-  exportBtn.innerHTML = `<span class="mi-icon">💾</span><div>Exportieren (aktuelle Sprache)</div><div class="mi-sub">Nur ${langB || 'Sprache'} als JSON</div>`;
-  exportBtn.addEventListener('click', exportMyData);
-
-  const importBtn = document.createElement('div');
-  importBtn.className = 'menu-item';
-  importBtn.innerHTML = `<span class="mi-icon">📂</span><div>Importieren (aktuelle Sprache)</div><div class="mi-sub">JSON-Datei laden</div>`;
-  importBtn.addEventListener('click', () => { document.getElementById('myDataFileImport').click(); });
-
-  menuSection.parentNode.insertBefore(exportBtn, menuSection.nextSibling);
-  menuSection.parentNode.insertBefore(importBtn, exportBtn.nextSibling);
+// Vier eigene Knöpfe (§4 Pflichtenheft) statt zwei kombinierter: Export und Import
+// behandeln Phrasen und Vokabeln als eigene Schätze. Der Import erkennt die Art
+// weiterhin aus dem Dateiinhalt (data.vocabs/data.phrases) — beide Import-Knöpfe
+// öffnen denselben Dateiauswahl-Dialog.
+function wireExportImportButtons() {
+  const exportVokabelnBtn = document.getElementById('exportVokabelnBtn');
+  const exportPhrasenBtn  = document.getElementById('exportPhrasenBtn');
+  const importVokabelnBtn = document.getElementById('importVokabelnBtn');
+  const importPhrasenBtn  = document.getElementById('importPhrasenBtn');
+  if (exportVokabelnBtn) exportVokabelnBtn.addEventListener('click', () => exportMyData("vokabel"));
+  if (exportPhrasenBtn)  exportPhrasenBtn.addEventListener('click', () => exportMyData("phrase"));
+  const openImportDialog = () => { document.getElementById('myDataFileImport').click(); };
+  if (importVokabelnBtn) importVokabelnBtn.addEventListener('click', openImportDialog);
+  if (importPhrasenBtn)  importPhrasenBtn.addEventListener('click', openImportDialog);
 }
 
 createDataFileInput();
-setTimeout(addDataButtonsToMenu, 1000);
+wireExportImportButtons();
 
 </script>
 

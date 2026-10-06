@@ -1,4 +1,4 @@
-const CACHE = "thilo-babel-v35";
+const CACHE = "thilo-babel-v36";
 const SHELL = ["/", "/index.html", "/manifest.json", "/icon.svg", "/coping-phrasen.txt"];
 
 self.addEventListener("install", (e) => {
