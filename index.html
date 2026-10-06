@@ -355,7 +355,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <span class="mi-icon">🌐</span>
       <div style="flex:1;">
         <div data-i18n="autoTranslateTitle">Beim Anzeigen automatisch übersetzen</div>
-        <div class="mi-sub" data-i18n="autoTranslateSub">Aus (Standard): keine automatischen Anfragen beim Öffnen/Filtern/Lernen — nur localize! übersetzt</div>
+        <div class="mi-sub" id="autoTranslateSub" data-i18n="autoTranslateSub">Aus (Standard): keine automatischen Anfragen beim Öffnen/Filtern/Lernen</div>
       </div>
       <input type="checkbox" id="autoTranslateToggle" style="width:20px;height:20px;flex-shrink:0;" />
     </label>
@@ -412,7 +412,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <div><div>ThiLo! Manifest</div><div class="mi-sub" data-i18n="manifestSub">Philosophie & Seele von ThiLo!</div></div>
     </a>
     <!-- **Rudolf sieht am Gerät sofort, welche Fassung gerade läuft.** -->
-<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel Pro</span> · Stand: 06.10.2026, 01:45 · Basis Babel v1.10</div>
+<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel Pro</span> · Stand: 06.10.2026, 13:34 · Basis Babel v1.10</div>
     <div style="text-align:center;margin-top:10px;">
       <a href="https://www.netlify.com" target="_blank">
         <img src="https://www.netlify.com/v3/img/components/netlify-color-accent.svg" alt="Hosted on Netlify" style="height:20px;opacity:0.4;">
@@ -1277,6 +1277,14 @@ updateAnchorBtn();
 if (!IST_PRO) {
   document.querySelectorAll("[data-pro-only]").forEach(el => { el.style.display = "none"; });
 }
+
+// Kernsatz: Der Hilfetext zum Auto-Übersetzen-Schalter soll in Pro und Basic
+// gleichermaßen stimmen, statt in Basic auf eine unsichtbare Pro-Funktion
+// ("localize!") zu verweisen, die es dort gar nicht gibt.
+// Funktion: Gemeinsamer Basistext plus, nur in Pro, der Localize!-Zusatz.
+document.getElementById("autoTranslateSub").textContent =
+  "Aus (Standard): keine automatischen Anfragen beim Öffnen/Filtern/Lernen"
+  + (IST_PRO ? " — nur localize! übersetzt" : "");
 
 
 // --- Wiederholbutton ---
@@ -3101,7 +3109,14 @@ function importMyData(file) {
           return;
         }
 
-        const treasure = data.treasure || "main";
+        // Kernsatz: In Basic gibt es keine Schatzkammer-UI, um mehrere benannte
+        // Fachschätze zu sehen oder zu verwalten — ein Import darf dort also nie
+        // einen eigenen, unsichtbaren Schatz anlegen (der dann beim Export fehlt),
+        // sondern muss immer im einzigen durchsuchbaren Bestand landen: manual.
+        // Funktion: In Pro gilt weiter der Schatzname aus der Datei (inkl. "main"
+        // für einen echten Goldschatz); in Basic wird treasure immer auf "manual"
+        // erzwungen, unabhängig davon, was die Datei angibt.
+        const treasure = IST_PRO ? (data.treasure || "main") : "manual";
         const quellen = [];
         if (data.vocabs)  quellen.push({ art: "vokabel", items: data.vocabs,  cats: data.categories });
         if (data.phrases) quellen.push({ art: "phrase",  items: data.phrases, cats: data.phraseCategories });
