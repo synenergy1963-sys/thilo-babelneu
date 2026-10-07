@@ -18,19 +18,45 @@
     color: #47a8e8; margin: 36px 0 14px; }
   p { font-size: 15px; color: #ccc; margin-bottom: 12px; }
   strong { color: #f0f0f0; }
-  blockquote { border-left: 3px solid #e8c547; padding: 12px 20px; margin: 20px 0;
-    background: #1a1a1a; border-radius: 0 10px 10px 0; }
-  blockquote p { font-size: 17px; color: #e8c547; font-style: italic; margin: 0; }
+  em { color: #e8c547; font-style: normal; font-weight: 600; }
   hr { border: none; border-top: 1px solid #2a2a2a; margin: 32px 0; }
+
+  blockquote { border-left: 3px solid #e8c547; padding: 14px 22px; margin: 24px 0;
+    background: #1a1a1a; border-radius: 0 10px 10px 0; }
+  blockquote p { font-size: 17px; color: #e8c547; font-style: italic; margin: 0; line-height: 1.6; }
+
   .feature { background: #1a1a1a; border: 1px solid #2a2a2a; border-left: 3px solid #e8c547;
     border-radius: 0 10px 10px 0; padding: 14px 18px; margin-bottom: 12px; }
   .feature-title { font-size: 14px; font-weight: 700; color: #f0f0f0; margin-bottom: 4px; }
-  .feature-text { font-size: 14px; color: #aaa; }
+  .feature-text { font-size: 14px; color: #aaa; line-height: 1.65; }
+
+  .persoenlich { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px;
+    padding: 22px 24px; margin: 24px 0; }
+  .persoenlich p { font-size: 15px; color: #ccc; margin-bottom: 10px; }
+  .persoenlich p:last-child { margin-bottom: 0; }
+  .persoenlich .unterzeichner { font-size: 13px; color: #888; font-style: italic;
+    margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a; }
+
+  .haltung { background: #1a1a1a; border: 1px solid #2a2a2a; border-left: 3px solid #47a8e8;
+    border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 24px 0; }
+  .haltung p { font-size: 15px; color: #ccc; margin-bottom: 10px; }
+  .haltung p:last-child { margin-bottom: 0; }
+
   .final { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px;
-    padding: 20px; margin-top: 32px; text-align: center; }
-  .final p { font-size: 16px; color: #e8c547; font-weight: 600; margin-bottom: 8px; }
-  .final .sub { font-size: 13px; color: #666; font-weight: 400; }
-  .author { margin-top: 40px; font-size: 12px; color: #555; text-align: right; }
+    padding: 28px 24px; margin-top: 32px; text-align: center; }
+  .final p { font-size: 17px; color: #e8c547; font-weight: 600; margin-bottom: 10px; line-height: 1.6; }
+  .final .sub { font-size: 14px; color: #888; font-weight: 400; font-style: italic; margin-top: 8px; }
+
+  .einladung { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px;
+    padding: 22px 24px; margin-top: 24px; }
+  .einladung p { font-size: 15px; color: #ccc; margin-bottom: 10px; }
+  .einladung p:last-child { margin-bottom: 0; }
+  .einladung .kernsatz { color: #e8c547; font-weight: 600; font-size: 16px; }
+
+  .author { margin-top: 40px; font-size: 12px; color: #555; text-align: right; line-height: 1.8; }
+
+  .slogan { text-align: center; margin: 40px 0 20px; font-size: 17px; color: #e8c547;
+    font-weight: 700; letter-spacing: 0.05em; }
 </style>
 </head>
 <body>
@@ -38,68 +64,17 @@
 <h1>ThiLo! Manifest</h1>
 <div class="tagline">Think Local. Synenergy.</div>
 
-<div style="display:flex;gap:8px;align-items:center;margin-bottom:28px;flex-wrap:wrap;">
-  <select id="docLangSel" style="background:#1a1a1a;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;">
-    <option value="">— Sprache wählen —</option>
-    <option value="hu">Ungarisch</option>
-    <option value="en">Englisch</option>
-    <option value="fr">Französisch</option>
-    <option value="it">Italienisch</option>
-    <option value="es">Spanisch</option>
-    <option value="pl">Polnisch</option>
-    <option value="cs">Tschechisch</option>
-    <option value="ru">Russisch</option>
-    <option value="tr">Türkisch</option>
-    <option value="hr">Kroatisch</option>
-    <option value="sk">Slowakisch</option>
-    <option value="sl">Slowenisch</option>
-    <option value="ro">Rumänisch</option>
-    <option value="uk">Ukrainisch</option>
-    <option value="sr">Serbisch</option>
-    <option value="el">Griechisch</option>
-    <option value="bs">Bosnisch</option>
-    <option value="sq">Albanisch</option>
-  </select>
-  <button id="docTranslateBtn" style="background:#e8c547;color:#111;border:none;padding:10px 18px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">🌐 Übersetzen</button>
-  <span id="docTransStatus" style="font-size:12px;color:#666;"></span>
-</div>
-
-<script>
-document.getElementById("docTranslateBtn").addEventListener("click", async () => {
-  const lang = document.getElementById("docLangSel").value;
-  if (!lang) { alert("Bitte zuerst eine Sprache wählen."); return; }
-  const status = document.getElementById("docTransStatus");
-  status.textContent = "Übersetze…";
-  const elements = document.querySelectorAll("p, .card-text, .step-text, .hint, li");
-  let done = 0;
-  for (const el of elements) {
-    const text = el.innerText.trim();
-    if (!text || text.length < 3) continue;
-    try {
-      const url = "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(text) + "&langpair=de|" + lang;
-      const res = await fetch(url);
-      const data = await res.json();
-      if (data.responseData && data.responseData.translatedText) {
-        el.innerText = data.responseData.translatedText;
-      }
-    } catch {}
-    done++;
-    status.textContent = done + " Abschnitte übersetzt…";
-    await new Promise(r => setTimeout(r, 100));
-  }
-  status.textContent = "✓ Fertig";
-});
-</script>
 <h2>Die Geschichte beginnt mit einer Ungerechtigkeit</h2>
-<p>SayHi war eine App die Menschen verband. Einfach, präzise, menschlich. Amazon kaufte sie — nicht um sie weiterzuentwickeln, sondern um sie zu eliminieren. Millionen Nutzer verloren ein Werkzeug das ihnen gehörte. Keine Erklärung. Kein Nachfolger. Einfach weg.</p>
-<p>Das ist die Macht der Konzerne: kaufen, auslöschen, kontrollieren.</p>
+<p>SayHi war eine App, die Menschen verband. Einfach, präzise, menschlich. Amazon kaufte sie — nicht um sie weiterzuentwickeln, sondern um sie zu eliminieren.</p>
+<p>Millionen Nutzer verloren ein Werkzeug, das ihnen gehörte. Keine Erklärung. Kein Nachfolger. Einfach weg.</p>
+<p>Ich habe das damals nicht vergessen.</p>
 
 <hr>
 
 <h2>Die Antwort</h2>
-<p>Ich habe mit Claude eine App gebaut die Amazon nicht noch einmal eliminieren kann.</p>
-<p>Nicht weil sie besser finanziert ist. Nicht weil sie einen mächtigen Konzern im Rücken hat. Sondern weil sie <strong>dezentral</strong> ist.</p>
-<p><strong>ThiLo! Babel</strong> lebt nicht in einem Rechenzentrum das man kaufen kann. Es lebt in den Händen seiner Nutzer. Im Browser. Im Code. In der Community.</p>
+<p>Ich habe eine App gebaut, die Amazon nicht noch einmal eliminieren kann.</p>
+<p>Nicht weil sie besser finanziert ist. Nicht weil ein mächtiger Konzern hinter ihr steht. Sondern weil sie <em>dezentral</em> ist.</p>
+<p><strong>ThiLo! Babel</strong> lebt nicht in einem Rechenzentrum, das man kaufen kann. Es lebt in den Händen seiner Nutzer. Im Browser. Im Code. In der Gemeinschaft.</p>
 
 <hr>
 
@@ -107,21 +82,21 @@ document.getElementById("docTranslateBtn").addEventListener("click", async () =>
 
 <div class="feature">
   <div class="feature-title">Dezentrale Macht</div>
-  <div class="feature-text">Kein einziger Punkt den man kaufen und stilllegen kann. Der Code gehört allen. Die App läuft überall.</div>
+  <div class="feature-text">Kein einziger Punkt, den man kaufen und stilllegen kann. Der Code gehört allen. Die App läuft überall.</div>
 </div>
 
 <div class="feature">
-  <div class="feature-title">Open Source</div>
+  <div class="feature-title">Offener Code</div>
   <div class="feature-text">Selbst wenn heute alle Server verschwänden — der Code lebt weiter. In jedem Gerät. In jedem Nutzer.</div>
 </div>
 
 <div class="feature">
   <div class="feature-title">Schwarmintelligenz</div>
-  <div class="feature-text">30 Nutzer heute. 3.000 morgen. Jeder ein Multiplikator. Jeder ein Knotenpunkt. Ein Schwarm hat kein Zentrum das man treffen kann.</div>
+  <div class="feature-text">Heute eine Handvoll Nutzer. Morgen tausend. Jeder ein Multiplikator. Jeder ein Knotenpunkt. Ein Schwarm hat kein Zentrum, das man treffen kann.</div>
 </div>
 
 <div class="feature">
-  <div class="feature-title">Deine KI gehört dir</div>
+  <div class="feature-title">Deine KI gehört Dir</div>
   <div class="feature-text">Nicht Amazons KI. Nicht Googles KI. Dein Wissen. Deine Geschichte. Deine KI. ThiLo! nutzt die globale Stärke der Cloud für lokale, persönliche Souveränität.</div>
 </div>
 
@@ -130,22 +105,68 @@ document.getElementById("docTranslateBtn").addEventListener("click", async () =>
 <h2>Das Prinzip</h2>
 <blockquote><p>Globale Intelligenz für lokale Souveränität.</p></blockquote>
 <p>Wir verbinden das Beste aus zwei Welten: die Kraft des globalen Netzes mit der Freiheit des Einzelnen.</p>
-<p>Das ist kein Zufall. Das ist Synenergy. Das kleine <strong>e</strong> — unsichtbar, aber alles verbindend.</p>
+<p>Das ist kein Zufall. Das ist <em>Synenergy</em>. Das kleine <em>e</em> — im Schriftzug der ThiLo!-Familie das unsichtbare, aber alles verbindende Element.</p>
+
+<hr>
+
+<h2>Was ThiLo! wirklich ist</h2>
+
+<div class="haltung">
+  <p>ThiLo! ist keine Firma. Es ist eine <strong>Haltung</strong>.</p>
+  <p>Eine KI, die <strong>denkt, statt zu sprechen</strong>. Eine, die zuhört, bis man sie fragt. Eine, die dem Menschen dient — nicht einem Konzern.</p>
+  <p>Das Wissen gehört dem Menschen. Die Maschine dient — sie herrscht nicht. Und Wissen wächst durch Zusammenarbeit, nicht durch Extraktion.</p>
+  <p>Das ist die Idee, die nicht käuflich ist. Und die man nicht auslöschen kann.</p>
+</div>
+
+<hr>
+
+<h2>Die Finanzierung</h2>
+<p>ThiLo! nutzt die <strong>g&amp;g-Methode</strong> — <em>get &amp; give</em>.</p>
+<p>Es gibt in der ThiLo!-Familie nur <strong>Vollversionen</strong>. Keine Abos. Keine Einschränkungen. Alles funktioniert dezentral.</p>
+
+<blockquote><p>Die Gegenleistung ist die Weitergabe.</p></blockquote>
+
+<p>Wer zufrieden ist, zeigt anderen Menschen, warum ThiLo! Sinn macht. Diese Weitergabe der Idee ist das, was ich als Entwickler erwarte — nicht Geld. So entsteht ein Schwarm: jeder für sich, und doch in der Idee vereint.</p>
+<p>Wer mehr will, steigt auf <strong>Pro</strong> um. Wer mit der <strong>Basis</strong> zufrieden ist, bleibt bei der kostenlosen Version. So bleibt der Code lebendig — und wird für beide Versionen weiterentwickelt.</p>
+
+<hr>
+
+<h2>Wer das schreibt</h2>
+
+<div class="persoenlich">
+  <p>Ich bin Rudolf Grothusen. Ich bin Problemlöser seit vielen Jahren. Ich löse sie nicht, um reich zu werden. Ich löse sie, weil mir das Freude macht — und weil ich glaube, dass andere dieselben Probleme haben und sich ebenfalls über deren Lösung freuen.</p>
+  <p>Babel entstand für die zwei Stunden Fahrt nach Ungarn. Ich wollte Vokabeln lernen, während ich fuhr. Aus diesem kleinen Bedürfnis ist etwas Größeres geworden.</p>
+  <p>Dieses Manifest ist keine Ankündigung. Es ist eine Einladung.</p>
+  <div class="unterzeichner">Mag. Rudolf Grothusen · Krensdorf, Österreich · 2026</div>
+</div>
 
 <hr>
 
 <h2>An die Konzerne</h2>
 <p>Ihr könnt eine App kaufen. Ihr könnt einen Server abschalten. Ihr könnt einen Gründer aufkaufen.</p>
-<p>Aber ihr könnt keine Idee kaufen die bereits in tausend Händen lebt.</p>
+<p>Aber ihr könnt keine Idee kaufen, die bereits in tausend Händen lebt.</p>
 
 <div class="final">
   <p>ThiLo! gehört allen — oder es gehört niemandem.</p>
   <div class="sub">Und genau deshalb kann es niemand nehmen.</div>
 </div>
 
+<hr>
+
+<h2>Und jetzt Du</h2>
+
+<div class="einladung">
+  <p class="kernsatz">Dies ist kein Aufruf zum Kauf. Es ist eine Einladung zur Weitergabe.</p>
+  <p>Wenn dir ThiLo! hilft, dann gib es weiter. An einen Menschen, der es brauchen kann. An jemanden, dem es eine Tür öffnet. An jemanden, der die Idee weiterträgt.</p>
+  <p>So wächst der Schwarm. Nicht durch Werbung. Nicht durch Investitionen. Sondern durch Menschen, die etwas gefunden haben, das ihnen hilft — und die es weitergeben wollen.</p>
+</div>
+
+<div class="slogan">Think Local. Synenergy.</div>
+
 <div class="author">
   Mag. Rudolf Grothusen, Krensdorf 2026<br>
-  ThiLo! — Think Local. Synenergy.
+  ThiLo! — Think Local. Synenergy.<br>
+  <a href="mailto:synenergy1963@gmail.com" style="color:#555">synenergy1963@gmail.com</a>
 </div>
 
 </body>

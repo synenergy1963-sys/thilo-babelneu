@@ -28,21 +28,9 @@
   select.lang-gold { border-color: #e8c547; color: #e8c547; }
   select.lang-blue { border-color: #47a8e8; color: #47a8e8; }
   select option { background: #1a1a1a; }
-  /* Kernsatz: Der KI-Knopf ersetzt den verwirrenden alten Swap-Knopf (Sprecher tauschen
-     nie ihre Rollen). Drei Zustände, alle in Blau, nur die Intensität unterscheidet sie —
-     Grün ist im Lernmodus-Feedback schon belegt. Kontext "atmet" per Puls, weil er aktiv
-     mithört. Nur in Pro sichtbar (data-pro-only); Basic hat an dieser Stelle keinen Knopf. */
-  .ki-btn { background: #1a1a1a; border: 1px solid #2a2a2a; width: 40px; height: 40px;
-    border-radius: 10px; font-size: 18px; display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; cursor: pointer; transition: all 0.2s; }
-  .ki-btn.aus { color: #556; border-color: #2a2a2a; }
-  .ki-btn.an { color: #47a8e8; border-color: #47a8e8; }
-  .ki-btn.kontext { color: #47a8e8; border-color: #47a8e8;
-    box-shadow: 0 0 8px rgba(71, 168, 232, 0.5); animation: ki-pulse 2s ease-in-out infinite; }
-  @keyframes ki-pulse {
-    0%, 100% { box-shadow: 0 0 6px rgba(71, 168, 232, 0.4); }
-    50%      { box-shadow: 0 0 12px rgba(71, 168, 232, 0.75); }
-  }
+  .swapbtn { background: #1a1a1a; border: 1px solid #2a2a2a; color: #888; width: 40px; height: 40px;
+    border-radius: 10px; cursor: pointer; font-size: 18px; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; }
 .anchorbtn { background: #1a1a1a; border: 1px solid #2a2a2a; color: #e8c547; width: 40px; height: 40px;
     border-radius: 10px; cursor: pointer; font-size: 18px; display: flex; align-items: center;
     justify-content: center; flex-shrink: 0; }
@@ -424,7 +412,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <div><div>ThiLo! Manifest</div><div class="mi-sub" data-i18n="manifestSub">Philosophie & Seele von ThiLo!</div></div>
     </a>
     <!-- **Rudolf sieht am Gerät sofort, welche Fassung gerade läuft.** -->
-<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel Pro</span> · Stand: 07.10.2026, 01:50 · Basis Babel v1.10</div>
+<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel Pro</span> · Stand: 06.10.2026, 13:34 · Basis Babel v1.10</div>
     <div style="text-align:center;margin-top:10px;">
       <a href="https://www.netlify.com" target="_blank">
         <img src="https://www.netlify.com/v3/img/components/netlify-color-accent.svg" alt="Hosted on Netlify" style="height:20px;opacity:0.4;">
@@ -437,7 +425,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
   <div class="langbar">
     <select id="langA" class="lang-gold"></select>
     <button class="anchorbtn" id="anchorBtn" title="Ankersprache setzen" data-pro-only>⚓</button>
-    <button class="ki-btn aus" id="kiBtn" title="KI-Übersetzung: aus" data-pro-only>🧠</button>
+    <button class="swapbtn" id="swapBtn">⇄</button>
     <select id="langB" class="lang-blue"></select>
   </div>
 
@@ -619,72 +607,6 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
    Netzwerkfehler beim allerersten Laden), darf die App nicht komplett sterben, nur weil eine
    Statuszeile leer bleibt. Funktion: Prüft, ob die externen Funktionen existieren; wenn nicht,
    ersetzt sie leise durch ungefährliche Platzhalter, bevor irgendein anderer Code sie aufruft. */
-// Kernsatz: Rudolf will, dass Babel wie der Rest von ThiLo auf IndexedDB läuft,
-// nicht mehr auf localStorage — aber ohne jede der rund 55 bestehenden Lese-/
-// Schreibstellen im Code einzeln auf async umzubauen.
-// Funktion: Beim Start wird der komplette Bestand einmalig synchron in einen
-// Cache geladen (inkl. einmaliger Übernahme von Alt-Daten aus localStorage,
-// falls IndexedDB für einen Schlüssel noch leer ist). idbGet/idbSet/idbRemove
-// haben danach exakt dieselbe Signatur wie die bisherigen localStorage-Methoden
-// und liefern sofort zurück — nur geschrieben wird im Hintergrund nach IndexedDB.
-const IDB_NAME = "thilo-babel-db";
-const IDB_STORE = "kv";
-let idbDb = null;
-let idbCache = {};
-
-function idbOeffnen() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(IDB_NAME, 1);
-    req.onupgradeneeded = () => req.result.createObjectStore(IDB_STORE);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-async function idbCacheLaden() {
-  try {
-    idbDb = await idbOeffnen();
-    await new Promise((resolve, reject) => {
-      const tx = idbDb.transaction(IDB_STORE, "readonly");
-      const req = tx.objectStore(IDB_STORE).openCursor();
-      req.onsuccess = (ev) => {
-        const cursor = ev.target.result;
-        if (cursor) { idbCache[cursor.key] = cursor.value; cursor.continue(); }
-        else resolve();
-      };
-      req.onerror = () => reject(req.error);
-    });
-  } catch (e) {
-    console.warn("ThiLo! Babel: IndexedDB nicht verfügbar, Daten bleiben nur im Speicher dieser Sitzung.", e);
-  }
-
-  // Einmalige Übernahme von Alt-Daten aus localStorage (von vor der Umstellung
-  // auf IndexedDB) — nur für Schlüssel, die in IndexedDB noch nicht existieren.
-  try {
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (!(k in idbCache)) {
-        idbCache[k] = localStorage.getItem(k);
-        idbSetPersist(k, idbCache[k]);
-      }
-    }
-  } catch {}
-}
-
-function idbSetPersist(key, value) {
-  if (!idbDb) return;
-  try { idbDb.transaction(IDB_STORE, "readwrite").objectStore(IDB_STORE).put(value, key); }
-  catch (e) { console.warn("ThiLo! Babel: IndexedDB-Schreibfehler", key, e); }
-}
-function idbGet(key) { return key in idbCache ? idbCache[key] : null; }
-function idbSet(key, value) { idbCache[key] = value; idbSetPersist(key, value); }
-function idbRemove(key) {
-  delete idbCache[key];
-  if (!idbDb) return;
-  try { idbDb.transaction(IDB_STORE, "readwrite").objectStore(IDB_STORE).delete(key); }
-  catch (e) { console.warn("ThiLo! Babel: IndexedDB-Löschfehler", key, e); }
-}
-
 if (typeof applyUILanguage !== "function") {
   console.warn("ThiLo! Babel: ui-strings.js nicht geladen — Menü bleibt beim eingebauten Deutsch.");
   window.applyUILanguage = function () {};
@@ -699,12 +621,6 @@ if (typeof tb !== "function") {
 }
 </script>
 <script>
-// Kernsatz: Der komplette restliche App-Code darf erst laufen, nachdem der
-// IndexedDB-Cache geladen ist — sonst läsen frühe Zeilen (Sprachprofile,
-// Ankersprache, API-Keys …) noch einen leeren Cache.
-(async () => {
-await idbCacheLaden();
-
 const LANGS = [
   { code: "de-DE", name: "Deutsch" },
   { code: "hu-HU", name: "Ungarisch" },
@@ -742,13 +658,13 @@ document.querySelectorAll("[data-appname]").forEach(el => { el.textContent = APP
 const LANG_PREF_KEY = "thilo-babel-langs";
 function loadLangPrefs() {
   try {
-    const raw = idbGet(LANG_PREF_KEY);
+    const raw = localStorage.getItem(LANG_PREF_KEY);
     if (raw) return JSON.parse(raw);
   } catch {}
   return null;
 }
 function saveLangPrefs() {
-  try { idbSet(LANG_PREF_KEY, JSON.stringify({ langA, langB })); } catch {}
+  try { localStorage.setItem(LANG_PREF_KEY, JSON.stringify({ langA, langB })); } catch {}
 }
 const _savedLangs = loadLangPrefs();
 let langA = _savedLangs ? _savedLangs.langA : "de-DE";
@@ -765,10 +681,10 @@ const ANCHOR_KEY = "thilo-babel-anchor";
 // nur beim Import wäre die Abweichung gewesen, nicht dieser feste Wert hier.
 const DE_FIELD_LANG = "de-DE";
 function loadAnchor() {
-  try { return idbGet(ANCHOR_KEY); } catch { return null; }
+  try { return localStorage.getItem(ANCHOR_KEY); } catch { return null; }
 }
 function saveAnchor(langCode) {
-  try { idbSet(ANCHOR_KEY, langCode); } catch {}
+  try { localStorage.setItem(ANCHOR_KEY, langCode); } catch {}
 }
 let anchorLang = loadAnchor();
 if (anchorLang) applyUILanguage(anchorLang); // Menüsprache wie beim letzten Mal (Ankersprache bleibt fix)
@@ -777,8 +693,8 @@ document.getElementById("uiModeBBtn").addEventListener("click", toggleUIModeB);
 
 // ============ Symbolmodus: Knöpfe zeigen nur Icons, kein Wort in keiner Sprache ============
 const SYMBOL_MODE_KEY = "thilo-babel-symbol-mode";
-function loadSymbolMode() { try { return idbGet(SYMBOL_MODE_KEY) === "1"; } catch { return false; } }
-function saveSymbolMode(on) { try { idbSet(SYMBOL_MODE_KEY, on ? "1" : "0"); } catch {} }
+function loadSymbolMode() { try { return localStorage.getItem(SYMBOL_MODE_KEY) === "1"; } catch { return false; } }
+function saveSymbolMode(on) { try { localStorage.setItem(SYMBOL_MODE_KEY, on ? "1" : "0"); } catch {} }
 function applySymbolMode(on) {
   document.body.classList.toggle("symbols-only", on);
   const btn = document.getElementById("symbolModeBtn");
@@ -993,17 +909,17 @@ const WARN_AT = 40000;
 
 function getLimitData() {
   const today = new Date().toISOString().slice(0,10);
-  if (idbGet(LIMIT_DATE_KEY) !== today) {
-    idbSet(LIMIT_DATE_KEY, today);
-    idbSet(LIMIT_KEY, "0");
+  if (localStorage.getItem(LIMIT_DATE_KEY) !== today) {
+    localStorage.setItem(LIMIT_DATE_KEY, today);
+    localStorage.setItem(LIMIT_KEY, "0");
     return 0;
   }
-  return parseInt(idbGet(LIMIT_KEY) || "0", 10);
+  return parseInt(localStorage.getItem(LIMIT_KEY) || "0", 10);
 }
 
 function addLimitChars(n) {
   const used = getLimitData() + n;
-  idbSet(LIMIT_KEY, String(used));
+  localStorage.setItem(LIMIT_KEY, String(used));
   if (used >= DAILY_LIMIT) {
     setStatus(tb('dailyLimitReached'));
   } else if (used >= WARN_AT) {
@@ -1024,7 +940,7 @@ async function libreTranslate(text, from, to) {
 }
 
 // ============ PRO: ÜBERSETZUNG mit eigenem Google-Key (direkt aus dem Browser) ============
-// Der Key liegt nur in der IndexedDB dieses Browsers, wird nie exportiert und nie an einen
+// Der Key liegt nur im localStorage dieses Browsers, wird nie exportiert und nie an einen
 // eigenen Server gesendet. Die Anfrage geht direkt vom Gerät an Google (Cloud Translation v2).
 const PRO_KEY_STORE = "thilo-babel-pro-google-key";
 const PRO_CHARS_PREFIX = "thilo-babel-pro-google-chars-";
@@ -1032,20 +948,20 @@ let lastService = "";
 let lastGoogleError = "";
 
 function getProKey() {
-  try { return (idbGet(PRO_KEY_STORE) || "").trim(); } catch { return ""; }
+  try { return (localStorage.getItem(PRO_KEY_STORE) || "").trim(); } catch { return ""; }
 }
 function saveProKey(k) {
-  try { idbSet(PRO_KEY_STORE, k); return true; } catch { return false; }
+  try { localStorage.setItem(PRO_KEY_STORE, k); return true; } catch { return false; }
 }
 function deleteProKey() {
-  try { idbRemove(PRO_KEY_STORE); } catch {}
+  try { localStorage.removeItem(PRO_KEY_STORE); } catch {}
 }
 function proCharsKey() { return PRO_CHARS_PREFIX + new Date().toISOString().slice(0, 7); }
 function getProChars() {
-  try { return parseInt(idbGet(proCharsKey()) || "0", 10) || 0; } catch { return 0; }
+  try { return parseInt(localStorage.getItem(proCharsKey()) || "0", 10) || 0; } catch { return 0; }
 }
 function addProChars(n) {
-  try { idbSet(proCharsKey(), String(getProChars() + n)); } catch {}
+  try { localStorage.setItem(proCharsKey(), String(getProChars() + n)); } catch {}
 }
 
 async function googleRequest(key, text, src, tgt) {
@@ -1236,8 +1152,21 @@ function stopRec() {
   updateButtons();
 }
 
+function swap() {
+  const tmp = langA;
+  langA = langB;
+  langB = tmp;
+  langSelA.value = langA;
+  langSelB.value = langB;
+  saveLangPrefs();
+  renderLabels();
+  setHeard("A", ""); setHeard("B", "");
+  setTrans("A", ""); setTrans("B", "");
+}
+
 langSelA.addEventListener("change", e => { langA = e.target.value; renderLabels(); saveLangPrefs(); });
 langSelB.addEventListener("change", e => { langB = e.target.value; renderLabels(); saveLangPrefs(); });
+document.getElementById("swapBtn").addEventListener("click", swap);
 micA.addEventListener("click", () => recording === "A" ? stopRec() : startRec("A"));
 micB.addEventListener("click", () => recording === "B" ? stopRec() : startRec("B"));
 goA.addEventListener("click", () => translateAndSpeak("A"));
@@ -1356,29 +1285,6 @@ if (!IST_PRO) {
 document.getElementById("autoTranslateSub").textContent =
   "Aus (Standard): keine automatischen Anfragen beim Öffnen/Filtern/Lernen"
   + (IST_PRO ? " — nur localize! übersetzt" : "");
-
-// Kernsatz: Der KI-Knopf (nur Pro, data-pro-only) schaltet reihum durch drei
-// Zustände — aus → an → kontext → aus. Die eigentliche KI-Anbindung (Kontext-
-// und Alternativübersetzung) ist noch nicht gebaut, das hier ist nur der
-// vorbereitete Schalter samt gespeichertem Zustand.
-const KI_MODUS_KEY = "thilo-babel-ki-modus";
-const KI_MODI = ["aus", "an", "kontext"];
-const KI_TITEL = { aus: "KI-Übersetzung: aus", an: "KI-Übersetzung: an", kontext: "KI-Übersetzung: an mit Kontext" };
-function ladeKiModus() { return idbGet(KI_MODUS_KEY) || "aus"; }
-function setzeKiModus(modus) {
-  idbSet(KI_MODUS_KEY, modus);
-  const btn = document.getElementById("kiBtn");
-  KI_MODI.forEach(m => btn.classList.remove(m));
-  btn.classList.add(modus);
-  btn.title = KI_TITEL[modus];
-}
-if (IST_PRO) {
-  setzeKiModus(ladeKiModus());
-  document.getElementById("kiBtn").addEventListener("click", () => {
-    const naechster = KI_MODI[(KI_MODI.indexOf(ladeKiModus()) + 1) % KI_MODI.length];
-    setzeKiModus(naechster);
-  });
-}
 
 
 // --- Wiederholbutton ---
@@ -1510,36 +1416,36 @@ const NOTES_VISIBLE_KEY = "thilo-babel-notes-visible";
 // Änderung 2, Auftrag 21.9.2026: Anzeige übersetzt nicht mehr automatisch, Standard aus.
 const AUTO_TRANSLATE_KEY = "thilo-babel-auto-translate-anzeige";
 function autoTranslateAnzeige() {
-  try { return idbGet(AUTO_TRANSLATE_KEY) === "1"; } catch { return false; }
+  try { return localStorage.getItem(AUTO_TRANSLATE_KEY) === "1"; } catch { return false; }
 }
 function setAutoTranslateAnzeige(an) {
-  try { idbSet(AUTO_TRANSLATE_KEY, an ? "1" : "0"); } catch {}
+  try { localStorage.setItem(AUTO_TRANSLATE_KEY, an ? "1" : "0"); } catch {}
 }
 
 function eintraegeKey(treasure, art) { return EINTRAG_PREFIX + treasure + "-" + art; }
 function loadTreasure(treasure, art) {
-  try { return JSON.parse(idbGet(eintraegeKey(treasure, art))) || []; } catch { return []; }
+  try { return JSON.parse(localStorage.getItem(eintraegeKey(treasure, art))) || []; } catch { return []; }
 }
 function saveTreasure(treasure, art, list) {
-  try { idbSet(eintraegeKey(treasure, art), JSON.stringify(list)); } catch {}
+  try { localStorage.setItem(eintraegeKey(treasure, art), JSON.stringify(list)); } catch {}
 }
 function activeKey(art) { return ACTIVE_TREASURES_KEY + "-" + art; }
 function loadActiveTreasures(art) {
   try {
-    const raw = idbGet(activeKey(art));
+    const raw = localStorage.getItem(activeKey(art));
     if (raw) return JSON.parse(raw);
   } catch {}
   return ["main", "manual"];
 }
 function saveActiveTreasures(art, list) {
-  try { idbSet(activeKey(art), JSON.stringify(list)); } catch {}
+  try { localStorage.setItem(activeKey(art), JSON.stringify(list)); } catch {}
 }
 function metaKey(art) { return TREASURES_META_KEY + "-" + art; }
 function loadTreasureMeta(art) {
-  try { return JSON.parse(idbGet(metaKey(art))) || {}; } catch { return {}; }
+  try { return JSON.parse(localStorage.getItem(metaKey(art))) || {}; } catch { return {}; }
 }
 function saveTreasureMeta(art, meta) {
-  try { idbSet(metaKey(art), JSON.stringify(meta)); } catch {}
+  try { localStorage.setItem(metaKey(art), JSON.stringify(meta)); } catch {}
 }
 
 function loadAllEintraege(art) {
@@ -1578,10 +1484,10 @@ function deleteEintragById(id, art) {
 
 // ---------- Kategorien (pro art getrennt, gleiche Funktionen) ----------
 function loadCats(art) {
-  try { return JSON.parse(idbGet(CATS_PREFIX + art)) || []; } catch { return []; }
+  try { return JSON.parse(localStorage.getItem(CATS_PREFIX + art)) || []; } catch { return []; }
 }
 function saveCats(art, cats) {
-  try { idbSet(CATS_PREFIX + art, JSON.stringify(cats)); } catch {}
+  try { localStorage.setItem(CATS_PREFIX + art, JSON.stringify(cats)); } catch {}
 }
 function ensureCat(art, cat) {
   if (!cat) return;
@@ -1603,7 +1509,7 @@ function refreshCatSelect(art, selectEl) {
 
 // ---------- Einmalige Migration aus dem alten, getrennten Speicherformat (vor v4) ----------
 function migriereAlteDaten() {
-  if (idbGet("thilo-babel-migrated-v4")) return;
+  if (localStorage.getItem("thilo-babel-migrated-v4")) return;
 
   // 1) Vokabel-Schätze: thilo-babel-vocab-<treasure> -> thilo-babel-eintraege-<treasure>-vokabel
   const keysToRemove = [];
@@ -1660,7 +1566,7 @@ function migriereAlteDaten() {
   localStorage.removeItem("thilo-babel-vocab-cats");
   localStorage.removeItem("thilo-babel-vocab-trans");
 
-  idbSet("thilo-babel-migrated-v4", "1");
+  localStorage.setItem("thilo-babel-migrated-v4", "1");
 }
 migriereAlteDaten();
 
@@ -1670,7 +1576,7 @@ migriereAlteDaten();
 // jede Art jetzt ihren eigenen Speicher-Key, ihre eigene Aktiv-Liste, ihre eigenen Metadaten.
 // Diese Migration läuft für alle, die schon auf dem gemischten v4-Format gespeichert hatten.
 function migriereAufGetrennteSchaetze() {
-  if (idbGet("thilo-babel-migrated-v5")) return;
+  if (localStorage.getItem("thilo-babel-migrated-v5")) return;
 
   // 1) Gemischte thilo-babel-eintraege-<treasure> (ohne -vokabel/-phrase-Suffix) aufteilen
   const combinedKeys = [];
@@ -1715,7 +1621,7 @@ function migriereAufGetrennteSchaetze() {
   } catch {}
   localStorage.removeItem(TREASURES_META_KEY);
 
-  idbSet("thilo-babel-migrated-v5", "1");
+  localStorage.setItem("thilo-babel-migrated-v5", "1");
 }
 migriereAufGetrennteSchaetze();
 
@@ -1783,10 +1689,10 @@ function getZielText(v) {
 
 // ---------- Anzeige/Übersetzung on-demand (ein Pfad für beide Arten) ----------
 function loadTransCache() {
-  try { return JSON.parse(idbGet(TRANS_CACHE_KEY)) || {}; } catch { return {}; }
+  try { return JSON.parse(localStorage.getItem(TRANS_CACHE_KEY)) || {}; } catch { return {}; }
 }
 function saveTransCache(cache) {
-  try { idbSet(TRANS_CACHE_KEY, JSON.stringify(cache)); } catch {}
+  try { localStorage.setItem(TRANS_CACHE_KEY, JSON.stringify(cache)); } catch {}
 }
 
 async function getEintragDisplay(v, targetLang) {
@@ -1858,12 +1764,12 @@ async function getEintragDisplay(v, targetLang) {
 // ---------- Notes-Toggle (global, gilt für Vokabeln UND Phrasen) ----------
 function notesSichtbar() {
   try {
-    const raw = idbGet(NOTES_VISIBLE_KEY);
+    const raw = localStorage.getItem(NOTES_VISIBLE_KEY);
     return raw === null ? true : raw === "true";
   } catch { return true; }
 }
 function setNotesSichtbar(sichtbar) {
-  try { idbSet(NOTES_VISIBLE_KEY, sichtbar ? "true" : "false"); } catch {}
+  try { localStorage.setItem(NOTES_VISIBLE_KEY, sichtbar ? "true" : "false"); } catch {}
   updateNotesToggleBtn();
 }
 function updateNotesToggleBtnFor(id) {
@@ -2361,7 +2267,7 @@ function renderTreasureListFor(containerId, art) {
       // Löscht nur diese Art dieses Schatzes — die andere Art (falls vorhanden) bleibt unberührt,
       // da Vokabel- und Phrasenschätze eigene, unabhängige Schätze sind.
       if (!confirm(tb('deleteEntryConfirm', labelPlural(art), t))) return;
-      idbRemove(eintraegeKey(t, art));
+      localStorage.removeItem(eintraegeKey(t, art));
       const m2 = loadTreasureMeta(art);
       delete m2[t];
       saveTreasureMeta(art, m2);
@@ -2396,7 +2302,7 @@ const GRUND_PHRASEN_FLAG = "thilo-babel-grundphrasen-geladen";
 function grundBtnZustand(btnId, flagKey) {
   const btn = document.getElementById(btnId);
   if (!btn) return;
-  const geladen = idbGet(flagKey) === "1";
+  const geladen = localStorage.getItem(flagKey) === "1";
   btn.disabled = geladen;
   btn.style.opacity = geladen ? "0.4" : "";
   btn.style.cursor = geladen ? "default" : "pointer";
@@ -2496,7 +2402,7 @@ document.getElementById("loadGrundvokabularBtn").addEventListener("click", () =>
   ensureCat("vokabel", "Grundvokabular");
   refreshCatSelect("vokabel", vocabCategoryInput);
   updateLocalizeBtn();
-  idbSet(GRUND_VOKABULAR_FLAG, "1");
+  localStorage.setItem(GRUND_VOKABULAR_FLAG, "1");
   grundBtnZustand("loadGrundvokabularBtn", GRUND_VOKABULAR_FLAG);
   renderListe("vokabel");
   setStatus(tb('baseVocabLoaded', added));
@@ -2568,7 +2474,7 @@ document.getElementById("loadGrundphrasenBtn").addEventListener("click", async (
   GRUNDPHRASEN.forEach(g => ensureCat("phrase", g.cat));
   refreshOwnPhraseCats();
   updateLocalizeBtn();
-  idbSet(GRUND_PHRASEN_FLAG, "1");
+  localStorage.setItem(GRUND_PHRASEN_FLAG, "1");
   grundBtnZustand("loadGrundphrasenBtn", GRUND_PHRASEN_FLAG);
   renderListe("phrase");
   setStatus(tb('basePhrasesLoaded', added));
@@ -3088,7 +2994,12 @@ updateAnchorBtn();
 if ("serviceWorker" in navigator && (location.protocol === "http:" || location.protocol === "https:")) {
   window.addEventListener("load", () => { navigator.serviceWorker.register("./sw.js").catch(() => {}); });
 }
+</script>
 
+
+
+<!-- **Die private Entwicklerseite zählt keine Besucher: hier steht bewusst kein Statistik-Skript.** -->
+<script>
 // (Statistik-Skript im Pro-Projekt bewusst entfernt: private Entwicklerseite)
 
 // ============ SPRACH-SPEZIFISCHER EXPORT/IMPORT ============
@@ -3275,7 +3186,7 @@ function importMyData(file) {
           meldungen.push(tb('importedSummary', level, treasure, labelPlural(art), neueEintraege.length));
         });
 
-        idbRemove(TRANS_CACHE_KEY);
+        localStorage.removeItem(TRANS_CACHE_KEY);
         setStatus(meldungen.join("  "));
         if (irgendwasImportiert) setTimeout(() => location.reload(), 1500);
         resolve(irgendwasImportiert ? data : null);
@@ -3322,7 +3233,6 @@ function wireExportImportButtons() {
 createDataFileInput();
 wireExportImportButtons();
 
-})();
 </script>
 
 </body>
