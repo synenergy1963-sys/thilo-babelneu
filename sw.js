@@ -4,7 +4,7 @@
 // bei jedem Deploy erhöht (v1 -> v2 -> v3 ...), damit der alte Cache beim
 // Aktivieren der neuen Version verworfen wird.
 
-const CACHE = "thilo-babel-basic-v3";
+const CACHE = "thilo-babel-basic-v4";
 const SHELL = [
   "/", "/index.html", "/manifest.json", "/coping-phrasen.txt",
   "/icons/favicon-48.png", "/icons/apple-touch-icon.png", "/icons/logo-144.png",

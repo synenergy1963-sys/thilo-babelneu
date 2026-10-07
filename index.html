@@ -424,7 +424,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <div><div>ThiLo! Manifest</div><div class="mi-sub" data-i18n="manifestSub">Philosophie & Seele von ThiLo!</div></div>
     </a>
     <!-- **Rudolf sieht am Gerät sofort, welche Fassung gerade läuft.** -->
-<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel Pro</span> · Stand: 07.10.2026, 01:50 · Basis Babel v1.10</div>
+<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel Pro</span> · Stand: 07.10.2026, 23:49 · Basis Babel v1.10 + Hebräisch</div>
     <div style="text-align:center;margin-top:10px;">
       <a href="https://www.netlify.com" target="_blank">
         <img src="https://www.netlify.com/v3/img/components/netlify-color-accent.svg" alt="Hosted on Netlify" style="height:20px;opacity:0.4;">
@@ -725,6 +725,14 @@ const LANGS = [
   { code: "el-GR", name: "Griechisch" },
   { code: "bs-BA", name: "Bosnisch" },
   { code: "sq-AL", name: "Albanisch" },
+  // **Eine Freundin soll in Israel sowohl Vokabeln lernen als auch dolmetschen können —
+  // Hebräisch muss dafür ganz normal in der Sprachliste stehen.**
+  // Funktion: wie jede andere Sprache generisch über `code`/`name` eingebunden. Einzige
+  // Besonderheit: Hebräisch wird rechts-nach-links geschrieben, Babels Oberfläche ist (wie
+  // bei allen anderen Sprachen) nicht für RTL ausgelegt — Text bleibt lesbar, nur nicht
+  // spiegelverkehrt ausgerichtet. Siehe sprachcodeFuerSpracherkennung() weiter unten für
+  // die he/iw-Sonderbehandlung bei Spracherkennung und Sprachausgabe.
+  { code: "he-IL", name: "Hebräisch" },
   { code: "la", name: "Latein" },
 ];
 
@@ -738,6 +746,17 @@ const IST_PRO = false;
 const APP_NAME = IST_PRO ? "ThiLo! Babel Pro" : "ThiLo! Babel";
 document.title = APP_NAME;
 document.querySelectorAll("[data-appname]").forEach(el => { el.textContent = APP_NAME; });
+
+// **Hebräisch wird erkannt und gesprochen wie jede andere Sprache — auch wenn
+// Google-nahe Sprachdienste dafür intern noch den uralten Code "iw" statt "he" wollen.**
+// Funktion: "he" ist der moderne ISO-Code und bleibt für die Übersetzung (MyMemory/Google
+// Translate) unverändert richtig. Chromes Spracherkennungs-Backend und manche
+// Sprachausgabe-Stimmen reagieren auf Hebräisch aber nur unter dem historischen Code "iw"
+// (ISO 639-1, vor der Umbenennung). Nur an den beiden betroffenen Stellen (Erkennung,
+// Stimmen-Suche) wird deshalb zusätzlich "iw" probiert.
+function sprachcodeFuerSpracherkennung(code) {
+  return code === "he-IL" ? "iw-IL" : code;
+}
 
 const LANG_PREF_KEY = "thilo-babel-langs";
 function loadLangPrefs() {
@@ -909,15 +928,23 @@ function speak(text, langCode, onDone) {
   const selectVoiceAndSpeak = () => {
     const voices = synth.getVoices();
 
+    // **Eine installierte Hebräisch-Stimme wird gefunden, auch wenn sie unter dem alten
+    // Code "iw" statt "he" registriert ist.**
+    // Funktion: manche Systeme/Browser führen die Hebräisch-Stimme noch unter dem
+    // historischen ISO-Code "iw" (siehe sprachcodeFuerSpracherkennung weiter oben) — hier
+    // zusätzlich danach suchen, falls "he" nichts findet.
+    const kurzcode = langCode.split('-')[0].toLowerCase();
+    const alternativerKurzcode = kurzcode === "he" ? "iw" : (kurzcode === "iw" ? "he" : null);
+
     const exactVoice = voices.find(
       voice => voice.lang.toLowerCase() === langCode.toLowerCase()
     );
 
     const languageVoice = voices.find(
-      voice => voice.lang.toLowerCase().startsWith(
-        langCode.split('-')[0].toLowerCase()
-      )
-    );
+      voice => voice.lang.toLowerCase().startsWith(kurzcode)
+    ) || (alternativerKurzcode && voices.find(
+      voice => voice.lang.toLowerCase().startsWith(alternativerKurzcode)
+    ));
 
     if (exactVoice) {
       utterance.voice = exactVoice;
@@ -1201,7 +1228,7 @@ function startRec(panel) {
   const src = isA ? langA : langB;
 
   const rec = new SR();
-  rec.lang = src;
+  rec.lang = sprachcodeFuerSpracherkennung(src);
   rec.interimResults = false;
   rec.maxAlternatives = 1;
   recInstance = rec;
@@ -2857,7 +2884,7 @@ function startLearnRecognition(isAuto) {
   const feedbackLang = listenLang;
 
   const rec = new SR();
-  rec.lang = listenLang;
+  rec.lang = sprachcodeFuerSpracherkennung(listenLang);
   rec.interimResults = false;
   learnCurrentRec = rec;
   document.getElementById("learnMicBtn").classList.add("active");
