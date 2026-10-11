@@ -436,7 +436,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <div><div>ThiLo! Manifest</div><div class="mi-sub" data-i18n="manifestSub">Philosophie & Seele von ThiLo!</div></div>
     </a>
     <!-- **Rudolf sieht am Gerät sofort, welche Fassung gerade läuft.** -->
-<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel</span> · Stand: 11.10.2026, 19:40 · Basis Babel v1.10 + Hebräisch + Kontext-Export + EN/DE-Schalter (Menü + Status) + Weitergeben</div>
+<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel</span> · Stand: 12.10.2026, 01:25 · Basis Babel v1.10 + Hebräisch + Kontext-Export + EN/DE-Schalter (Menü + Status) + Weitergeben + Status-Strings verdrahtet</div>
     <div style="text-align:center;margin-top:10px;">
       <a href="https://www.netlify.com" target="_blank">
         <img src="https://www.netlify.com/v3/img/components/netlify-color-accent.svg" alt="Hosted on Netlify" style="height:20px;opacity:0.4;">
@@ -462,7 +462,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <button class="translatebtn icon-lbl-btn" id="goA"><svg class="ico-deco" width="15" height="9" viewBox="0 0 64 32" aria-hidden="true" style="flex-shrink:0"><rect x="4" y="4" width="52" height="6" rx="3" fill="#e0b84a"/><rect x="4" y="16" width="36" height="6" rx="3" fill="#e0b84a" opacity="0.7"/><rect x="4" y="28" width="44" height="4" rx="2" fill="#e0b84a" opacity="0.5"/></svg><svg class="ico-arrow" width="24" height="24" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><path d="M8 32H50" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M38 18L54 32L38 46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="ico-deco" width="15" height="9" viewBox="0 0 64 32" aria-hidden="true" style="flex-shrink:0"><rect x="4" y="4" width="52" height="6" rx="3" fill="#4a8fe0"/><rect x="4" y="16" width="36" height="6" rx="3" fill="#4a8fe0" opacity="0.7"/><rect x="4" y="28" width="44" height="4" rx="2" fill="#4a8fe0" opacity="0.5"/></svg><span class="lbl" data-i18n-b="translateLabel">Übersetzen</span></button>
       <button class="repeatbtn" id="repeatTransA" title="Übersetzung wiederholen">🔁</button>
     </div>
-    <div class="translated empty" id="transA">Übersetzung erscheint hier</div>
+    <div class="translated empty" id="transA" data-i18n-b="translationPlaceholderPanel">Übersetzung erscheint hier</div>
   </div>
 
   <div class="panel blue" id="panelB">
@@ -474,7 +474,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <button class="translatebtn icon-lbl-btn" id="goB"><svg class="ico-deco" width="15" height="9" viewBox="0 0 64 32" aria-hidden="true" style="flex-shrink:0"><rect x="4" y="4" width="52" height="6" rx="3" fill="#4a8fe0"/><rect x="4" y="16" width="36" height="6" rx="3" fill="#4a8fe0" opacity="0.7"/><rect x="4" y="28" width="44" height="4" rx="2" fill="#4a8fe0" opacity="0.5"/></svg><svg class="ico-arrow" width="24" height="24" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0"><path d="M8 32H50" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M38 18L54 32L38 46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="ico-deco" width="15" height="9" viewBox="0 0 64 32" aria-hidden="true" style="flex-shrink:0"><rect x="4" y="4" width="52" height="6" rx="3" fill="#e0b84a"/><rect x="4" y="16" width="36" height="6" rx="3" fill="#e0b84a" opacity="0.7"/><rect x="4" y="28" width="44" height="4" rx="2" fill="#e0b84a" opacity="0.5"/></svg><span class="lbl" data-i18n-b="translateLabel">Übersetzen</span></button>
       <button class="repeatbtn" id="repeatTransB" title="Übersetzung wiederholen">🔁</button>
     </div>
-    <div class="translated empty" id="transB">Übersetzung erscheint hier</div>
+    <div class="translated empty" id="transB" data-i18n-b="translationPlaceholderPanel">Übersetzung erscheint hier</div>
   </div>
 
   <div class="status" id="status"></div>
@@ -498,7 +498,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <input type="text" id="ownHu" placeholder="Übersetzung" data-i18n-ph-b="translationPlaceholder" />
       <div style="display:flex;gap:8px;align-items:center;">
         <select id="ownPhraseCat" style="flex:1;background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;">
-          <option value="" disabled selected>— Kategorie wählen —</option>
+          <option value="" disabled selected data-i18n-b="chooseCategory">— Kategorie wählen —</option>
           <option value="Eigene Phrasen">Eigene Phrasen</option>
         </select>
                <input type="text" id="ownPhraseNewCat" placeholder="Neue Kategorie…" data-i18n-ph-b="newCategoryPlaceholder" style="flex:1;background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;" />
@@ -538,7 +538,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <input type="text" id="vocabTerm" placeholder="Fremdwort eingeben (z.B. ragazza)" data-i18n-ph-b="vocabTermPlaceholder" />
       <div style="display:flex;gap:8px;align-items:center;">
         <select id="vocabCategory" style="flex:1;background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;">
-          <option value="">— Kategorie wählen —</option>
+          <option value="" data-i18n-b="chooseCategory">— Kategorie wählen —</option>
         </select>
         <input type="text" id="vocabNewCat" placeholder="Neue Kategorie…" data-i18n-ph-b="newCategoryPlaceholder" style="flex:1;background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;" />
       </div>
@@ -930,7 +930,7 @@ function setTrans(panel, text) {
     el.textContent = text;
     el.classList.remove("empty");
   } else {
-    el.textContent = "Übersetzung erscheint hier";
+    el.textContent = tb("translationPlaceholderPanel");
     el.classList.add("empty");
   }
 }
@@ -1147,7 +1147,7 @@ async function googleRequest(key, text, src, tgt) {
     throw err;
   }
   const t = data.data && data.data.translations && data.data.translations[0] && data.data.translations[0].translatedText;
-  if (!t) throw new Error("Leere Antwort von Google");
+  if (!t) throw new Error(tb("errGoogleEmpty"));
   return t;
 }
 
@@ -1155,7 +1155,7 @@ async function googleRequest(key, text, src, tgt) {
 async function googleTranslate(text, from, to, versuch) {
   versuch = versuch || 1;
   const key = getProKey();
-  if (!key) throw new Error("Kein Google-Key hinterlegt");
+  if (!key) throw new Error(tb("errNoGoogleKey"));
   try {
     const t = await googleRequest(key, text, from.split("-")[0], to.split("-")[0]);
     addProChars(text.length);
@@ -1180,7 +1180,7 @@ let translatePausedUntil = 0;
 async function doTranslate(text, from, to) {
   // Gleiche Sprache: nichts zu übersetzen, kein Aufruf (verbraucht sonst das Tageslimit)
   if (from.split("-")[0] === to.split("-")[0]) return text;
-  if (Date.now() < translatePausedUntil) throw new Error("Übersetzung pausiert (zu viele Fehler)");
+  if (Date.now() < translatePausedUntil) throw new Error(tb("errPaused"));
   try {
     const result = await doTranslateCore(text, from, to);
     translateFailStreak = 0;
@@ -1232,17 +1232,17 @@ async function doTranslateCore(text, from, to) {
   const url = "https://api.mymemory.translated.net/get?q=" +
     encodeURIComponent(text) + "&langpair=" + src + "|" + tgt + "&de=synenergy1963@gmail.com";
 
-  const limitText = "MyMemory-Tageslimit erreicht" + (getProKey() ? "" : " — Google-Key im Menü hinterlegen");
+  const limitText = tb("errDailyLimit", !!getProKey());
   const res = await fetch(url);
   if (res.status === 429) throw new Error(limitText);
-  if (!res.ok) throw new Error("Server-Fehler: " + res.status);
+  if (!res.ok) throw new Error(tb("errServer", res.status));
   const data = await res.json();
   if (data.responseStatus === 429 || (data.responseDetails && data.responseDetails.includes("MYMEMORY WARNING"))) {
     throw new Error(limitText);
   }
   const translation = data.responseData && data.responseData.translatedText;
   if (!translation || data.responseStatus !== 200) {
-    throw new Error("Keine Übersetzung erhalten.");
+    throw new Error(tb("errNoTranslation"));
   }
   lastService = googleFehler ? "MyMemory (Google-Fehler)" : "MyMemory";
   return translation;
@@ -1536,14 +1536,14 @@ document.getElementById("autoTranslateSub").textContent =
 // vorbereitete Schalter samt gespeichertem Zustand.
 const KI_MODUS_KEY = "thilo-babel-ki-modus";
 const KI_MODI = ["aus", "an", "kontext"];
-const KI_TITEL = { aus: "KI-Übersetzung: aus", an: "KI-Übersetzung: an", kontext: "KI-Übersetzung: an mit Kontext" };
+const KI_TITEL = { aus: "kiTitleAus", an: "kiTitleAn", kontext: "kiTitleKontext" }; // Schlüssel in status-strings.js
 function ladeKiModus() { return idbGet(KI_MODUS_KEY) || "aus"; }
 function setzeKiModus(modus) {
   idbSet(KI_MODUS_KEY, modus);
   const btn = document.getElementById("kiBtn");
   KI_MODI.forEach(m => btn.classList.remove(m));
   btn.classList.add(modus);
-  btn.title = KI_TITEL[modus];
+  btn.title = tb(KI_TITEL[modus]);
 }
 if (IST_PRO) {
   setzeKiModus(ladeKiModus());
@@ -1598,29 +1598,28 @@ function maskKey(k) { return k.length > 8 ? k.slice(0, 4) + "…" + k.slice(-4) 
 function refreshProKeyUI() {
   const key = getProKey();
   if (key) {
-    proKeyStatus.textContent = "✓ Key gespeichert (" + maskKey(key) + ") · Google zuerst, MyMemory als Reserve" +
-      (lastGoogleError ? " · letzter Google-Fehler: " + lastGoogleError : "");
-    proKeyUsage.textContent = "Über Google übersetzte Zeichen diesen Monat: " + getProChars().toLocaleString("de-AT");
+    proKeyStatus.textContent = tb("keySavedStatus", maskKey(key), lastGoogleError);
+    proKeyUsage.textContent = tb("googleCharsThisMonth", getProChars().toLocaleString(uiModeB === "en" ? "en-GB" : "de-AT"));
   } else {
-    proKeyStatus.textContent = "Kein Key hinterlegt · Übersetzung läuft über MyMemory (Tageslimit)";
+    proKeyStatus.textContent = tb("noKeyStatus");
     proKeyUsage.textContent = "";
   }
 }
 
 document.getElementById("proKeySaveBtn").addEventListener("click", async () => {
   const k = proKeyInput.value.trim();
-  if (!k) { proKeyStatus.textContent = "Bitte zuerst einen Key einfügen."; return; }
-  if (/\s/.test(k) || k.length < 20) { proKeyStatus.textContent = "✗ Das sieht nicht wie ein Google-API-Key aus."; return; }
-  proKeyStatus.textContent = "Prüfe Key…";
+  if (!k) { proKeyStatus.textContent = tb("keyInputEmpty"); return; }
+  if (/\s/.test(k) || k.length < 20) { proKeyStatus.textContent = tb("keyLooksWrong"); return; }
+  proKeyStatus.textContent = tb("keyChecking");
   try {
     const t = await googleRequest(k, "Hallo", "de", "en");
-    if (!saveProKey(k)) { proKeyStatus.textContent = "✗ Key konnte nicht im Browser gespeichert werden."; return; }
+    if (!saveProKey(k)) { proKeyStatus.textContent = tb("keySaveFailed"); return; }
     proKeyInput.value = "";
     lastGoogleError = "";
     refreshProKeyUI();
-    proKeyStatus.textContent = "✓ Key geprüft (Test: Hallo → " + t + ") und gespeichert (" + maskKey(k) + ")";
+    proKeyStatus.textContent = tb("keyCheckedSaved", t, maskKey(k));
   } catch (e) {
-    proKeyStatus.textContent = "✗ Key nicht akzeptiert: " + (e.message || e);
+    proKeyStatus.textContent = tb("keyRejected", e.message || e);
   }
 });
 
@@ -1765,7 +1764,7 @@ function refreshCatSelect(art, selectEl) {
   if (!selectEl) return;
   const cats = loadCats(art);
   const current = selectEl.value;
-  selectEl.innerHTML = '<option value="">— Kategorie wählen —</option>';
+  selectEl.innerHTML = '<option value="">' + tb("chooseCategory") + '</option>';
   cats.forEach(c => {
     const opt = document.createElement("option");
     opt.value = c; opt.textContent = c;
@@ -2090,14 +2089,14 @@ function buildEintragRow(v, art) {
     notesEl.style.marginTop = "3px";
     notesEl.style.cursor = "pointer";
     notesEl.style.fontStyle = v.notes ? "normal" : "italic";
-    notesEl.textContent = v.notes || "Notiz hinzufügen…";
-    notesEl.title = "Klicken zum Bearbeiten";
+    notesEl.textContent = v.notes || tb("addNote");
+    notesEl.title = tb("clickToEdit");
     notesEl.addEventListener("click", (e) => {
       e.stopPropagation();
       const input = document.createElement("input");
       input.type = "text";
       input.value = v.notes || "";
-      input.placeholder = "Notiz…";
+      input.placeholder = tb("notePlaceholder");
       input.style.width = "100%";
       input.style.background = "#111";
       input.style.border = "1px solid #555";
@@ -2170,7 +2169,7 @@ function buildEintragRow(v, art) {
   const delBtn = document.createElement("button");
   delBtn.className = "phrase-del";
   delBtn.textContent = "✕";
-  delBtn.title = LABELS[art].singular + " löschen";
+  delBtn.title = tb("itemDeleteTitle", labelSingular(art));
   delBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     deleteEintragById(v.id, art);
@@ -2215,13 +2214,13 @@ async function renderListe(art) {
   const filterInput = document.getElementById(ids.filter);
   const filter = (filterInput ? filterInput.value : "").trim().toLowerCase();
   const list = getEintraege(art);
-  listEl.innerHTML = '<div style="color:#555;font-size:13px;text-align:center;padding:20px 0;">Lade…</div>';
+  listEl.innerHTML = '<div style="color:#555;font-size:13px;text-align:center;padding:20px 0;">' + tb("loadingShort") + '</div>';
 
   const titleEl = document.getElementById(ids.title);
   if (titleEl) titleEl.textContent = LABELS[art].plural + " (" + langName(langB) + ")";
 
   if (list.length === 0) {
-    listEl.innerHTML = '<div style="color:#444;font-size:13px;font-style:italic;text-align:center;padding:20px 0;">Noch keine ' + LABELS[art].plural + ' gespeichert</div>';
+    listEl.innerHTML = '<div style="color:#444;font-size:13px;font-style:italic;text-align:center;padding:20px 0;">' + tb("noneSavedYet", labelPlural(art)) + '</div>';
     return;
   }
 
@@ -2523,12 +2522,12 @@ function renderTreasureListFor(containerId, art) {
     info.style.cssText = "margin-left:auto;color:#666;font-size:11px;";
     const m = meta[t];
     if (m) info.textContent = (m.dateiname || "") + " · " + (m.level || "");
-    else if (t === "manual") info.textContent = "manuell";
-    else info.textContent = "kein Import";
+    else if (t === "manual") info.textContent = tb("manualLabel");
+    else info.textContent = tb("noImport");
 
     const del = document.createElement("button");
     del.textContent = "🗑️";
-    del.title = LABELS[art].plural + " aus '" + t + "' löschen";
+    del.title = tb("treasureDeleteTitle", labelPlural(art), t);
     del.style.cssText = "background:none;border:1px solid #2a2a2a;color:#888;border-radius:6px;padding:2px 6px;cursor:pointer;font-size:11px;";
     del.addEventListener("click", () => {
       // Löscht nur diese Art dieses Schatzes — die andere Art (falls vorhanden) bleibt unberührt,
@@ -2894,9 +2893,9 @@ function openLearnOverlay(art) {
   learnIndex = 0;
   learnSessionMissed = [];
   updateRepeatBtn();
-  document.getElementById("learnProgress").textContent = "Bereit";
+  document.getElementById("learnProgress").textContent = tb("learnReady");
   document.getElementById("learnWord").textContent = "—";
-  document.getElementById("learnInstruction").textContent = "Wähle eine Richtung: 🤔→ oder ←🤔 (manuell) / 🚖 oder 🚘 (Automatik)";
+  document.getElementById("learnInstruction").textContent = tb("learnChooseDirection");
   document.getElementById("learnFeedback").textContent = "";
   document.getElementById("learnFeedback").className = "learn-feedback";
   // §8.11: Startwert der Wartezeit je nach art — bleibt über das Menü änderbar.
@@ -2968,14 +2967,14 @@ function showLearnCard() {
   if (learnIndex >= learnQueue.length) { endOfQueue(); return; }
 
   const v = learnQueue[learnIndex];
-  progressEl.textContent = LABELS[learnArt].singular + " " + (learnIndex + 1) + " von " + learnQueue.length;
+  progressEl.textContent = tb("learnProgress", labelSingular(learnArt), learnIndex + 1, learnQueue.length);
 
   if (learnDirection === "left") {
     wordEl.textContent = getAnkerText(v);
-    instrEl.textContent = "Hör zu und antworte in " + langName(langB) + ".";
+    instrEl.textContent = tb("learnAnswerIn", langName(langB));
   } else {
     wordEl.textContent = getZielText(v);
-    instrEl.textContent = "Hör zu und antworte in " + langName(langA) + ".";
+    instrEl.textContent = tb("learnAnswerIn", langName(langA));
   }
 }
 
@@ -2983,8 +2982,8 @@ function endOfQueue() {
   learnActive = false;
   stopAutoLoop();
   document.getElementById("learnWord").textContent = "✓";
-  document.getElementById("learnInstruction").textContent = "Liste fertig. Du kannst jetzt die Zahl-Taste drücken, um Fehler zu wiederholen.";
-  document.getElementById("learnProgress").textContent = "Fertig";
+  document.getElementById("learnInstruction").textContent = tb("learnListDone");
+  document.getElementById("learnProgress").textContent = tb("learnFinished");
   unlockControls();
 }
 
@@ -3226,10 +3225,10 @@ function updateAnchorBtn() {
   if (!btn) return;
   if (anchorLang) {
     btn.classList.add("locked");
-    btn.title = "Die Ankersprache ist nun bis zu einer Neuinstallation auf " + langName(anchorLang) + " gesetzt.";
+    btn.title = tb("anchorBtnLocked", langName(anchorLang));
   } else {
     btn.classList.remove("locked");
-    btn.title = "Ankersprache setzen (einmalig)";
+    btn.title = tb("anchorBtnSet");
   }
 }
 document.getElementById("anchorBtn").addEventListener("click", () => {
@@ -3494,6 +3493,20 @@ function wireExportImportButtons() {
 
 createDataFileInput();
 wireExportImportButtons();
+
+// **Wer EN/DE umschaltet, soll sofort alles in der neuen Sprache sehen — nicht erst nach dem nächsten Ereignis.**
+// Funktion: Läuft nach toggleUIModeB (Listener-Reihenfolge) und zeichnet die Stellen neu, die ihren Text beim
+// Aufbau setzen (Key-Fach, Anker-Tooltip, KI-Tooltip, Kategorie-Auswahl, Leer-Platzhalter der Panels).
+document.getElementById("uiModeBBtn").addEventListener("click", () => {
+  try { refreshProKeyUI(); } catch (e) {}
+  try { updateAnchorBtn(); } catch (e) {}
+  try { if (IST_PRO) setzeKiModus(ladeKiModus()); } catch (e) {}
+  document.querySelectorAll(".translated.empty").forEach(el => { el.textContent = tb("translationPlaceholderPanel"); });
+  document.querySelectorAll("select").forEach(sel => {
+    const o = sel.querySelector('option[value=""]:not([data-i18n-b])');
+    if (o && o.textContent.indexOf("—") === 0) o.textContent = tb("chooseCategory");
+  });
+});
 
 })();
 </script>
