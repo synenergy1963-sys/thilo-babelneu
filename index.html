@@ -91,7 +91,7 @@
     border-radius: 8px; font-family: inherit; font-size: 12px; cursor: pointer; align-self: center; }
 /* Transcript */
 .transcript-wrap { width: 100%; max-width: 460px; margin-top: 8px; }
-.transcript-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 0 8px; }
+.transcript-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; padding: 10px 0 8px; }
 .transcript-title { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #666; }
 .transcript-actions { display: flex; gap: 8px; }
 .transcript-btn { background: none; border: 1px solid #2a2a2a; color: #666; padding: 5px 12px; border-radius: 8px; font-family: inherit; font-size: 11px; cursor: pointer; }
@@ -424,7 +424,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <div><div>ThiLo! Manifest</div><div class="mi-sub" data-i18n="manifestSub">Philosophie & Seele von ThiLo!</div></div>
     </a>
     <!-- **Rudolf sieht am Gerät sofort, welche Fassung gerade läuft.** -->
-<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel Pro</span> · Stand: 07.10.2026, 23:49 · Basis Babel v1.10 + Hebräisch</div>
+<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel Pro</span> · Stand: 11.10.2026, 14:47 · Basis Babel v1.10 + Hebräisch</div>
     <div style="text-align:center;margin-top:10px;">
       <a href="https://www.netlify.com" target="_blank">
         <img src="https://www.netlify.com/v3/img/components/netlify-color-accent.svg" alt="Hosted on Netlify" style="height:20px;opacity:0.4;">
@@ -561,6 +561,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
     <div class="transcript-title">Gesprächsprotokoll</div>
     <div class="transcript-actions">
       <button class="transcript-btn" id="exportBtn">Exportieren</button>
+      <button class="transcript-btn" id="exportKontextBtn" title="Protokoll als Kontext für ThiLo! Note (JSON)" data-pro-only>Kontext</button>
       <button class="transcript-btn" id="clearTransBtn">Löschen</button>
     </div>
   </div>
@@ -1280,6 +1281,16 @@ document.getElementById("clearBtn").addEventListener("click", () => {
 const transcriptList = document.getElementById("transcriptList");
 let transcriptData = [];
 
+// **Jeder Protokolleintrag soll sein Datum und seinen Übersetzungsdienst selbst mitführen,
+// damit der Kontext-Export später ein vollständiges Gespräch zeigt, auch über Mitternacht.**
+// Funktion: tagString liefert das LOKALE Datum (JJJJ-MM-TT, nicht UTC wie toISOString);
+// dienstKurz macht aus lastService (z. B. "MyMemory (Google-Fehler)") den Kurzwert
+// "google" oder "mymemory" — leer, wenn gar kein Dienst gefragt wurde.
+function tagString(d) {
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function dienstKurz(s) { return !s ? "" : (s.indexOf("Google") === 0 ? "google" : "mymemory"); }
+
 function addTranscriptEntry(panel, spoken, translated) {
   const isA = panel === "A";
   const srcLang = isA ? langA : langB;
@@ -1287,7 +1298,8 @@ function addTranscriptEntry(panel, spoken, translated) {
   const now = new Date();
   const time = now.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
 
-  const entry = { panel, srcLang, tgtLang, spoken, translated, time };
+  const entry = { panel, srcLang, tgtLang, spoken, translated, time,
+    datum: tagString(now), dienst: dienstKurz(lastService) };
   transcriptData.push(entry);
 
   const div = document.createElement("div");
@@ -1362,6 +1374,79 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   a.click();
   URL.revokeObjectURL(url);
 });
+
+// ============ KONTEXT-EXPORT (Gesprächsprotokoll → ThiLo! Note) ============
+// **Ein Babel-Gespräch soll sich wie ein Mic-Export in ThiLo! Note als Kontext importieren
+// lassen, damit Rudolf es später samt Original und Übersetzung wieder abrufen kann.**
+// Nur Pro: Der Knopf trägt data-pro-only, in Basic (IST_PRO = false) bleibt er unsichtbar,
+// damit die Marktversion nach außen genau so bleibt, wie sie beworben wird.
+// Funktion: Der Knopf "Kontext" erzeugt babel-<JJJJ-MM-TT>-<HHMM>.json (Kopf, Einträge,
+// Splitterbefehl); der TXT-Export daneben bleibt unverändert. Texte werden unverändert
+// übernommen, auch Erkennungsfehler — das Protokoll ist ein Zeugnis, keine Korrektur.
+// Status-Meldung bewusst ohne Wörter (nur Dateiname), damit sie in jeder Sprache stimmt.
+// **Der Splitterbefehl reist im Export mit, damit die KI beim Erzeugen der Splitter dieselben
+// Regeln anwendet wie bei den anderen ThiLo-Apps — ohne dass Rudolf sie jedes Mal neu sagt.**
+// Funktion: Konstante, wird unverändert als Feld "splitterbefehl" in die JSON-Datei geschrieben.
+const KONTEXT_SPLITTERBEFEHL = `Aufgabe: Erzeuge aus diesem Babel-Gesprächsprotokoll ThiLo-Note-Splitter (Trigger: "notiere!", optional mit Zahl = maximale Seitenanzahl). Schema je Splitter: id, titel, typ, datum, kurztext, quelle, datei, eltern_id, anker, tags, kategorie, inhalt, freigabe.
+
+1. Ein Splitter pro Sinneinheit (Themenblock), nicht pro Satz. Ein kurzes Gespräch mit wenigen Einträgen ergibt genau einen Splitter.
+2. inhalt: Original und Übersetzung bleiben zusammen, Reihenfolge erhalten, ungekürzt. Jeder Eintrag als "[Uhrzeit] Sprache: Original" und darunter "→ Zielsprache: Übersetzung". Erkennungsfehler im Original nicht stillschweigend korrigieren.
+3. kurztext: ein bis zwei Sätze, worum es im Gespräch ging. Nur, was im Protokoll steht, nichts erfinden.
+4. id: sprechender Kleinbuchstaben-Slug aus Thema plus Jahr-Monat (z. B. hotel-suche-2026-10). titel: knapper Titel zum Thema. datum: Datum des Gesprächs (JJJJ-MM-TT).
+5. typ: "wissen". quelle: "ThiLo! Babel – " plus Datum und Uhrzeit des Gesprächsbeginns (nennt Rudolf beim Splitter-Erzeugen die Chat-URL, kommt diese statt der Textzeile in quelle). datei: null. eltern_id: null. freigabe: false.
+6. anker: Namen, Orte und Sachbegriffe aus dem Gespräch. tags: Sprachpaar plus Thema.
+7. kategorie: genau eine der neun festen Kategorien; passt keine, erst nachfragen und keine bestehende verbiegen.
+8. Nur Inhalte aus diesem Protokoll verwenden.`;
+
+function exportKontext() {
+  if (transcriptData.length === 0) { setStatus(tb('noTranscript')); return; }
+  const erster = transcriptData[0];
+  const letzter = transcriptData[transcriptData.length - 1];
+  const id = "babel-" + erster.datum + "-" + erster.time.replace(":", "");
+
+  // links = Sprecher A (gold), rechts = Sprecher B (blau); Reihenfolge nach erstem Auftreten.
+  const seiten = e => e.panel === "A" ? [e.srcLang, e.tgtLang] : [e.tgtLang, e.srcLang];
+  const sprachNamen = [];
+  transcriptData.forEach(e => seiten(e).forEach(c => {
+    const n = langName(c);
+    if (!sprachNamen.includes(n)) sprachNamen.push(n);
+  }));
+  const [links, rechts] = seiten(erster);
+  const dienste = [];
+  transcriptData.forEach(e => { if (e.dienst && !dienste.includes(e.dienst)) dienste.push(e.dienst); });
+  const tz = erster.datum.split("-");
+
+  const exportData = {
+    id: id,
+    typ: "babel-protokoll",
+    titel: "Gespräch " + sprachNamen.join("–") + " – " + tz[2] + "." + tz[1] + "." + tz[0],
+    datum: erster.datum + " " + erster.time,
+    ende: letzter.datum + " " + letzter.time,
+    sprachen: { links: langName(links), rechts: langName(rechts) },
+    ort: "",
+    uebersetzer: dienste.join(", "),
+    turns: transcriptData.map(e => ({
+      zeit: e.time,
+      sprache: langName(e.srcLang),
+      original: e.spoken,
+      zielsprache: langName(e.tgtLang),
+      uebersetzung: e.translated
+    })),
+    splitterbefehl: KONTEXT_SPLITTERBEFEHL
+  };
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = id + ".json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  setStatus("✓ " + id + ".json (" + transcriptData.length + ")");
+}
+document.getElementById("exportKontextBtn").addEventListener("click", exportKontext);
 
 populateSelects();
 renderLabels();
