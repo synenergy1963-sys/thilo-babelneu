@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#0f0f0f" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Babel Pro" />
+<meta name="apple-mobile-web-app-title" content="ThiLo! Babel" />
 <meta name="robots" content="noindex, nofollow" />
 <meta name="mobile-web-app-capable" content="yes" />
-<title>ThiLo! Babel Pro</title>
+<title>ThiLo! Babel</title>
 <link rel="manifest" href="./manifest.json" />
 <link rel="icon" type="image/png" sizes="48x48" href="./icons/favicon-48.png" />
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
@@ -303,14 +303,14 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
 
 <div class="app-header">
   <img src="./icons/logo-144.png" width="72" height="72" alt="Synenergy">
-  <div style="font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#666" data-appname>ThiLo! Babel Pro</div>
+  <div style="font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#666" data-appname>ThiLo! Babel</div>
   <button class="menu-btn" id="menuBtn">⋮</button>
 </div>
 
 <div class="modal-overlay" id="menuModal">
   <div class="menu-sheet">
     <div class="modal-header">
-      <div class="menu-title" data-appname>ThiLo! Babel Pro</div>
+      <div class="menu-title" data-appname>ThiLo! Babel</div>
       <button class="modal-close" id="closeMenuBtn">✕</button>
     </div>
 
@@ -345,7 +345,8 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
 
     <hr class="menu-divider" />
     <div class="menu-section" data-i18n="settingsHeader">Einstellungen</div>
-    <div class="menu-item" style="cursor:default;" data-pro-only>
+    <!-- **Basic und Pro haben denselben EN/DE-Schalter für Status- und Hilfetexte.** Funktion: bewusst ohne data-pro-only. -->
+    <div class="menu-item" style="cursor:default;">
       <span class="mi-icon">🌍</span>
       <div style="flex:1;">
         <div data-i18n-b="uiModeBTitle">Sprache für Status- und Hilfetexte</div>
@@ -373,7 +374,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
     </label>
 
     <hr class="menu-divider" />
-    <div class="menu-section">🔑 Google Translate (Pro)</div>
+    <div class="menu-section">🔑 Google Translate</div>
     <div class="menu-item" style="cursor:default;flex-direction:column;align-items:stretch;gap:8px;">
       <div class="mi-sub" id="proKeyStatus"></div>
       <input type="password" id="proKeyInput" placeholder="Google-API-Key einfügen" data-i18n-ph="keyPlaceholder" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;color:#f0f0f0;padding:10px 14px;border-radius:10px;font-family:inherit;font-size:14px;outline:none;" />
@@ -399,6 +400,17 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
 
     <hr class="menu-divider" />
     <div class="menu-section" data-i18n="supportHeader">Unterstützen</div>
+    <!-- **Wer zufrieden ist, gibt Babel weiter (g&g – get & give) und findet den Weg zu Pro.** Funktion: Nur im Basic-Build
+         (IST_PRO=false). "Weitergeben" öffnet das Teilen-Menü des Handys mit der eigenen Adresse der App (location.origin),
+         Rückfall: Link in die Zwischenablage. "Pro" verweist nur auf die Anleitung, nennt keinen Preis. Texte DE/EN folgen dem Schalter. -->
+    <a class="menu-item" href="#" id="shareBtn" data-basic-only>
+      <span class="mi-icon">🤝</span>
+      <div><div id="shareTitle">Weitergeben</div><div class="mi-sub" id="shareSub">get &amp; give – zeig es einem Menschen, dem es hilft</div></div>
+    </a>
+    <a class="menu-item" href="/anleitung.html#pro-teaser" target="_blank" data-basic-only>
+      <span class="mi-icon">✨</span>
+      <div><div id="proHintTitle">Persönliche Babel – Pro</div><div class="mi-sub" id="proHintSub">Mehr dazu in der Anleitung</div></div>
+    </a>
     <a class="menu-item" href="https://paypal.me/RuGrothusen" target="_blank">
       <span class="mi-icon">☕</span>
       <div><div data-i18n="coffeeTitle">Einen Kaffee spendieren</div><div class="mi-sub" data-i18n="coffeeSub">PayPal – freiwilliger Beitrag</div></div>
@@ -424,7 +436,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <div><div>ThiLo! Manifest</div><div class="mi-sub" data-i18n="manifestSub">Philosophie & Seele von ThiLo!</div></div>
     </a>
     <!-- **Rudolf sieht am Gerät sofort, welche Fassung gerade läuft.** -->
-<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel Pro</span> · Stand: 11.10.2026, 14:47 · Basis Babel v1.10 + Hebräisch</div>
+<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel</span> · Stand: 11.10.2026, 19:40 · Basis Babel v1.10 + Hebräisch + Kontext-Export + EN/DE-Schalter (Menü + Status) + Weitergeben</div>
     <div style="text-align:center;margin-top:10px;">
       <a href="https://www.netlify.com" target="_blank">
         <img src="https://www.netlify.com/v3/img/components/netlify-color-accent.svg" alt="Hosted on Netlify" style="height:20px;opacity:0.4;">
@@ -561,7 +573,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
     <div class="transcript-title">Gesprächsprotokoll</div>
     <div class="transcript-actions">
       <button class="transcript-btn" id="exportBtn">Exportieren</button>
-      <button class="transcript-btn" id="exportKontextBtn" title="Protokoll als Kontext für ThiLo! Note (JSON)" data-pro-only>Kontext</button>
+      <button class="transcript-btn" id="exportKontextBtn" title="Protokoll als Kontext für ThiLo! Note (JSON)">Kontext</button>
       <button class="transcript-btn" id="clearTransBtn">Löschen</button>
     </div>
   </div>
@@ -794,6 +806,51 @@ let anchorLang = loadAnchor();
 if (anchorLang) applyUILanguage(anchorLang); // Menüsprache wie beim letzten Mal (Ankersprache bleibt fix)
 applyUILanguageB(); // Status-/Fehler-/Hilfetexte: DE oder EN, unabhängig vom Anker
 document.getElementById("uiModeBBtn").addEventListener("click", toggleUIModeB);
+// **Basic hat keine Ankersprache — der EN/DE-Schalter soll dort Menü UND Statustexte gemeinsam umstellen.**
+// Funktion: Nur im Free-Build (Pro folgt weiter der Ankersprache). Läuft nach toggleUIModeB (Listener-Reihenfolge),
+// liest den Zustand uiModeB aus status-strings.js, setzt das Menü auf "en" bzw. "de" und passt den Untertitel
+// des Schalters an (der Pro-Text "folgt der Ankersprache" träfe in Basic nicht zu).
+if (!IST_PRO) {
+  const SUB_BASIC = {
+    de: "Betrifft Menü und Meldungen im Hauptbildschirm",
+    en: "Affects the menu and the messages on the main screen"
+  };
+  const menueNachSchalter = () => {
+    const m = (typeof uiModeB !== "undefined" && uiModeB === "en") ? "en" : "de";
+    applyUILanguage(m);
+    const sub = document.getElementById("uiModeBBtn").closest(".menu-item").querySelector(".mi-sub");
+    if (sub) { sub.removeAttribute("data-i18n-b"); sub.textContent = SUB_BASIC[m]; }
+  };
+  menueNachSchalter();
+  document.getElementById("uiModeBBtn").addEventListener("click", menueNachSchalter);
+  const WEITERGABE = {
+    de: { title: "Weitergeben", sub: "get & give – zeig es einem Menschen, dem es hilft",
+          text: "Ich nutze ThiLo! Babel zum Dolmetschen – ohne Abo, ohne Werbung.", copied: "✓ Link kopiert",
+          proTitle: "Persönliche Babel – Pro", proSub: "Mehr dazu in der Anleitung" },
+    en: { title: "Pass it on", sub: "get & give – show it to someone it helps",
+          text: "I use ThiLo! Babel for interpreting – no subscription, no ads.", copied: "✓ Link copied",
+          proTitle: "Your personal Babel – Pro", proSub: "More in the manual" }
+  };
+  const weitergabeTexte = () => {
+    const m = (typeof uiModeB !== "undefined" && uiModeB === "en") ? "en" : "de", w = WEITERGABE[m];
+    document.getElementById("shareTitle").textContent = w.title;
+    document.getElementById("shareSub").textContent = w.sub;
+    document.getElementById("proHintTitle").textContent = w.proTitle;
+    document.getElementById("proHintSub").textContent = w.proSub;
+  };
+  weitergabeTexte();
+  document.getElementById("uiModeBBtn").addEventListener("click", weitergabeTexte);
+  document.getElementById("shareBtn").addEventListener("click", async (ev) => {
+    ev.preventDefault();
+    const m = (typeof uiModeB !== "undefined" && uiModeB === "en") ? "en" : "de", w = WEITERGABE[m];
+    const url = location.origin + "/";
+    try {
+      if (navigator.share) { await navigator.share({ title: "ThiLo! Babel", text: w.text, url }); return; }
+    } catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(w.text + " " + url); setStatus(w.copied); }
+    catch { setStatus(url); }
+  });
+}
 
 // ============ Symbolmodus: Knöpfe zeigen nur Icons, kein Wort in keiner Sprache ============
 const SYMBOL_MODE_KEY = "thilo-babel-symbol-mode";
@@ -1378,8 +1435,9 @@ document.getElementById("exportBtn").addEventListener("click", () => {
 // ============ KONTEXT-EXPORT (Gesprächsprotokoll → ThiLo! Note) ============
 // **Ein Babel-Gespräch soll sich wie ein Mic-Export in ThiLo! Note als Kontext importieren
 // lassen, damit Rudolf es später samt Original und Übersetzung wieder abrufen kann.**
-// Nur Pro: Der Knopf trägt data-pro-only, in Basic (IST_PRO = false) bleibt er unsichtbar,
-// damit die Marktversion nach außen genau so bleibt, wie sie beworben wird.
+// Bewusst auch in Basic: Basic bleibt immer kostenlos, soll aber das Gesprächsprotokoll voll
+// kontextfähig für ThiLo! Note haben (kein data-pro-only). Basic hat keine KI; aus dem Export
+// macht eine Cloud-KI außerhalb den Splitter ("notiere!"), Pro kann das später selbst.
 // Funktion: Der Knopf "Kontext" erzeugt babel-<JJJJ-MM-TT>-<HHMM>.json (Kopf, Einträge,
 // Splitterbefehl); der TXT-Export daneben bleibt unverändert. Texte werden unverändert
 // übernommen, auch Erkennungsfehler — das Protokoll ist ein Zeugnis, keine Korrektur.
@@ -1457,6 +1515,9 @@ updateAnchorBtn();
 // internationale UI, Notesfeld, Lernmodule, Schatzkammer/Veredelung) — das
 // Datenmodell dahinter (guete, treasure, origin …) bleibt unverändert bestehen,
 // nur die Bedienelemente verschwinden.
+if (IST_PRO) {
+  document.querySelectorAll("[data-basic-only]").forEach(el => { el.style.display = "none"; });
+}
 if (!IST_PRO) {
   document.querySelectorAll("[data-pro-only]").forEach(el => { el.style.display = "none"; });
 }

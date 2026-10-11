@@ -1,163 +1,306 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" dir="ltr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ThiLo! Babel – Anwendung & Besonderheiten</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f0f0f">
+<title>ThiLo! Babel — Anwendung &amp; Besonderheiten</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    background: #0f0f0f; color: #f0f0f0;
-    padding: 40px 20px; max-width: 620px; margin: 0 auto;
-    line-height: 1.75;
-  }
-  h1 { font-size: 28px; font-weight: 700; color: #e8c547; margin-bottom: 6px; }
-  .tagline { font-size: 13px; color: #666; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 40px; }
-  h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
-    color: #47a8e8; margin: 36px 0 14px; }
-  p { font-size: 15px; color: #ccc; margin-bottom: 12px; }
-  strong { color: #f0f0f0; }
-  hr { border: none; border-top: 1px solid #2a2a2a; margin: 32px 0; }
-
-  .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px;
-    padding: 16px 18px; margin-bottom: 10px; }
-  .card-title { font-size: 14px; font-weight: 700; color: #f0f0f0; margin-bottom: 6px; }
-  .card-text { font-size: 14px; color: #aaa; line-height: 1.6; }
-
-  .step { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px;
-    padding: 14px 18px 14px 52px; margin-bottom: 10px; position: relative; }
-  .step-num { position: absolute; left: 14px; top: 14px;
-    background: #e8c547; color: #111; width: 24px; height: 24px; border-radius: 50%;
-    font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
-  .step-title { font-size: 14px; font-weight: 700; color: #f0f0f0; margin-bottom: 4px; }
-  .step-text { font-size: 14px; color: #aaa; line-height: 1.55; }
-
-  .hint { background: #1a1a1a; border: 1px solid #2a2a2a; border-left: 3px solid #e8c547;
-    border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0; font-size: 14px; color: #aaa; }
-  .hint strong { color: #e8c547; }
-
-  .gold { color: #e8c547; font-weight: 700; }
-  .blue { color: #47a8e8; font-weight: 700; }
-
-  .format-box { background: #111; border: 1px solid #2a2a2a; border-radius: 10px;
-    padding: 12px 16px; font-family: monospace; font-size: 13px; color: #6abf6a; margin: 10px 0; }
-
-  .author { margin-top: 40px; font-size: 13px; color: #666; line-height: 1.8; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0f0f0f; --surf: #1a1a1a; --surf2: #222; --bord: #2a2a2a;
+  --gold: #e8c547; --blue: #47a8e8; --red: #e84747; --green: #6abf6a;
+  --text: #f0f0f0; --muted: #999; --dim: #6a6a6a;
+  --font: 'Inter','Helvetica Neue',sans-serif;
+}
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.65; }
+.hero { padding: 48px 20px 30px; text-align: center; border-bottom: 1px solid var(--bord); background: radial-gradient(ellipse at top, rgba(232,197,71,0.08), transparent 60%); }
+.hero svg { display: block; margin: 0 auto 18px; }
+.hero h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: var(--gold); }
+.hero .sub { font-size: 15px; color: var(--muted); margin-top: 6px; }
+.hero .meta { font-size: 12px; color: var(--dim); margin-top: 14px; letter-spacing: 0.04em; }
+#docbar { margin-top: 16px; }
+main { max-width: 700px; margin: 0 auto; padding: 40px 20px 120px; }
+section { margin-bottom: 52px; scroll-margin-top: 20px; }
+h2 { font-size: 22px; font-weight: 800; color: var(--gold); letter-spacing: -0.01em; padding-bottom: 10px; margin-bottom: 18px; border-bottom: 2px solid var(--bord); }
+h3 { font-size: 16px; font-weight: 700; color: var(--blue); margin: 24px 0 8px; }
+p { font-size: 15px; color: #dcdcdc; margin-bottom: 12px; max-width: 62ch; }
+strong, b { color: var(--text); font-weight: 700; }
+ul, ol { margin-block: 0 14px; margin-inline: 22px 0; }
+li { font-size: 15px; color: #dcdcdc; margin-bottom: 6px; max-width: 60ch; }
+a { color: var(--blue); }
+.gold { color: var(--gold); } .blue { color: var(--blue); }
+/* PRO-Schloss: reine CSS-Marke, damit der Text darunter sauber übersetzbar bleibt */
+h2.pro::before, h3.pro::before, .toc-sheet a.pro::before {
+  content: "🔒 PRO"; display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+  color: #1a1408; background: var(--gold); border-radius: 999px; padding: 3px 10px 3px 8px;
+  vertical-align: middle; white-space: nowrap; margin-inline-end: 10px; line-height: 1.4;
+}
+.toc-sheet a.pro::before { font-size: 9px; padding: 1px 7px 1px 6px; }
+.box { border-inline-start: 3px solid var(--blue); background: var(--surf); border-radius: 10px; padding: 12px 16px; margin: 16px 0; font-size: 14px; color: #ddd; }
+.box b { color: var(--blue); }
+.box.warn { border-inline-start-color: var(--gold); } .box.warn b { color: var(--gold); }
+.box.tip { border-inline-start-color: var(--green); } .box.tip b { color: var(--green); }
+.box.locked { border-inline-start-color: var(--gold); background: #1e1a0e; } .box.locked b { color: var(--gold); }
+pre { background: #111; border: 1px solid var(--bord); border-radius: 10px; padding: 14px 16px; overflow-x: auto; margin: 14px 0; font-size: 13px; line-height: 1.55; direction: ltr; text-align: left; }
+code { font-family: 'SF Mono', Consolas, monospace; color: #b7d9ff; direction: ltr; unicode-bidi: isolate; }
+p code, li code { background: #111; border: 1px solid var(--bord); border-radius: 5px; padding: 1px 6px; font-size: 13px; }
+table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+th, td { text-align: start; padding: 9px 12px; border: 1px solid var(--bord); }
+th { background: var(--surf2); color: var(--muted); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+td { color: #ddd; }
+.levels { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 16px 0; }
+.level-card { background: var(--surf); border: 1px solid var(--bord); border-radius: 10px; padding: 14px; text-align: center; }
+.level-card .emoji { font-size: 26px; } .level-card .name { font-weight: 700; margin-top: 6px; font-size: 14px; }
+.level-card.bronze .name { color: #cd8a4a; } .level-card.silber .name { color: #c9c9c9; } .level-card.gold .name { color: var(--gold); } .level-card.platin .name { color: var(--blue); }
+.leiter { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+.stufe { background: var(--surf); border: 1px solid var(--bord); border-radius: 12px; padding: 18px 20px; position: relative; }
+.stufe.frei { border-color: var(--green); } .stufe.pro { border-color: var(--gold); }
+.stufe .badge { position: absolute; top: -9px; inset-inline-end: 16px; background: var(--green); color: #0a1a0a; font-size: 10px; font-weight: 800; letter-spacing: 0.06em; padding: 2px 9px; border-radius: 999px; }
+.stufe.pro .badge { background: var(--gold); color: #1a1408; }
+.stufe .titel { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+.stufe.frei .titel { color: var(--green); } .stufe.pro .titel { color: var(--gold); }
+.stufe p { font-size: 14px; margin-bottom: 0; color: #ccc; max-width: none; }
+.leiter-pfeil { text-align: center; color: var(--dim); font-size: 18px; }
+/* nummerierte Schritte per CSS-Zähler: die Zahl ist keine Textarbeit für die Übersetzung */
+.steps { counter-reset: st; }
+h3.step::before { counter-increment: st; content: counter(st); display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--gold); color: #111; font-weight: 800; font-size: 12px; border-radius: 50%; margin-inline-end: 8px; vertical-align: middle; }
+.toc-btn { position: fixed; inset-inline-end: 18px; bottom: 18px; z-index: 60; background: var(--gold); color: #111; border: none; border-radius: 999px; padding: 13px 18px; font-family: var(--font); font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
+.toc-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; display: none; align-items: flex-end; justify-content: center; }
+.toc-overlay.open { display: flex; }
+.toc-sheet { background: #161616; border: 1px solid var(--bord); border-radius: 20px 20px 0 0; width: 100%; max-width: 520px; max-height: 78vh; overflow-y: auto; padding: 18px 16px 30px; }
+.toc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.toc-head .t { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
+.toc-close { background: var(--surf2); border: 1px solid var(--bord); color: var(--muted); width: 32px; height: 32px; border-radius: 8px; font-size: 16px; cursor: pointer; }
+.toc-sheet a { display: flex; align-items: center; gap: 8px; padding: 10px 8px; color: #ccc; text-decoration: none; font-size: 14px; border-radius: 8px; }
+.toc-sheet a:hover, .toc-sheet a:active { background: #1e1e1e; color: var(--text); }
+footer { border-top: 1px solid var(--bord); padding: 32px 20px; text-align: center; }
+footer .brand { color: var(--gold); font-weight: 700; font-size: 14px; }
+footer .line { color: var(--dim); font-size: 12px; margin-top: 6px; }
+footer a { color: var(--gold); }
+@media (max-width: 480px) { .hero h1 { font-size: 25px; } h2 { font-size: 19px; } }
 </style>
 </head>
 <body>
 
-<h1>ThiLo! Babel</h1>
-<div class="tagline">Anwendung & Besonderheiten · v1.7</div>
+<div class="hero">
+  <svg width="56" height="56" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs><radialGradient id="mg" cx="45%" cy="40%" r="60%"><stop offset="0%" stop-color="#f5d96b"/><stop offset="60%" stop-color="#d4960a"/><stop offset="100%" stop-color="#b87800"/></radialGradient></defs>
+    <circle cx="100" cy="100" r="98" fill="#1a1a1a"/><circle cx="100" cy="100" r="86" fill="url(#mg)"/><circle cx="100" cy="100" r="13" fill="white" stroke="#8a5a00" stroke-width="2"/>
+  </svg>
+  <h1>ThiLo! Babel Basic</h1>
+  <div class="sub">Anwendung &amp; Besonderheiten</div>
+  <div class="meta">Stand: 9.10.2026 · Anleitung v2.0</div>
+  <div id="docbar" data-no-translate></div>
+</div>
 
+<main>
+
+<section id="wozu">
 <h2>Wozu dient ThiLo! Babel?</h2>
 <p>ThiLo! Babel beseitigt die Sprachbarriere zwischen Menschen, damit andere Kulturen und ihre Besonderheiten besser erkundet und diese Schätze mit anderen geteilt werden können.</p>
 <p>Die App unterstützt außerdem beim Erlernen von Fremdsprachen und Fachausdrücken. Jeder Beruf bringt seine eigene Fachsprache mit sich — ein ukrainischer Zimmermann hat andere Bedürfnisse als eine slowakische Pflegerin. Deshalb kannst Du eigene Vokabel- und Phrasenlisten erstellen und importieren.</p>
-<p>Diese bleiben ausschließlich auf Deinem persönlichen Speicher — ganz im Sinne von <strong>„Think Local"</strong>, der Kernidee der ThiLo!-Produktfamilie.</p>
+<p>Diese bleiben ausschließlich auf Deinem persönlichen Speicher — ganz im Sinne von <strong>„Think Local"</strong>, der Kernidee der ThiLo!-Produktfamilie. Eine KI kann beim Aufbereiten Deines Sprachschatzes helfen, ist aber nie Pflicht.</p>
+</section>
 
-<hr>
-
-<h2>Übersetzen</h2>
-
-<div class="step">
-  <div class="step-num">1</div>
-  <div class="step-title">Sprachen wählen</div>
-  <div class="step-text">Oben links und rechts die gewünschten Sprachen auswählen. Mit ⇄ tauschen. Die App merkt sich die letzte Einstellung.</div>
+<section id="stufen">
+<h2>Zwei Stufen</h2>
+<p>ThiLo! Babel gibt es in zwei Stufen. Die Basic-Version ist vollständig nutzbar; Pro baut darauf auf.</p>
+<div class="leiter">
+  <div class="stufe frei">
+    <div class="badge">Du bist hier</div>
+    <div class="titel">ThiLo! Babel Basic — kostenlos</div>
+    <p>Dolmetschen per Sprache und Text, Gesprächsprotokoll, Vokabeln und Phrasen, eigene Listen, Import und Export, 21 Sprachen. Übersetzt wird mit dem Gratisdienst MyMemory (Tageslimit) — oder mit Deinem eigenen API-Key.</p>
+  </div>
+  <div class="leiter-pfeil">↑</div>
+  <div class="stufe pro">
+    
+    <div class="titel">ThiLo! Babel Pro</div>
+    <p>Zusätzlich: eigene <strong>Ankersprache</strong> mit Bedienoberfläche in Deiner Muttersprache, <strong>Veredelung</strong> Deiner Sprachschätze (Bronze bis Platin), Fachsprachschätze, <strong>Lernmodule</strong> mit Automatikmodus und Notes.</p>
+  </div>
 </div>
+<div class="box warn"><b>Legende:</b> Das Zeichen 🔒 PRO markiert, was es erst in Pro gibt. Alles Unmarkierte steht in beiden Versionen zur Verfügung.</div>
+</section>
 
-<div class="step">
-  <div class="step-num">2</div>
-  <div class="step-title">Sprechen</div>
-  <div class="step-text"><span class="gold">Gelber Knopf</span> — erste Person spricht. <span class="blue">Blauer Knopf</span> — zweite Person spricht. Kurz und klar sprechen, dann warten bis die Übersetzung erscheint und vorgelesen wird.</div>
+<section id="erste-schritte">
+<h2>Erste Schritte</h2>
+<div class="steps">
+<h3 class="step">Sprachen wählen</h3>
+<p>Oben links und rechts die gewünschten Sprachen auswählen. Die App merkt sich die letzte Einstellung beim erneuten Öffnen. Standardmäßig steht links (in Gold) die eigene Sprache und rechts (in Blau) die Fremdsprache.</p>
+
+<h3 class="step">Grundvokabular laden</h3>
+<p>Öffne das Vokabel-Fenster und tippe auf <strong>📚 <span data-ui="loadBaseVocabBtn">Grundvokabular laden</span></strong>. Das mitgelieferte Grundvokabular (Deutsch mit ungarischer Referenzübersetzung) wird in Deinen Speicher geschrieben. Danach ist der Knopf grau — es ist nur das Anfangskapital, Du wirst Deinen Sprachschatz ständig erweitern. Für die Phrasen gibt es entsprechend <strong><span data-ui="loadBasePhrasesBtn">Grundphrasen laden</span></strong>.</p>
 </div>
+<h3>Welcher Browser?</h3>
+<p>Babel funktioniert am besten in <strong>Google Chrome</strong> (besonders auf Android). Die Grundfunktionen gehen in jedem Browser, aber Spracherkennung und Aussprache brauchen gute Sprachmodelle — und da ist Chrome der Goldstandard. Probiere es aus: Deine Vokabeln sollten nach Muttersprachler klingen, nicht nach Computer.</p>
+</section>
 
-<div class="step">
-  <div class="step-num">3</div>
-  <div class="step-title">Text eingeben</div>
-  <div class="step-text">Alternativ Text direkt ins Textfeld tippen oder einfügen, dann auf <strong>Übersetzen</strong> tippen.</div>
+<section id="dolmetschen">
+<h2>Hauptfunktion: Das simultane Dolmetschen</h2>
+<div class="steps">
+<h3 class="step">Sprechen</h3>
+<p><span class="gold">Gelber Knopf</span> — erste Person spricht. <span class="blue">Blauer Knopf</span> — zweite Person spricht. Kurz und klar sprechen, dann warten, bis die Übersetzung erscheint und vorgelesen wird.</p>
+<h3 class="step">Text eingeben</h3>
+<p>Alternativ Text direkt ins Textfeld tippen oder einfügen, dann auf <strong><span data-ui="translateLabel">Übersetzen</span></strong> tippen.</p>
+<h3 class="step">Wiederholen und vorbereiten</h3>
+<p>Mit <strong>🔁</strong> wird die letzte Übersetzung nochmals vorgelesen. Du kannst Gespräche auch vorab einsprechen und die übersetzten Phrasen später mit der Wiederholfunktion abspielen — von Vorteil, wenn alles schnell gehen muss, etwa bei einer Bestellung mit Sonderwunsch an der Theke, umringt von vielen Leuten.</p>
 </div>
+<div class="box"><b>Hinweis:</b> Die Spracherkennung bricht nach einer kurzen Pause ab. Sprich flüssig und zügig — Denkpausen vorher machen.</div>
+</section>
 
-<div class="step">
-  <div class="step-num">4</div>
-  <div class="step-title">Wiederholen & vorbereiten</div>
-  <div class="step-text">Mit <strong>🔁</strong> wird die letzte Übersetzung nochmals vorgelesen. Du kannst Gespräche auch vorab einsprechen und die übersetzten Phrasen später mit der Wiederholfunktion im Gespräch abspielen.</div>
-</div>
-
-<div class="hint"><strong>Hinweis:</strong> Die Spracherkennung bricht nach einer kurzen Pause ab. Flüssig und zügig sprechen — Denkpausen vorher machen. Die App funktioniert am besten in <strong>Google Chrome</strong> auf Android.</div>
-
-<hr>
-
+<section id="protokoll">
 <h2>Gesprächsprotokoll</h2>
-<p>Alle Übersetzungen werden automatisch mitgeschrieben. Am Ende eines Gesprächs kann das Protokoll als Textdatei exportiert werden — ideal um besprochene Details zuhause nachzulesen.</p>
+<p>Alle Übersetzungen werden automatisch mitgeschrieben. Am Ende eines Gesprächs kann das Protokoll mit <strong><span data-ui="transcriptExportBtn">Exportieren</span></strong> als Textdatei gesichert werden — ideal, um Besprochenes zuhause nachzulesen. Es ist auch fein, wenn zwei Menschen, die etwas ausgehandelt haben, das Ergebnis schriftlich besitzen.</p>
+</section>
 
-<hr>
+<section id="dienste">
+<h2>Übersetzungsdienste und Limits</h2>
+<h3>MyMemory — kostenlos</h3>
+<p>Standardmäßig übersetzt Babel mit der API von MyMemory. Sie ist gut, aber nicht unfehlbar: Bei Fachvokabular lass das Ergebnis von einem Muttersprachler oder einer hochwertigen KI prüfen, bevor Du es als Original speicherst. Erscheint unten statt einer Übersetzung die Meldung <strong>429</strong>, ist das Tageslimit des Gratisdienstes erreicht — am nächsten Tag geht es wieder.</p>
+<h3>Eigener API-Key — für Unabhängigkeit</h3>
+<p>Besorge Dir einen eigenen Schlüssel für <strong>Google Cloud Translation</strong> und kopiere ihn im Menü in das geschützte API-Key-Fach (<strong><span data-ui="keySave">Speichern & prüfen</span></strong>). Ab dann läuft Deine Übersetzung über Deinen eigenen Zugang.</p>
+<ul>
+<li><strong>Der Schlüssel bleibt bei Dir.</strong> Er liegt im Speicher Deines Browsers; die Anfragen gehen von Deinem Gerät direkt zu Google.</li>
+<li><strong>Die Menge bestimmst Du.</strong> Es gibt kein Abo — abgerechnet wird nach tatsächlichem Verbrauch auf Deinem eigenen Google-Konto. Aktuelle Preise und das monatliche Gratiskontingent findest Du bei Google; nach meiner Erfahrung reicht es sehr lange, ich habe noch nie etwas zahlen müssen.</li>
+<li><strong>Ohne Schlüssel</strong> arbeitet Babel einfach weiter mit MyMemory.</li>
+</ul>
+<div class="box tip"><b>Tipp für die Sicherheit:</b> Beschränke den Schlüssel bei Google auf den Dienst „Cloud Translation" und setze ein Budget-Limit mit Alarm. Eine Schritt-für-Schritt-Anleitung zum Erzeugen des Schlüssels folgt.</div>
+<h3>Automatisch übersetzen — ein Schalter</h3>
+<p>Im Menü gibt es den Schalter <strong><span data-ui="autoTranslateTitle">Beim Anzeigen automatisch übersetzen</span></strong>. Standard: <strong>aus</strong>. Dann werden beim Scrollen, Filtern oder Lernen keine Anfragen an den Dienst geschickt. Das schont Deine Ressourcen: Bei großen Sprachschätzen kann ein kurzer Ausflug in eine neue Sprache sonst Tausende Anfragen auslösen.</p>
+<p>Wenn Du zum ersten Mal eine neue Sprache wählst, sind Deine Vokabeln dort also noch unübersetzt. Schalte dann die automatische Übersetzung ein; bei langen Listen kann das ein paar Minuten dauern. Danach liegen die Übersetzungen im Speicher und werden nicht erneut geholt.</p>
+</section>
 
-<h2>Phrasenbuch & Coping-Phrasen</h2>
+<section id="phrasen">
+<h2>Phrasenbuch und Coping-Phrasen</h2>
+<p>Über den Knopf <strong>📖 <span data-ui="phrasenBtn">Phrasen</span></strong> gelangst Du ins Phrasenfenster.</p>
+<h3>Vorgefertigte Phrasen</h3>
+<p>Häufige Redewendungen, nach Kategorien geordnet. Antippen — die Phrase wird übersetzt und vorgelesen. Zuerst lädst Du die Grundphrasen; sie sind im Code enthalten und werden dann in Deinen Speicher geschrieben.</p>
+<h3>Coping-Phrasen</h3>
+<p>Im Menü steht ein Paket mit <strong>47 Fragen</strong> für lokales Klimawissen bereit — die Idee vom Touristen als reisendem Reporter. Die Fragen helfen, Anpassungsstrategien an den Klimawandel aufzuspüren, mit Einheimischen ins Gespräch zu kommen und nützliche Anregungen mit nach Hause zu nehmen. Für lange Gespräche gibt es mit <strong>ThiLo! Mic</strong> das passende Werkzeug: Es nimmt auf und transkribiert.</p>
+<h3>Eigene Phrasen hinzufügen</h3>
+<p>Einzeln oder als eingefügte Liste im Bulkverfahren. Zuerst steht die Ankersprache, dann die Übersetzung, zuletzt die Kategorie. Die Kategorie erzeugt das Inhaltsverzeichnis, über das Du später springen kannst. <strong>Die drei Teile werden durch ein Semikolon getrennt.</strong></p>
+<pre><code>Wo ist der nächste Bahnhof? ; Hol van az állomás? ; Reise</code></pre>
+<p>Die Kategorie ist optional — sonst gilt die Standardkategorie <strong>Eigene Phrasen</strong>.</p>
+</section>
 
-<div class="card">
-  <div class="card-title">Vorgefertigte Phrasen</div>
-  <div class="card-text">Häufige Redewendungen nach Kategorien geordnet. Antippen — die Phrase wird übersetzt und vorgelesen.</div>
-</div>
+<section id="vokabeln">
+<h2>Vokabeln</h2>
+<p>Über den Knopf <strong>📚 <span data-ui="vokabelnBtn">Vokabeln</span></strong> gelangst Du ins Vokabelfenster.</p>
+<h3>Eigene Vokabeln und Importformat</h3>
+<p>Gib ein Wort ein — die App übersetzt automatisch. Mehrere Einträge fügst Du als Liste ein, die Teile jeweils durch ein Semikolon getrennt:</p>
+<pre><code>Berg (der) ; montagne (la) (FR)
+tető ; roof (EN)</code></pre>
+<h3>Klammern und Ländercode</h3>
+<p>Der Ländercode <strong>(FR)</strong>, <strong>(HU)</strong> usw. zeigt die Ursprungssprache an. <strong>Alles in Klammern wird weder gesprochen noch automatisch übersetzt</strong> — Klammern dienen nur dem grammatikalischen Verständnis auf dem Bildschirm.</p>
 
-<div class="card">
-  <div class="card-title">Coping-Phrasen</div>
-  <div class="card-text">Im Menü steht ein Paket mit 47 Fragen für lokales Klimawissen zum Herunterladen bereit — der Tourist als reisender Reporter. Diese Fragen helfen, Anpassungsstrategien an den Klimawandel aufzuspüren und weiterzugeben.</div>
-</div>
+<h3>Deinen Sprachschatz pflegen</h3>
+<p>Babel Basic hat zwei Sprachschätze: den <strong>Grundwortschatz (main)</strong> — der mitgelieferte Bestand, er bleibt, wie er ist — und <strong>Deinen persönlichen Sprachschatz (manual)</strong>, in dem alles landet, was Du selbst hinzufügst oder importierst.</p>
+<ul>
+<li>Sammle Vokabeln und Phrasen — alles landet in Deinem persönlichen Schatz.</li>
+<li>Willst Du ihn veredeln, exportiere ihn im Menü als JSON-Datei und gib sie einer KI Deiner Wahl. Sie kann Fehler korrigieren, Kategorien sortieren und Artikel ergänzen. Welchen Prompt Du verwendest, entscheidest Du.</li>
+<li>Importiere die veredelte Datei wieder. Sie ersetzt Deinen bestehenden persönlichen Schatz.</li>
+</ul>
+<div class="box warn"><b>Wichtig:</b> Sichere vor dem Import Deinen aktuellen Schatz als Backup. Der Export kostet nichts und schützt Dich.</div>
+<p>In Babel Pro übernimmt Babel diese Arbeit mit einem Standard-Prompt, mit Localize! und den Stufen Bronze, Silber, Gold. Aber Du kannst alles auch mit Basic erreichen — Du brauchst nur Zeit und eine KI Deiner Wahl.</p>
 
-<div class="card">
-  <div class="card-title">Eigene Phrasen importieren</div>
-  <div class="card-text">Eigene Phrasenlisten als TXT-Datei importieren. Format pro Zeile:</div>
-</div>
-<div class="format-box">Deutsch | Übersetzung | Kategorie<br>Wo ist der Bahnhof? | Hol van az állomás? | Reise</div>
-<p style="font-size:13px;color:#666">Kategorie ist optional — Standard: Eigene Phrasen.</p>
+</section>
 
-<hr>
 
-<h2>Vokabelliste</h2>
 
-<div class="card">
-  <div class="card-title">Grundvokabular</div>
-  <div class="card-text">1750 deutsche Grundvokabeln mit ungarischer Referenzübersetzung sind eingebaut. Im Vokabel-Modal einmalig laden — für alle 20 Sprachen nutzbar.</div>
-</div>
+<section id="datenbank">
+<h2>Der Speicherort Deiner Daten</h2>
+<p>Babel speichert in <strong>IndexedDB</strong>. Damit lassen sich zahlreiche Übersetzungen, umfangreiche Protokolle und große Sprachschätze halten; die 5-MB-Grenze des früheren localStorage ist Vergangenheit.</p>
+<p>Für Erfahrene: Mit <strong>F12</strong> öffnest Du die Entwicklerwerkzeuge und findest Deine Daten unter <code>Application → IndexedDB → thilo-babel-db → kv</code>.</p>
+<div class="box warn"><b>Wichtig:</b> Sichere Deinen Bestand per Export, bevor Du den Browser wechselst oder Browserdaten löschst — sonst kann er verloren gehen. Das betrifft vor allem Deine Sprachschätze.</div>
+</section>
 
-<div class="card">
-  <div class="card-title">Eigene Vokabeln & Importformat</div>
-  <div class="card-text">Fremdwort eingeben — die App übersetzt automatisch ins Deutsche. Eigene Listen im Format:</div>
-</div>
-<div class="format-box">Berg (der) | montagne (la) (FR)<br>tető | roof (EN)</div>
-
-<div class="card">
-  <div class="card-title">Klammern & Ländercode</div>
-  <div class="card-text">Der Ländercode (FR), (HU) etc. zeigt die Ursprungssprache an. <strong>Alles in Klammern wird weder gesprochen noch automatisch übersetzt</strong> — Klammern dienen ausschließlich dem grammatikalischen Verständnis auf dem Bildschirm.</div>
-</div>
-
-<div class="hint"><strong>Tipp:</strong> Die automatische Übersetzung via MyMemory ist gut aber nicht unfehlbar. Bei Fachvokabular bitte bei einem Muttersprachler prüfen bevor Du es als Original speicherst.</div>
-
-<hr>
-
+<section id="updates">
 <h2>Updates</h2>
-<p>Da es keine zentrale Nutzerverwaltung gibt, solltest Du gelegentlich nach Updates suchen. Dafür gibt es den <strong>Update-Knopf im Menü</strong>. Ein Download lohnt sich nur, wenn die Versionsnummer höher ist als die der installierten Version.</p>
-<p>Ist das der Fall, lösche die App vom Startbildschirm und installiere die neue Version über das Browsermenü erneut. Eventuell musst Du anschließend die Mikrofonfreigabe nochmals erlauben.</p>
+<p>Da es keine zentrale Nutzerverwaltung gibt, schau gelegentlich nach Updates. Dafür gibt es den <strong>Update-Knopf im Menü</strong>. Ein Download lohnt sich nur, wenn die Versionsnummer höher ist als die der installierten Version; sie steht unten im Menü.</p>
+<p>Ist das der Fall, lösche die App vom Startbildschirm und installiere die neue Version über das Browsermenü erneut. Eventuell musst Du die Mikrofonfreigabe nochmals erlauben.</p>
+<div class="box"><b>Wenn ein Update nicht sofort ankommt:</b> Lade die Seite hart neu (Strg+F5). Manchmal hält der Browser-Cache noch an der alten Version fest.</div>
+</section>
 
-<hr>
+<section id="sprachen">
+<h2>21 Sprachen</h2>
+<p>Deutsch, Ungarisch, Englisch, Französisch, Italienisch, Spanisch, Polnisch, Tschechisch, Russisch, Türkisch, Kroatisch, Slowakisch, Slowenisch, Rumänisch, Ukrainisch, Serbisch, Griechisch, Bosnisch, Albanisch, Hebräisch, Latein.</p>
+<p><strong>Latein</strong> ist als Funfakt dabei — die Übersetzungsqualität ist begrenzt, da Latein eine tote Sprache ist. <strong>Hebräisch</strong> wird von rechts nach links dargestellt (RTL); die Sprachausgabe wird noch verbessert.</p>
+</section>
 
-<h2>20 Sprachen</h2>
-<p>Deutsch, Ungarisch, Englisch, Französisch, Italienisch, Spanisch, Polnisch, Tschechisch, Russisch, Türkisch, Kroatisch, Slowakisch, Slowenisch, Rumänisch, Ukrainisch, Serbisch, Griechisch, Bosnisch, Albanisch, Latein.</p>
-<div class="hint"><strong>Latein:</strong> Dabei als Funfakt — die Übersetzungsqualität ist begrenzt da Latein eine tote Sprache ist.</div>
 
-<hr>
+<section id="pro-teaser">
+<h2>Was Babel Pro zusätzlich kann</h2>
+<p>Babel Basic ist vollständig. Wer mehr will, findet hier die Unterschiede.</p>
+<ul>
+<li><strong>Ankersprache:</strong> Jeder Mensch kann seine Muttersprache als Referenz verankern und die Bedienoberfläche auf sie stellen. Statusmeldungen und Hilfetexte lassen sich zusätzlich wahlweise auf Deutsch oder Englisch anzeigen.</li>
+<li><strong>Veredelung:</strong> Die mitgelieferte Grundausstattung an Vokabeln und Phrasen wird vom Bronze- zum Goldsprachschatz veredelt.</li>
+<li><strong>Sprachfächer:</strong> Fachsprachschätze für besondere Momente hast Du immer dabei.</li>
+<li><strong>Lernmodule:</strong> Jeder Schatz lässt sich gezielt trainieren, im Automatikmodus zum Beispiel beim Autofahren: Babel fragt, Du antwortest, Babel vergleicht und sammelt Nichtgewusstes zur Wiedervorlage.</li>
+<li><strong>KI-Knopf:</strong> In Vorbereitung — kontextbezogene Übersetzung und Alternativvorschläge.</li>
+</ul>
+</section>
 
+
+<section id="waechst">
 <h2>ThiLo! wächst</h2>
-<p>Die ThiLo!-Produktfamilie wächst laufend weiter. Eine eigene Internetseite wird folgen.</p>
-<p>Ich freue mich über jedes Feedback und wünsche mir, dass die Produkte weitergegeben werden und möglichst großen Nutzen in der Welt stiften.</p>
-<p><strong>Viel Freude damit!</strong></p>
+<p>Die ThiLo!-Produktfamilie wächst laufend weiter. Eine eigene Internetseite wird folgen. Ich freue mich über jedes Feedback und wünsche mir, dass die Produkte weitergegeben werden und möglichst großen Nutzen in der Welt stiften. Und ich habe noch Ideen — etwa ein Grammatiklernmodul zum Konjugieren und Deklinieren.</p>
+<p style="font-size:17px;color:var(--gold);font-weight:700;margin-top:20px;">Viel Freude damit!</p>
+</section>
 
-<div class="author">
-  Mag. Rudolf Grothusen, Krensdorf 2026<br>
-  ThiLo! — Think Local. Synenergy.<br>
-  <a href="mailto:synenergy1963@gmail.com" style="color:#555">synenergy1963@gmail.com</a>
+</main>
+
+<footer>
+  <div class="brand" data-no-translate>ThiLo! — Think Local. Synenergy.</div>
+  <div class="line" data-no-translate>Mag. Rudolf Grothusen, Krensdorf 2026</div>
+  <div class="line"><a href="mailto:synenergy1963@gmail.com">synenergy1963@gmail.com</a></div>
+</footer>
+
+<button class="toc-btn" id="tocBtn" type="button"><span aria-hidden="true">📑</span><span class="lbl">Inhalt</span></button>
+<div class="toc-overlay" id="tocOverlay">
+  <div class="toc-sheet" id="tocSheet">
+    <div class="toc-head"><div class="t">Inhaltsverzeichnis</div><button class="toc-close" id="tocClose" type="button" aria-label="×">✕</button></div>
+    <div id="tocLinks"></div>
+  </div>
 </div>
 
+<script src="ui-strings.js"></script>
+<script src="doc-veredeln.js"></script>
+<script src="doc-en-anleitung.js"></script>
+<script>
+const IST_PRO = false;
+const SELECTOR = "h1, h2, h3, p, li, th, td, .box, .badge, .stufe .titel, .level-card .name, .toc-btn .lbl, .toc-head .t, .hero .sub, .hero .meta, footer .line";
+
+// Inhaltsverzeichnis: wird aus den Überschriften gebaut, damit es immer zur gerade angezeigten Sprache passt.
+function buildToc() {
+  const box = document.getElementById("tocLinks");
+  box.replaceChildren();
+  document.querySelectorAll("main section[id]").forEach(sec => {
+    const h = sec.querySelector("h2"); if (!h) return;
+    const a = document.createElement("a");
+    a.href = "#" + sec.id; a.textContent = h.textContent;
+    if (h.classList.contains("pro")) a.className = "pro";
+    box.appendChild(a);
+  });
+  const h1 = document.querySelector(".hero h1"), sub = document.querySelector(".hero .sub");
+  if (h1 && sub) document.title = h1.textContent + " — " + sub.textContent;
+}
+const tocOverlay = document.getElementById("tocOverlay");
+document.getElementById("tocBtn").addEventListener("click", () => tocOverlay.classList.add("open"));
+document.getElementById("tocClose").addEventListener("click", () => tocOverlay.classList.remove("open"));
+tocOverlay.addEventListener("click", e => { if (e.target === tocOverlay || e.target.closest("a")) tocOverlay.classList.remove("open"); });
+buildToc();
+
+(async function () {
+  if (typeof initDocVeredelung !== "function") return;   // Modul fehlt: Seite bleibt deutsch, funktioniert trotzdem
+  const opts = { onApply: buildToc };
+  if (typeof THILO_DOC_EN !== "undefined") opts.builtin = { en: THILO_DOC_EN };
+  const v = initDocVeredelung("anleitung", SELECTOR, opts);
+  window.docV = v;
+  await v.ready;
+  await v.autoApplyOnLoad();
+  v.mountBar(document.getElementById("docbar"), { pro: IST_PRO });
+})();
+</script>
 </body>
 </html>

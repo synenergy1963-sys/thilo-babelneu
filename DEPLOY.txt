@@ -1,0 +1,9 @@
+ThiLo! Babel (Basic) – Deploy-Paket, Stand 11.10.2026, 19:40 (index)
+index.html          Basic (IST_PRO=false), Name "ThiLo! Babel"
+ui-strings.js       Menü (Gruppe A), gleiche Datei wie Pro
+status-strings.js   Status-/Hilfetexte DE/EN + Schalter, gleiche Datei wie Pro
+anleitung.html      aus anleitung_basic.html
+thilo-manifest.html aus manifest_basic.html
+doc-veredeln.js, doc-en-anleitung.js, doc-en-manifest.js   für die Seiten
+NICHT enthalten (kenne ich nicht, bleiben wie bisher): manifest.json, sw.js, _headers, icons/, coping-phrasen.txt
+Vor dem Hochladen: manifest.json ohne "Pro"; in sw.js die Cache-Version hochzählen und ui-strings.js, status-strings.js, anleitung.html, thilo-manifest.html, doc-*.js in die Liste der vorab zwischengespeicherten Dateien aufnehmen.

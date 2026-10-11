@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,12 +21,12 @@
   em { color: #e8c547; font-style: normal; font-weight: 600; }
   hr { border: none; border-top: 1px solid #2a2a2a; margin: 32px 0; }
 
-  blockquote { border-left: 3px solid #e8c547; padding: 14px 22px; margin: 24px 0;
-    background: #1a1a1a; border-radius: 0 10px 10px 0; }
+  blockquote { border-inline-start: 3px solid #e8c547; padding: 14px 22px; margin: 24px 0;
+    background: #1a1a1a; border-start-end-radius: 10px; border-end-end-radius: 10px; }
   blockquote p { font-size: 17px; color: #e8c547; font-style: italic; margin: 0; line-height: 1.6; }
 
-  .feature { background: #1a1a1a; border: 1px solid #2a2a2a; border-left: 3px solid #e8c547;
-    border-radius: 0 10px 10px 0; padding: 14px 18px; margin-bottom: 12px; }
+  .feature { background: #1a1a1a; border: 1px solid #2a2a2a; border-inline-start: 3px solid #e8c547;
+    border-start-end-radius: 10px; border-end-end-radius: 10px; padding: 14px 18px; margin-bottom: 12px; }
   .feature-title { font-size: 14px; font-weight: 700; color: #f0f0f0; margin-bottom: 4px; }
   .feature-text { font-size: 14px; color: #aaa; line-height: 1.65; }
 
@@ -37,8 +37,8 @@
   .persoenlich .unterzeichner { font-size: 13px; color: #888; font-style: italic;
     margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a; }
 
-  .haltung { background: #1a1a1a; border: 1px solid #2a2a2a; border-left: 3px solid #47a8e8;
-    border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 24px 0; }
+  .haltung { background: #1a1a1a; border: 1px solid #2a2a2a; border-inline-start: 3px solid #47a8e8;
+    border-start-end-radius: 10px; border-end-end-radius: 10px; padding: 20px 24px; margin: 24px 0; }
   .haltung p { font-size: 15px; color: #ccc; margin-bottom: 10px; }
   .haltung p:last-child { margin-bottom: 0; }
 
@@ -53,16 +53,19 @@
   .einladung p:last-child { margin-bottom: 0; }
   .einladung .kernsatz { color: #e8c547; font-weight: 600; font-size: 16px; }
 
-  .author { margin-top: 40px; font-size: 12px; color: #555; text-align: right; line-height: 1.8; }
+  .author { margin-top: 40px; font-size: 12px; color: #555; text-align: end; line-height: 1.8; }
 
   .slogan { text-align: center; margin: 40px 0 20px; font-size: 17px; color: #e8c547;
     font-weight: 700; letter-spacing: 0.05em; }
+  #docbar { margin: 0 0 28px; }
+  html[dir="rtl"] body { text-align: right; }
 </style>
 </head>
 <body>
 
 <h1>ThiLo! Manifest</h1>
-<div class="tagline">Think Local. Synenergy.</div>
+<div class="tagline" data-no-translate>Think Local. Synenergy.</div>
+<div id="docbar" data-no-translate></div>
 
 <h2>Die Geschichte beginnt mit einer Ungerechtigkeit</h2>
 <p>SayHi war eine App, die Menschen verband. Einfach, präzise, menschlich. Amazon kaufte sie — nicht um sie weiterzuentwickeln, sondern um sie zu eliminieren.</p>
@@ -161,13 +164,30 @@
   <p>So wächst der Schwarm. Nicht durch Werbung. Nicht durch Investitionen. Sondern durch Menschen, die etwas gefunden haben, das ihnen hilft — und die es weitergeben wollen.</p>
 </div>
 
-<div class="slogan">Think Local. Synenergy.</div>
+<div class="slogan" data-no-translate>Think Local. Synenergy.</div>
 
-<div class="author">
+<div class="author" data-no-translate>
   Mag. Rudolf Grothusen, Krensdorf 2026<br>
   ThiLo! — Think Local. Synenergy.<br>
   <a href="mailto:synenergy1963@gmail.com" style="color:#555">synenergy1963@gmail.com</a>
 </div>
 
+<script src="ui-strings.js"></script>
+<script src="doc-veredeln.js"></script>
+<script src="doc-en-manifest.js"></script>
+<script>
+const IST_PRO = false;
+const SELECTOR = "h1, h2, p, .feature-title, .feature-text, .sub, .unterzeichner";
+(async function () {
+  if (typeof initDocVeredelung !== "function") return;   // Modul fehlt: Seite bleibt deutsch, funktioniert trotzdem
+  const opts = { onApply: function () { const h = document.querySelector("h1"); if (h) document.title = h.textContent; } };
+  if (typeof THILO_DOC_EN !== "undefined") opts.builtin = { en: THILO_DOC_EN };
+  const v = initDocVeredelung("manifest", SELECTOR, opts);
+  window.docV = v;
+  await v.ready;
+  await v.autoApplyOnLoad();
+  v.mountBar(document.getElementById("docbar"), { pro: IST_PRO });
+})();
+</script>
 </body>
 </html>
