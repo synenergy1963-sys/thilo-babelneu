@@ -1,66 +1,72 @@
-// ThiLo! Babel Basic — Service Worker
-// Diese Datei muss bei jedem Deploy über die _headers-Datei vom Browser-Cache
-// ausgenommen sein, sonst findet kein Update mehr statt. Der CACHE-Name wird
-// bei jedem Deploy erhöht (v1 -> v2 -> v3 ...), damit der alte Cache beim
-// Aktivieren der neuen Version verworfen wird.
+// ThiLo! Babel Pro — Service Worker.
+// Kernsatz: index.html, ui-strings.js und status-strings.js sind fürs erste Laden lebensnotwendig
+// (ohne sie läuft die App nur noch mit dem Fallback aus index.html, siehe dort) — sie kommen fest
+// in die Startliste. anleitung.html/thilo-manifest.html bewusst NICHT (eigenständige Seiten,
+// siehe README, Abschnitt "Wunsch → Wirkung"). Fremde Adressen (Google, MyMemory) werden nie
+// abgefangen oder zwischengespeichert.
 
-const CACHE = "thilo-babel-basic-v9";
+// Bei jedem Deploy, der garantiert sofort greifen soll, diese Nummer erhöhen.
+const CACHE_VERSION = "v10";
+const CACHE = "babel-pro-shell-" + CACHE_VERSION;
 const SHELL = [
-  "/", "/index.html", "/manifest.json", "/coping-phrasen.txt",
-  "/icons/favicon-48.png", "/icons/apple-touch-icon.png", "/icons/logo-144.png",
-  "/icons/icon-192.png", "/icons/icon-512.png", "/icons/icon-maskable-512.png"
+  "/", "/index.html", "/manifest.json",
+  "/ui-strings.js", "/status-strings.js"
 ];
 
-// ============ Install: Shell cachen + neue Version sofort aktivieren ============
 self.addEventListener("install", (e) => {
+  self.skipWaiting();
+  // { cache: "reload" } erzwingt einen echten Netzwerk-Roundtrip auch beim ersten Befüllen,
+  // statt versehentlich eine alte, browsereigene HTTP-Cache-Antwort zu übernehmen.
   e.waitUntil(
-    caches.open(CACHE).then(async (c) => {
-      // Tolerant: Eine fehlende Shell-Datei killt nicht den ganzen SW.
-      for (const url of SHELL) {
-        try {
-          await c.add(url);
-        } catch (err) {
-          console.warn("ThiLo! Babel SW: Shell-Datei nicht ladbar:", url, err);
-        }
-      }
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE).then((c) =>
+      Promise.all(SHELL.map((url) =>
+        fetch(url, { cache: "reload" })
+          .then((r) => { if (r.ok) return c.put(url, r); })
+          .catch(() => {})
+      ))
+    )
   );
 });
 
-// ============ Activate: alte Caches löschen + sofort alle Tabs übernehmen ============
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(
-        keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))
-      ))
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
 
-// ============ Fetch: Network-First mit Cache-Fallback ============
+// clone() MUSS vor der Rückgabe passieren, sonst "Response body is already used".
+function cachePut(req, response) {
+  if (!response || !response.ok) return;
+  const copy = response.clone();
+  caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+}
+
 self.addEventListener("fetch", (e) => {
-  // Funktionsaufrufe (Übersetzung) niemals aus dem Cache bedienen
-  if (e.request.url.includes("/.netlify/functions/")) return;
+  const req = e.request;
+  if (req.method !== "GET") return;
+  if (new URL(req.url).origin !== self.location.origin) return;
 
-  // Nur GET-Anfragen cachen (POST, PUT etc. nicht)
-  if (e.request.method !== "GET") return;
+  // Navigation (HTML-Seiten, auch anleitung.html/thilo-manifest.html): immer zuerst frisch vom
+  // Netz, dabei den browsereigenen HTTP-Cache umgehen; nur bei Netzfehler auf den Cache zurück.
+  if (req.mode === "navigate") {
+    e.respondWith(
+      fetch(req, { cache: "no-store" })
+        .then((response) => { cachePut(req, response); return response; })
+        .catch(() => caches.match(req).then((cached) => cached || caches.match("/index.html")))
+    );
+    return;
+  }
 
-  // Externe Domains (Google, MyMemory, PayPal etc.) nicht anfassen —
-  // Browser soll sie normal behandeln
-  const url = new URL(e.request.url);
-  if (url.origin !== self.location.origin) return;
-
+  // Alle anderen eigenen Dateien (JS, Icons, ...): stale-while-revalidate — sofort aus dem
+  // Cache antworten (schnell, funktioniert offline), im Hintergrund aktualisieren.
   e.respondWith(
-    fetch(e.request)
-      .then((res) => {
-        // Frische Antwort im Cache ablegen, damit sie offline verfügbar ist
-        if (res && res.status === 200 && res.type === "basic") {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(e.request, copy)).catch(() => {});
-        }
-        return res;
-      })
-      .catch(() => caches.match(e.request))
+    caches.match(req).then((cached) => {
+      const networkFetch = fetch(req)
+        .then((response) => { cachePut(req, response); return response; })
+        .catch(() => cached);
+      return cached || networkFetch;
+    })
   );
 });

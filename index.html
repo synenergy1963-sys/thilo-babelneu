@@ -314,7 +314,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <button class="modal-close" id="closeMenuBtn">✕</button>
     </div>
 
-    <div class="menu-section">App</div>
+    <div class="menu-section" data-i18n="appHeader">App</div>
     <a class="menu-item" href="/" target="_blank">
       <span class="mi-icon">🔄</span>
       <div><div data-i18n="updateTitle">App aktualisieren</div><div class="mi-sub" data-i18n="updateSub">Neueste Version im Browser öffnen</div></div>
@@ -436,7 +436,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <div><div>ThiLo! Manifest</div><div class="mi-sub" data-i18n="manifestSub">Philosophie & Seele von ThiLo!</div></div>
     </a>
     <!-- **Rudolf sieht am Gerät sofort, welche Fassung gerade läuft.** -->
-<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel</span> · Stand: 12.10.2026, 01:45 · Basis Babel v1.10 + Hebräisch + Kontext-Export + EN/DE-Schalter (Menü + Status) + Weitergeben + Status-Strings verdrahtet</div>
+<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel</span> · Stand: 12.10.2026, 09:30 · Basis Babel v1.10 + Hebräisch + Kontext-Export + EN/DE-Schalter (Menü + Status) + Weitergeben + Status-Strings verdrahtet</div>
     <div style="text-align:center;margin-top:10px;">
       <a href="https://www.netlify.com" target="_blank">
         <img src="https://www.netlify.com/v3/img/components/netlify-color-accent.svg" alt="Hosted on Netlify" style="height:20px;opacity:0.4;">
@@ -499,7 +499,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <div style="display:flex;gap:8px;align-items:center;">
         <select id="ownPhraseCat" style="flex:1;background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;">
           <option value="" disabled selected data-i18n-b="chooseCategory">— Kategorie wählen —</option>
-          <option value="Eigene Phrasen">Eigene Phrasen</option>
+          <option value="Eigene Phrasen" id="optEigenePhrasen">Eigene Phrasen</option>
         </select>
                <input type="text" id="ownPhraseNewCat" placeholder="Neue Kategorie…" data-i18n-ph-b="newCategoryPlaceholder" style="flex:1;background:#111;border:1px solid #2a2a2a;color:#f0f0f0;padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px;outline:none;" />
       </div>
@@ -606,7 +606,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
     </div>
 
     <div class="learn-card">
-      <div class="learn-progress" id="learnProgress">Vokabel 1 von 50</div>
+      <div class="learn-progress" id="learnProgress" data-i18n-b="learnReady">Bereit</div>
       <div class="learn-word" id="learnWord">—</div>
       <div class="learn-instruction" id="learnInstruction"></div>
     </div>
@@ -891,9 +891,19 @@ const micAText = document.getElementById("micAText");
 const micBText = document.getElementById("micBText");
 const statusEl = document.getElementById("status");
 
+// **Sprachnamen sollen in der Sprache des Menüs stehen (z. B. "German" statt "Deutsch" bei EN).**
+// Funktion: Basic folgt dem EN/DE-Schalter, Pro der Ankersprache. Deutsch bleibt die Liste LANGS;
+// jede andere Sprache holt sich der Browser über Intl.DisplayNames, bei Fehlern gilt der deutsche Name.
 function langName(code) {
   const l = LANGS.find(l => l.code === code);
-  return l ? l.name : code;
+  if (!l) return code;
+  try {
+    const key = IST_PRO ? uiLangKey(anchorLang) : (uiModeB === "en" ? "en" : "de");
+    if (key === "de") return l.name;
+    const base = code.split("-")[0];
+    const n = new Intl.DisplayNames([key], { type: "language" }).of(base);
+    return n && n !== base ? n.charAt(0).toUpperCase() + n.slice(1) : l.name;
+  } catch (e) { return l.name; }
 }
 
 function populateSelects() {
@@ -902,7 +912,7 @@ function populateSelects() {
     LANGS.forEach(l => {
       const opt = document.createElement("option");
       opt.value = l.code;
-      opt.textContent = l.name;
+      opt.textContent = langName(l.code);
       sel.appendChild(opt);
     });
   });
@@ -911,8 +921,9 @@ function populateSelects() {
 }
 
 function renderLabels() {
-  labelA.textContent = langName(langA) + " spricht";
-  labelB.textContent = langName(langB) + " spricht";
+  const sp = uiT("speaksLabel");
+  labelA.textContent = typeof sp === "function" ? sp(langName(langA)) : langName(langA) + " spricht";
+  labelB.textContent = typeof sp === "function" ? sp(langName(langB)) : langName(langB) + " spricht";
 }
 
 function setHeard(panel, text) {
@@ -948,6 +959,30 @@ function updateButtons() {
   micB.classList.toggle("active", recording === "B");
   micAText.textContent = recording === "A" ? uiT("stopRecordingLabel") : uiT("speakLabel");
   micBText.textContent = recording === "B" ? uiT("stopRecordingLabel") : uiT("speakLabel");
+}
+
+// **Die Hinweise an den Wiederhol-Knöpfen folgen dem EN/DE-Schalter.** Funktion: kleine Tabelle, weil deine
+// status-strings.js dafür keinen Schlüssel hat; applyRepeatTitles setzt die festen Knöpfe im HTML.
+const REPEAT_T = { de: { orig: "Original wiederholen", trans: "Übersetzung wiederholen" },
+                   en: { orig: "Repeat original", trans: "Repeat translation" } };
+function repT(k) { return (REPEAT_T[uiModeB === "en" ? "en" : "de"] || REPEAT_T.de)[k]; }
+// Anzeigename der Standardkategorie (der gespeicherte Wert bleibt "Eigene Phrasen")
+function applyCatLabels() {
+  const o = document.getElementById("optEigenePhrasen");
+  if (o) o.textContent = uiModeB === "en" ? "My phrases" : "Eigene Phrasen";
+}
+// **Der Kontext-Knopf im Protokoll folgt dem EN/DE-Schalter wie alle anderen Texte.** Funktion: kleine Tabelle,
+// weil in status-strings.js/ui-strings.js dafür kein Schlüssel existiert (Wortlaut bei Gelegenheit dorthin verschieben).
+const KONTEXT_T = { de: { label: "Kontext", title: "Protokoll als Kontext für ThiLo! Note (JSON)" },
+                    en: { label: "Context", title: "Transcript as context for ThiLo! Note (JSON)" } };
+function applyKontextTexts() {
+  const b = document.getElementById("exportKontextBtn"); if (!b) return;
+  const t = KONTEXT_T[uiModeB === "en" ? "en" : "de"];
+  b.textContent = t.label; b.title = t.title;
+}
+function applyRepeatTitles() {
+  ["repeatA", "repeatB"].forEach(id => { const e = document.getElementById(id); if (e) e.title = repT("orig"); });
+  ["repeatTransA", "repeatTransB"].forEach(id => { const e = document.getElementById(id); if (e) e.title = repT("trans"); });
 }
 
 // **Knopfbeschriftungen, die im Code gesetzt werden, sollen dieselbe Sprache haben wie das Menü.**
@@ -1390,7 +1425,7 @@ function addTranscriptEntry(panel, spoken, translated) {
   const repeatSpoken = document.createElement("button");
   repeatSpoken.className = "repeatbtn";
   repeatSpoken.textContent = "🔁";
-  repeatSpoken.title = "Original wiederholen";
+  repeatSpoken.title = repT("orig");
   repeatSpoken.style.cssText = "width:32px;height:32px;font-size:13px;";
   repeatSpoken.addEventListener("click", () => speak(spoken, srcLang));
   spokenRow.appendChild(spokenText);
@@ -1411,7 +1446,7 @@ function addTranscriptEntry(panel, spoken, translated) {
   const repeatTrans = document.createElement("button");
   repeatTrans.className = "repeatbtn";
   repeatTrans.textContent = "🔁";
-  repeatTrans.title = "Übersetzung wiederholen";
+  repeatTrans.title = repT("trans");
   repeatTrans.style.cssText = "width:32px;height:32px;font-size:13px;";
   repeatTrans.addEventListener("click", () => speak(translated, tgtLang));
   transRow.appendChild(transText);
@@ -2234,7 +2269,12 @@ async function renderListe(art) {
   listEl.innerHTML = '<div style="color:#555;font-size:13px;text-align:center;padding:20px 0;">' + tb("loadingShort") + '</div>';
 
   const titleEl = document.getElementById(ids.title);
-  if (titleEl) titleEl.textContent = LABELS[art].plural + " (" + langName(langB) + ")";
+  if (titleEl) {
+    // Fenstertitel in der Sprache des Menüs ("Phrases" statt "Phrasen"); Rückfall: bisheriger Wert aus LABELS
+    const lab = uiT(art === "phrase" ? "labelPhrase" : "labelVokabel");
+    const pl = (lab && lab.plural) ? lab.plural.charAt(0).toUpperCase() + lab.plural.slice(1) : LABELS[art].plural;
+    titleEl.textContent = pl + " (" + langName(langB) + ")";
+  }
 
   if (list.length === 0) {
     listEl.innerHTML = '<div style="color:#444;font-size:13px;font-style:italic;text-align:center;padding:20px 0;">' + tb("noneSavedYet", labelPlural(art)) + '</div>';
@@ -2608,7 +2648,7 @@ function refreshOwnPhraseCats() { refreshCatSelect("phrase", document.getElement
 
 function openPhraseModal() {
   refreshOwnPhraseCats();
-  ownHuInput.placeholder = "Übersetzung (" + langName(langB) + ")";
+  ownHuInput.placeholder = tb("translationPlaceholder") + " (" + langName(langB) + ")";
   updateLocalizeBtn();
   updateNotesToggleBtn();
   renderTreasureList();
@@ -2695,12 +2735,12 @@ document.getElementById("loadGrundvokabularBtn").addEventListener("click", () =>
 ownDeInput.addEventListener("blur", async () => {
   const de = ownDeInput.value.trim();
   if (!de || ownHuInput.value.trim()) return;
-  ownHuInput.placeholder = "Übersetze…";
+  ownHuInput.placeholder = tb("translating");
   try {
     const translated = await doTranslate(de, "de-DE", langB);
     ownHuInput.value = translated;
-    ownHuInput.placeholder = "Übersetzung (" + langName(langB) + ")";
-  } catch { ownHuInput.placeholder = "Übersetzung (" + langName(langB) + ")"; }
+    ownHuInput.placeholder = tb("translationPlaceholder") + " (" + langName(langB) + ")";
+  } catch { ownHuInput.placeholder = tb("translationPlaceholder") + " (" + langName(langB) + ")"; }
 });
 
 document.getElementById("ownAddBtn").addEventListener("click", async () => {
@@ -3514,7 +3554,10 @@ wireExportImportButtons();
 // **Wer EN/DE umschaltet, soll sofort alles in der neuen Sprache sehen — nicht erst nach dem nächsten Ereignis.**
 // Funktion: Läuft nach toggleUIModeB (Listener-Reihenfolge) und zeichnet die Stellen neu, die ihren Text beim
 // Aufbau setzen (Key-Fach, Anker-Tooltip, KI-Tooltip, Kategorie-Auswahl, Leer-Platzhalter der Panels).
+applyRepeatTitles(); applyCatLabels(); applyKontextTexts();
 document.getElementById("uiModeBBtn").addEventListener("click", () => {
+  try { applyRepeatTitles(); applyCatLabels(); applyKontextTexts(); } catch (e) {}
+  try { populateSelects(); renderLabels(); } catch (e) {}
   try { refreshProKeyUI(); } catch (e) {}
   try { updateAnchorBtn(); } catch (e) {}
   try { if (IST_PRO) setzeKiModus(ladeKiModus()); } catch (e) {}
