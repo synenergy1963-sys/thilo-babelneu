@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Google-API-Key für Babel – Kurzanleitung</title>
+<style>
+  body { font-family: Arial, Helvetica, sans-serif; background: #0f0f0f; color: #f0f0f0;
+    max-width: 600px; margin: 0 auto; padding: 32px 20px 80px; line-height: 1.65; font-size: 16px; }
+  h1 { font-size: 24px; color: #e8c547; margin: 0 0 6px; }
+  .sub { color: #888; font-style: italic; margin-bottom: 32px; }
+  h2 { font-size: 18px; color: #47a8e8; border-bottom: 1px solid #2a2a2a;
+    padding-bottom: 6px; margin: 32px 0 14px; }
+  p { margin: 0 0 12px; }
+  ol { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 10px; }
+  .warn { background: #1f1a14; border-left: 3px solid #e8c547; padding: 12px 16px;
+    margin: 16px 0; font-size: 15px; }
+  .warn strong { color: #e8c547; }
+  .ok { background: #14201a; border-left: 3px solid #6abf6a; padding: 12px 16px;
+    margin: 16px 0; font-size: 15px; }
+  .ok strong { color: #6abf6a; }
+  code { background: #1a1a1a; color: #6abf6a; padding: 2px 6px; border-radius: 4px;
+    font-family: monospace; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<h1>Google-API-Key für Babel</h1>
+<div class="sub">Eine kurze Anleitung in sechs Schritten</div>
+
+<p>Babel Pro kann über einen eigenen Google-Schlüssel übersetzen. Dann läuft die Übersetzung über Google statt über einen anderen Dienst. Der Schlüssel kostet dich nichts, solange du unter dem monatlichen Freibetrag bleibst.</p>
+
+<h2>Was du brauchst</h2>
+
+<ul>
+<li>Ein Google-Konto (das hast du, wenn du Gmail oder YouTube nutzt).</li>
+<li>Eine Kreditkarte – nur zur Sicherheit. Belastet wird sie erst, wenn du den Freibetrag überschreitest.</li>
+</ul>
+
+<h2>Die sechs Schritte</h2>
+
+<ol>
+<li><strong>Google Cloud öffnen.</strong><br>
+Gehe auf <code>console.cloud.google.com</code> und melde dich mit deinem Google-Konto an.</li>
+
+<li><strong>Ein Projekt anlegen.</strong><br>
+Oben links auf „Projekt auswählen" klicken, dann „Neues Projekt". Gib ihm einen Namen, zum Beispiel „Babel". Klicke auf „Erstellen".</li>
+
+<li><strong>Die Translation-API einschalten.</strong><br>
+Im Menü links auf „APIs und Dienste" → „Bibliothek". Suche nach <code>Cloud Translation API</code>. Klicke darauf und dann auf „Aktivieren".</li>
+
+<li><strong>Abrechnung einrichten.</strong><br>
+Google verlangt, dass du ein Abrechnungskonto verknüpfst. Klicke auf „Abrechnung" und folge den Schritten. Du bekommst 300 $ Startguthaben für 90 Tage. Danach kostet die Übersetzung etwa 20 $ pro Million Zeichen – das ist sehr viel Text.</li>
+
+<li><strong>Den Schlüssel erstellen.</strong><br>
+Im Menü links auf „APIs und Dienste" → „Anmeldedaten". Klicke auf „Anmeldedaten erstellen" → „API-Schlüssel". Der Schlüssel wird dir angezeigt.</li>
+
+<li><strong>Den Schlüssel kopieren und einschränken.</strong><br>
+Kopiere den Schlüssel. Klicke dann auf „Schlüssel einschränken". Wähle unter „API-Einschränkungen" die <code>Cloud Translation API</code>. Speichern.</li>
+</ol>
+
+<div class="ok">
+<strong>Fertig.</strong> Du hast jetzt einen Schlüssel. Füge ihn in Babel Pro im Menü unter „🔑 Google Translate (Pro)" ein und tippe auf „Speichern & prüfen". Wenn alles stimmt, steht dort „✓ Key geprüft".
+</div>
+
+<div class="warn">
+<strong>Wichtig:</strong> Der Schlüssel gehört nur dir. Gib ihn nicht weiter. Er liegt in deinem Browser und wird nicht mit den Vokabeln exportiert.
+</div>
+
+</body>
+</html>
