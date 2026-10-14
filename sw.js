@@ -1,4 +1,4 @@
-// ThiLo! Babel Pro — Service Worker.
+// ThiLo! Babel Basic — Service Worker.
 // Kernsatz: index.html, ui-strings.js und status-strings.js sind fürs erste Laden lebensnotwendig
 // (ohne sie läuft die App nur noch mit dem Fallback aus index.html, siehe dort) — sie kommen fest
 // in die Startliste. anleitung.html/thilo-manifest.html bewusst NICHT (eigenständige Seiten,
@@ -6,7 +6,7 @@
 // abgefangen oder zwischengespeichert.
 
 // Bei jedem Deploy, der garantiert sofort greifen soll, diese Nummer erhöhen.
-const CACHE_VERSION = "v10";
+const CACHE_VERSION = "v12";
 const CACHE = "babel-pro-shell-" + CACHE_VERSION;
 const SHELL = [
   "/", "/index.html", "/manifest.json",
