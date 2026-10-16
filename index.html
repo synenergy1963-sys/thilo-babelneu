@@ -373,6 +373,16 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <input type="checkbox" id="autoTranslateToggle" style="width:20px;height:20px;flex-shrink:0;" />
     </label>
 
+    <!-- Kernsatz: Rudolf will selbst wählen, ob Babel über Google oder über MyMemory übersetzt. -->
+    <div class="menu-item" style="cursor:default;">
+      <span class="mi-icon">🔀</span>
+      <div style="flex:1;">
+        <div id="dienstTitle">Übersetzungsdienst</div>
+        <div class="mi-sub" id="dienstSub"></div>
+      </div>
+      <button class="phrasebtn" id="dienstBtn" style="min-width:84px;flex-shrink:0;">MyMemory</button>
+    </div>
+
     <hr class="menu-divider" />
     <div class="menu-section">🔑 Google Translate</div>
     <div class="menu-item" style="cursor:default;flex-direction:column;align-items:stretch;gap:8px;">
@@ -436,7 +446,7 @@ body:not(.symbols-only) .translatebtn .ico-arrow { margin-right: -1px; }
       <div><div>ThiLo! Manifest</div><div class="mi-sub" data-i18n="manifestSub">Philosophie & Seele von ThiLo!</div></div>
     </a>
     <!-- **Rudolf sieht am Gerät sofort, welche Fassung gerade läuft.** -->
-<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel</span> · Stand: 14.10.2026, 17:20 · Basis Babel v1.10 + Hebräisch + Kontext-Export + EN/DE-Schalter (Menü + Status) + Weitergeben + Status-Strings verdrahtet + Grundvokabular DE–HU (1745)</div>
+<div class="menu-version" id="menuStand"><span data-appname>ThiLo! Babel</span> · Stand: 16.10.2026, 10:30 · Dienst-Schalter Google/MyMemory + MyMemory-Prüfung · Basis Babel v1.10 + Hebräisch + Kontext-Export + EN/DE-Schalter (Menü + Status) + Weitergeben + Status-Strings verdrahtet + Grundvokabular DE–HU (1745)</div>
     <div style="text-align:center;margin-top:10px;">
       <a href="https://www.netlify.com" target="_blank">
         <img src="https://www.netlify.com/v3/img/components/netlify-color-accent.svg" alt="Hosted on Netlify" style="height:20px;opacity:0.4;">
@@ -1174,6 +1184,39 @@ function saveProKey(k) {
 function deleteProKey() {
   try { idbRemove(PRO_KEY_STORE); } catch {}
 }
+
+// ============ ÜBERSETZUNGSDIENST-SCHALTER: Google oder MyMemory ============
+// Kernsatz: Wer Google wählt, will auch Google — ohne stillen Rückfall auf MyMemory (dessen Treffer
+// stammen teils aus ungeprüften Nutzer-/Korpus-Einträgen). Funktion: Gespeichert wird "google" oder
+// "mymemory". Noch nichts gewählt: Google, wenn ein Key hinterlegt ist, sonst MyMemory. Ohne Key
+// ist Google nicht wählbar (der Schalter bleibt dann bei MyMemory und zeigt einen Hinweis).
+const DIENST_KEY = "thilo-babel-dienst";
+function getDienst() {
+  let v = null;
+  try { v = idbGet(DIENST_KEY); } catch {}
+  if (v === "google" && getProKey()) return "google";
+  if (v === "mymemory") return "mymemory";
+  return getProKey() ? "google" : "mymemory";
+}
+function setDienst(v) { try { idbSet(DIENST_KEY, v); } catch {} }
+const DIENST_T = {
+  de: { title: "Übersetzungsdienst",
+        google: "Google: zuverlässig, kein Rückfall auf MyMemory",
+        mymemory: "MyMemory: kostenlos, Treffer teils aus ungeprüften Nutzereinträgen",
+        nokey: "Google braucht zuerst einen Key (weiter unten eintragen)" },
+  en: { title: "Translation service",
+        google: "Google: reliable, no fallback to MyMemory",
+        mymemory: "MyMemory: free, results partly from unchecked user entries",
+        nokey: "Google needs a key first (enter it further down)" }
+};
+function applyDienstTexts(hinweisKeinKey) {
+  const btn = document.getElementById("dienstBtn"); if (!btn) return;
+  const t = DIENST_T[uiModeB === "en" ? "en" : "de"];
+  const d = getDienst();
+  btn.textContent = d === "google" ? "Google" : "MyMemory";
+  document.getElementById("dienstTitle").textContent = t.title;
+  document.getElementById("dienstSub").textContent = hinweisKeinKey === true ? t.nokey : t[d];
+}
 function proCharsKey() { return PRO_CHARS_PREFIX + new Date().toISOString().slice(0, 7); }
 function getProChars() {
   try { return parseInt(idbGet(proCharsKey()) || "0", 10) || 0; } catch { return 0; }
@@ -1260,22 +1303,22 @@ async function doTranslateCore(text, from, to) {
     return ergebnisse.join(" ");
   }
 
-  // 1) Mit hinterlegtem Google-Key: Google zuerst
+  // 1) Dienstwahl (Schalter im Menü): Google wird ohne Rückfall verwendet, MyMemory überspringt Google ganz.
   let googleFehler = false;
-  if (getProKey()) {
+  if (getDienst() === "google") {
     try {
       const t = await googleTranslate(text, from, to);
       lastService = "Google";
       lastGoogleError = "";
       return t;
     } catch (e) {
-      googleFehler = true;
       lastGoogleError = e.message || String(e);
-      console.warn("Google-Fehler, weiche auf MyMemory aus:", lastGoogleError);
+      console.warn("Google-Fehler (kein Rückfall auf MyMemory, Schalter steht auf Google):", lastGoogleError);
+      throw e;
     }
   }
 
-  // 2) MyMemory (ohne Key oder als Reserve bei Google-Fehler)
+  // 2) MyMemory (nur wenn im Schalter gewählt)
   addLimitChars(text.length);
 
   const url = "https://api.mymemory.translated.net/get?q=" +
@@ -1289,12 +1332,58 @@ async function doTranslateCore(text, from, to) {
   if (data.responseStatus === 429 || (data.responseDetails && data.responseDetails.includes("MYMEMORY WARNING"))) {
     throw new Error(limitText);
   }
-  const translation = data.responseData && data.responseData.translatedText;
-  if (!translation || data.responseStatus !== 200) {
+  if (data.responseStatus !== 200) {
     throw new Error(tb("errNoTranslation"));
   }
-  lastService = googleFehler ? "MyMemory (Google-Fehler)" : "MyMemory";
-  return translation;
+
+  // Kernsatz: MyMemory ist ein Translation Memory mit Nutzer-Einträgen (Untertitel, Songtexte),
+  // kein reines Übersetzungsmodell — bei Kurzphrasen liefert es oft einen fremden, langen
+  // Treffer. Funktion: Den Haupttreffer und alle weiteren Treffer (data.matches) auf
+  // Plausibilität prüfen (Trefferwert, Längenverhältnis, "#"); der beste plausible gewinnt,
+  // gibt es keinen, wird lieber ein Fehler gemeldet als ein Fantasietext angezeigt.
+  // Ergänzung: Nur die Einträge aus data.matches zählen, denn sie tragen `quality` (0–100) und
+  // `created-by`. Importierte Korpora ("Public_Corpora") haben quality 0 und können trotz
+  // Trefferwert 0,98 fremden Text enthalten. Fehlt matches ganz, bleibt nur der Haupttreffer
+  // (ohne Qualitätsangabe, aber mit strengem Trefferwert).
+  const kandidaten = [];
+  if (Array.isArray(data.matches)) {
+    data.matches.forEach(x => {
+      if (x && x.translation) kandidaten.push({
+        t: x.translation, m: Number(x.match), q: Number(x.quality), von: x["created-by"] || ""
+      });
+    });
+  }
+  if (kandidaten.length === 0 && data.responseData && data.responseData.translatedText) {
+    kandidaten.push({ t: data.responseData.translatedText, m: Number(data.responseData.match), q: NaN, von: "" });
+  }
+  const plausible = kandidaten
+    .filter(k => mymemoryPlausibel(text, k.t, k.m, k.q))
+    .sort((a, b) => (b.q || 0) - (a.q || 0) || (b.m || 0) - (a.m || 0));
+  if (plausible.length === 0) {
+    console.warn("MyMemory: kein vertrauenswürdiger Treffer für", JSON.stringify(text), kandidaten);
+    throw new Error(tb("errNoTranslation"));
+  }
+  // Deutlich als ungeprüft kennzeichnen: anders als bei Google steht hier kein Übersetzungsmodell dahinter.
+  lastService = googleFehler ? "MyMemory (Google-Fehler, ungeprüft)" : "MyMemory (ungeprüft)";
+  return plausible[0].t;
+}
+
+function mymemoryPlausibel(quelle, ziel, treffer, qualitaet) {
+  const z = String(ziel || "").trim();
+  if (!z) return false;
+  // Strenger Trefferwert (0..1): nur nahezu exakte Treffer. Fehlt der Wert (NaN), ablehnen.
+  if (isNaN(treffer) || treffer < 0.9) return false;
+  // Qualität (0–100) der Quelle: 0 = ungeprüfter Korpus-Import, unter 50 ablehnen.
+  // Fehlt die Angabe (NaN), nicht allein deswegen ablehnen; die übrigen Prüfungen gelten weiter.
+  if (!isNaN(qualitaet) && qualitaet < 50) return false;
+  // "#" im Ergebnis, aber nicht im Original: typisch für Song-/Untertitel-Einträge.
+  if (z.includes("#") && !quelle.includes("#")) return false;
+  // Ausgabe auffällig länger als die Eingabe.
+  const wq = quelle.trim().split(/\s+/).length;
+  const wz = z.split(/\s+/).length;
+  if (wz > wq * 3 + 2) return false;
+  if (z.length > quelle.length * 4 + 20) return false;
+  return true;
 }
 
 async function translateAndSpeak(panel) {
@@ -5292,9 +5381,19 @@ wireExportImportButtons();
 // **Wer EN/DE umschaltet, soll sofort alles in der neuen Sprache sehen — nicht erst nach dem nächsten Ereignis.**
 // Funktion: Läuft nach toggleUIModeB (Listener-Reihenfolge) und zeichnet die Stellen neu, die ihren Text beim
 // Aufbau setzen (Key-Fach, Anker-Tooltip, KI-Tooltip, Kategorie-Auswahl, Leer-Platzhalter der Panels).
-applyRepeatTitles(); applyCatLabels(); applyKontextTexts();
+applyRepeatTitles(); applyCatLabels(); applyKontextTexts(); applyDienstTexts();
+document.getElementById("dienstBtn").addEventListener("click", () => {
+  const naechster = getDienst() === "google" ? "mymemory" : "google";
+  if (naechster === "google" && !getProKey()) { applyDienstTexts(true); return; }
+  setDienst(naechster);
+  applyDienstTexts();
+});
+document.getElementById("menuBtn").addEventListener("click", () => applyDienstTexts());
+["proKeySaveBtn", "proKeyDeleteBtn"].forEach(id => {
+  document.getElementById(id).addEventListener("click", () => setTimeout(() => applyDienstTexts(), 600));
+});
 document.getElementById("uiModeBBtn").addEventListener("click", () => {
-  try { applyRepeatTitles(); applyCatLabels(); applyKontextTexts(); } catch (e) {}
+  try { applyRepeatTitles(); applyCatLabels(); applyKontextTexts(); applyDienstTexts(); } catch (e) {}
   try { populateSelects(); renderLabels(); } catch (e) {}
   try { refreshProKeyUI(); } catch (e) {}
   try { updateAnchorBtn(); } catch (e) {}

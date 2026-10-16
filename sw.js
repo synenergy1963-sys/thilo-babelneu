@@ -6,7 +6,7 @@
 // abgefangen oder zwischengespeichert.
 
 // Bei jedem Deploy, der garantiert sofort greifen soll, diese Nummer erhöhen.
-const CACHE_VERSION = "v12";
+const CACHE_VERSION = "v13";
 const CACHE = "babel-pro-shell-" + CACHE_VERSION;
 const SHELL = [
   "/", "/index.html", "/manifest.json",
